@@ -2,6 +2,7 @@ import { defineConfig } from 'vitepress'
 // https://vitepress.dev/reference/site-config
 import demoblock from "vitepress-demoblock-xr";
 export default defineConfig({
+  base: '/useAsyncHandler/',
   title: "docs",
   description: "A VitePress Site",
   themeConfig: {
