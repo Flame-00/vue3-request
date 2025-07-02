@@ -1,35 +1,51 @@
 {
-  "name": "asynchandler-vue3",
-  "version": "0.0.0",
-  "private": true,
-  "type": "module",
+  "name": "@flame00/vue3-request",
+  "version": "1.0.0",
+  "description": "A Vue 3 request handling library, designed to simplify your API calls",
+  "main": "dist/vue3-request.es.js",
+  "types": "dist/vue3-request.es.d.ts",
+  "files": [
+    "dist"
+  ],
+  "module": "dist/vue3-request.es.js",
+  "exports": {
+    ".": {
+      "import": "./dist/vue3-request.es.js",
+      "require": "./dist/vue3-request.cjs.js"
+    },
+    "types": "./dist/vue3-request.es.d.ts"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
+  },
   "scripts": {
     "dev": "vite",
-    "build": "run-p type-check \"build-only {@}\" --",
-    "preview": "vite preview",
-    "build-only": "vite build",
-    "type-check": "vue-tsc --build",
-    "docs:dev": "vitepress dev docs",
-    "docs:build": "vitepress build docs",
-    "docs:preview": "vitepress preview docs"
+    "dev:vue3": "pnpm --filter @async-handler/vue3 dev",
+    "dev:docs": "pnpm --filter @async-handler/docs docs:dev",
+    "build": "vite build",
+    "build:vue3": "pnpm --filter @async-handler/vue3 build-only",
+    "build:docs": "pnpm --filter @async-handler/docs docs:build",
+    "serve:docs": "pnpm --filter @async-handler/docs docs:serve"
   },
+  "keywords": [
+    "vue3",
+    "request",
+    "api",
+    "hooks",
+    "async",
+    "handler",
+    "vue3-request",
+    "flame00"
+  ],
+  "author": "flame00",
+  "license": "ISC",
+  "packageManager": "pnpm@10.12.1",
   "dependencies": {
-    "shiki": "^3.7.0",
-    "vitepress-demoblock-xr": "^2.0.5",
+    "vite": "^7.0.0",
     "vue": "^3.5.17"
   },
   "devDependencies": {
-    "@tsconfig/node22": "^22.0.2",
-    "@types/node": "^22.15.32",
     "@vitejs/plugin-vue": "^6.0.0",
-    "@vue/tsconfig": "^0.7.0",
-    "naive-ui": "^2.42.0",
-    "npm-run-all2": "^8.0.4",
-    "typescript": "~5.8.0",
-    "vite": "^7.0.0",
-    "vite-plugin-dts": "^4.5.4",
-    "vite-plugin-vue-devtools": "^7.7.7",
-    "vitepress": "^1.6.3",
-    "vue-tsc": "^2.2.10"
+    "vite-plugin-dts": "^4.5.4"
   }
 }

@@ -1,11 +1,3 @@
 {
-  "files": [],
-  "references": [
-    {
-      "path": "./tsconfig.node.json"
-    },
-    {
-      "path": "./tsconfig.app.json"
-    }
-  ]
+  "include": ["packages/**/*.ts", "packages/**/*.vue"],
 }

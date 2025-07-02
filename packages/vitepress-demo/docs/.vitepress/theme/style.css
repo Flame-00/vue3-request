@@ -1,0 +1,32 @@
+:root {
+  /* #646cff */
+  --vp-c-brand-1: hsl(237, 100%, 70%);
+  --vp-c-brand-2: hsl(237, 100%, 73%);
+  --vp-c-brand-3: hsl(237, 100%, 70%);
+  --vp-c-brand-soft: hsl(237, 100%, 70%, 14%);
+
+  --vp-code-block-bg: #f9fafb;
+}
+
+html.dark {
+  --vp-code-block-bg: var(--vp-c-bg-alt, #161618);
+}
+
+.demo-block .xl-button {
+  margin: 0 10px 10px 0;
+}
+
+
+/* vp-doc style */
+.vp-doc table {
+  display: table !important;
+  width: 100%;
+}
+
+.vp-doc tr:nth-child(2n) {
+  background-color: transparent !important;
+}
+
+.vp-doc th {
+  color: unset !important;
+}
