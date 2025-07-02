@@ -9,6 +9,5 @@ import { ref } from 'vue'
 
 const show = ref(true)
 
-console.log(123)
 </script>
 <style scoped lang="scss"></style>
