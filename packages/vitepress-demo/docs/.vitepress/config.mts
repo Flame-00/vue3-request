@@ -1,7 +1,7 @@
 import { defineConfig } from 'vitepress'
 import { demoblockPlugin, demoblockVitePlugin } from 'vitepress-theme-demoblock'
 export default defineConfig({
-  title: "vue3-async-handler-hooks",
+  title: "Vue3AsyncHandlerHooks",
   description: "A Vue3 asynchronous request processing library, designed to simplify your asynchronous operations and API calls.",
   base: '/vue3-async-handler-hooks',
   head: [

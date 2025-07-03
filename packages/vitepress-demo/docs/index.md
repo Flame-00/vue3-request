@@ -2,7 +2,7 @@
 layout: home
 
 hero:
-  name: "vue3-async-handler-hooks"
+  name: "Vue3AsyncHandlerHooks"
   text: "一个Vue3的异步请求处理库，旨在简化你的异步操作和api调用"
   image:
     src: /logo.svg
