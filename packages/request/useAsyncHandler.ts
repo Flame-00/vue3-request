@@ -193,14 +193,12 @@ export function useAsyncHandler<T extends CallbackType>(
     const cache = getCache(cacheKey); // 获取缓存
     if (cache) {
       if ((Date.now() - cache.time) > staleTime) { // 缓存已过期
-        console.log('缓存已过期')
         clearCache(cacheKey) // 清除缓存
         return {
           isReturnRequest: false,
           cache: null
         }
       } else { // 缓存未过期
-        console.log('缓存未过期')
         return {
           isReturnRequest: true,
           cache
@@ -220,22 +218,21 @@ export function useAsyncHandler<T extends CallbackType>(
     const { cache, isReturnRequest } = checkCache()
 
     if (isReturnRequest && cache) { // 如果保鲜时间未过期并且有缓存 那么停止请求并返回缓存数据 
-      const { data, params } = cache
+      const { data: res, params } = cache
       onBefore?.(params)
 
-      data.value = data
+      data.value = res
 
       params.value = params
 
-      onSuccess?.(data, params)
+      onSuccess?.(res, params)
 
-      onFinally(data)
+      onFinally(res)
 
-      return data
+      return res
     }
 
     if (promise) {
-      console.log('有了', promise)
       return promise
     }
 

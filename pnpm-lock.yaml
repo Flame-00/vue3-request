@@ -8,9 +8,6 @@ importers:
 
   .:
     dependencies:
-      '@flame00/vue3-request':
-        specifier: ^1.0.0
-        version: 1.0.0(@types/node@22.16.0)(typescript@5.8.3)(yaml@2.8.0)
       vite:
         specifier: ^7.0.0
         version: 7.0.0(@types/node@22.16.0)(yaml@2.8.0)
@@ -45,6 +42,9 @@ importers:
       '@async-handler/request':
         specifier: workspace:*
         version: link:../request
+      '@flame00/vue3-request':
+        specifier: ^1.0.0
+        version: 1.0.0(@types/node@22.16.0)(typescript@5.8.3)(yaml@2.8.0)
       vue:
         specifier: ^3.5.17
         version: 3.5.17(typescript@5.8.3)
