@@ -1,6 +1,5 @@
 # Vitepress Demo
 
-
 :::demo
 
 ```vue
@@ -8,17 +7,20 @@
   <div>{{ data }}</div>
 </template>
 <script setup lang="ts">
-import { useAsyncHandler } from '@flame00/vue3-async-handler-hooks'
+import { useAsyncHandler } from "@flame00/vue3-async-handler-hooks";
+
+const requestOptions = {
+  method: "GET",
+  redirect: "follow",
+};
 
 const testService = async () => {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve(1)
-        }, 1000)
-    })
-}
-const { run, data } = useAsyncHandler(() => testService)
-
+  return fetch("https://api.avdgw.com/api/cai", requestOptions)
+    .then((response) => response.text())
+};
+const { run, data } = useAsyncHandler(() => testService);
 </script>
+
 ```
+
 :::
