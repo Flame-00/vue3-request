@@ -1,10 +1,11 @@
 import { defineConfig } from 'vitepress'
 import { demoblockPlugin, demoblockVitePlugin } from 'vitepress-theme-demoblock'
 export default defineConfig({
-  title: "test",
-  description: "A VitePress Site",
+  title: "vue3-async-handler-hooks",
+  description: "A Vue3 asynchronous request processing library, designed to simplify your asynchronous operations and API calls.",
   base: '/vue3-async-handler-hooks',
   themeConfig: {
+    logo: '/logo.svg',
     nav: [
       { text: 'Home', link: '/' },
       { text: 'Examples', link: '/markdown-examples' }

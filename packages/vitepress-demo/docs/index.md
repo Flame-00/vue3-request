@@ -1,17 +1,18 @@
 ---
-# https://vitepress.dev/reference/default-theme-home-page
 layout: home
 
 hero:
-  name: "test"
-  text: "A VitePress Site"
-  tagline: My great project tagline
+  name: "vue3-async-handler-hooks"
+  text: "一个Vue3的异步请求处理库，旨在简化你的异步操作和api调用"
+  image:
+    src: /logo.svg
+    alt: Flame
   actions:
     - theme: brand
-      text: Markdown Examples
+      text: 开始
       link: /markdown-examples
     - theme: alt
-      text: API Examples
+      text: 演示
       link: /api-examples
 
 features:
@@ -22,4 +23,3 @@ features:
   - title: Feature C
     details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
 ---
-
