@@ -1,6 +1,6 @@
 {
   "name": "@flame00/vue3-async-handler-hooks",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "type": "module",
   "description": "A Vue3 asynchronous request processing library, designed to simplify your asynchronous operations and API calls.",
   "main": "dist/vue3-async-handler-hooks.es.js",
@@ -11,10 +11,10 @@
   "module": "dist/vue3-async-handler-hooks.es.js",
   "exports": {
     ".": {
-      "types": "dist/vue3-async-handler-hooks.es.d.ts",
       "import": "dist/vue3-async-handler-hooks.es.js",
       "require": "dist/vue3-async-handler-hooks.cjs.js"
-    }
+    },
+    "types": "dist/vue3-async-handler-hooks.es.d.ts"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org"

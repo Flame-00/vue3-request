@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import { useAsyncHandler } from '@async-handler/request/useAsyncHandler'
+import { useAsyncHandler } from '@flame00/vue3-async-handler-hooks'
 
 const testService = () => {
     return new Promise((resolve) => {
@@ -18,6 +18,9 @@ const testService = () => {
 
 const { data, isLoading } = useAsyncHandler(() => testService, {
     cacheKey: 'testService',
+    onSuccess: (data) => {
+        console.log('onSuccess', data)
+    }
 })
 
 </script>

@@ -42,9 +42,9 @@ importers:
       '@async-handler/request':
         specifier: workspace:*
         version: link:../request
-      '@flame00/vue3-request':
-        specifier: ^1.0.0
-        version: 1.0.0(@types/node@22.16.0)(typescript@5.8.3)(yaml@2.8.0)
+      '@flame00/vue3-async-handler-hooks':
+        specifier: ^1.0.1
+        version: 1.0.1(@types/node@22.16.0)(typescript@5.8.3)(yaml@2.8.0)
       vue:
         specifier: ^3.5.17
         version: 3.5.17(typescript@5.8.3)
@@ -609,8 +609,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@flame00/vue3-request@1.0.0':
-    resolution: {integrity: sha512-jOllT1+R/ROB2asUl8yD68V9fmEwGIEqj5YZWDxrI86T8Uhh+jjf1cGC6mu0xl6LP1Z71C8MGm+ZQHWCv2gLvA==}
+  '@flame00/vue3-async-handler-hooks@1.0.1':
+    resolution: {integrity: sha512-J2qUswPqXLpM2cr71PJYTjs3NcAip+ptbBxf3b/QCAiLb7waMz9jREtIOLuLIFWQabncou6frr34voLEXIOLeg==}
 
   '@floating-ui/core@1.7.2':
     resolution: {integrity: sha512-wNB5ooIKHQc+Kui96jE/n69rHFWAVoxn5CAzL1Xdd8FG03cgY3MLO+GF9U3W737fYDSgPWA6MReKhBQBop6Pcw==}
@@ -2669,7 +2669,7 @@ snapshots:
   '@esbuild/win32-x64@0.25.5':
     optional: true
 
-  '@flame00/vue3-request@1.0.0(@types/node@22.16.0)(typescript@5.8.3)(yaml@2.8.0)':
+  '@flame00/vue3-async-handler-hooks@1.0.1(@types/node@22.16.0)(typescript@5.8.3)(yaml@2.8.0)':
     dependencies:
       vite: 7.0.0(@types/node@22.16.0)(yaml@2.8.0)
       vue: 3.5.17(typescript@5.8.3)
