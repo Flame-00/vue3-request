@@ -22,11 +22,11 @@
   "scripts": {
     "dev": "vite",
     "dev:vue3": "pnpm --filter @async-handler/vue3 dev",
-    "dev:docs": "pnpm --filter @async-handler/docs docs:dev",
+    "dev:docs": "pnpm --filter @async-handler/docs dev",
     "build": "vite build",
     "build:vue3": "pnpm --filter @async-handler/vue3 build-only",
-    "build:docs": "pnpm --filter @async-handler/docs docs:build",
-    "serve:docs": "pnpm --filter @async-handler/docs docs:serve"
+    "build:docs": "pnpm --filter @async-handler/docs build",
+    "serve:docs": "pnpm --filter @async-handler/docs serve"
   },
   "keywords": [
     "vue3",

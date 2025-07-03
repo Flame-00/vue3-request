@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "docs:dev": "pnpm run register:components && vitepress dev docs",
-    "docs:build": "pnpm run register:components && vitepress build docs",
-    "docs:serve": "vitepress serve docs",
+    "dev": "pnpm register:components && vitepress dev docs",
+    "build": "pnpm register:components && vitepress build docs",
+    "serve": "vitepress serve docs",
     "register:components": "vitepress-rc"
   },
   "keywords": [],
