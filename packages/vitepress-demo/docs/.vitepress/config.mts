@@ -5,6 +5,7 @@ import { demoblockPlugin, demoblockVitePlugin } from 'vitepress-theme-demoblock'
 export default defineConfig({
   title: "test",
   description: "A VitePress Site",
+  base: 'vue3-async-handler-hooks',
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [
