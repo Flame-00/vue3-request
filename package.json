@@ -1,6 +1,6 @@
 {
   "name": "@flame00/vue3-async-handler-hooks",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "type": "module",
   "description": "A Vue3 asynchronous request processing library, designed to simplify your asynchronous operations and API calls.",
   "main": "dist/vue3-async-handler-hooks.es.js",
