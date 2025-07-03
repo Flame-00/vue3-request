@@ -12,6 +12,7 @@ import { useAsyncHandler } from "@flame00/vue3-async-handler-hooks";
 const requestOptions = {
   method: "GET",
   redirect: "follow",
+  
 };
 
 const testService = async () => {
