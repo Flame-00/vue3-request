@@ -8,7 +8,7 @@
   <div>{{ data }}</div>
 </template>
 <script setup lang="ts">
-import { useAsyncHandler } from '@useAsyncHandler/request/useAsyncHandler'
+import { useAsyncHandler } from '@flame00/vue3-async-handler-hooks'
 
 const testService = async () => {
     return new Promise((resolve) => {

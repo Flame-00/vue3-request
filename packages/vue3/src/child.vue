@@ -7,7 +7,7 @@
 <script setup lang="ts">
 import { useAsyncHandler } from '@flame00/vue3-async-handler-hooks'
 
-const testService = () => {
+const testService = (): Promise<string> => {
     return new Promise((resolve) => {
         console.log('testService')
         setTimeout(() => {
