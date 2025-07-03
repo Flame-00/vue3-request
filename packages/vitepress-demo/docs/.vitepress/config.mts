@@ -4,6 +4,9 @@ export default defineConfig({
   title: "vue3-async-handler-hooks",
   description: "A Vue3 asynchronous request processing library, designed to simplify your asynchronous operations and API calls.",
   base: '/vue3-async-handler-hooks',
+  head: [
+    ['link', { rel: 'icon', href: '/vue3-async-handler-hooks/logo.svg' }]
+  ],
   themeConfig: {
     logo: '/logo.svg',
     nav: [
