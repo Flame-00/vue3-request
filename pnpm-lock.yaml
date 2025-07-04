@@ -29,9 +29,6 @@ importers:
       '@async-handler/request':
         specifier: workspace:*
         version: link:../request
-      '@flame00/vue3-async-handler-hooks':
-        specifier: ^1.0.3
-        version: 1.0.3(@types/node@22.16.0)(typescript@5.8.3)(yaml@2.8.0)
     devDependencies:
       vitepress:
         specifier: ^1.6.3
@@ -45,9 +42,6 @@ importers:
       '@async-handler/request':
         specifier: workspace:*
         version: link:../request
-      '@flame00/vue3-async-handler-hooks':
-        specifier: ^1.0.3
-        version: 1.0.3(@types/node@22.16.0)(typescript@5.8.3)(yaml@2.8.0)
       vue:
         specifier: ^3.5.17
         version: 3.5.17(typescript@5.8.3)
@@ -611,9 +605,6 @@ packages:
     engines: {node: '>=18'}
     cpu: [x64]
     os: [win32]
-
-  '@flame00/vue3-async-handler-hooks@1.0.3':
-    resolution: {integrity: sha512-DhLXrS9hPL0ix+N8OEteBcgc6mowXII13uFNP01ro/C0bH/7yF8h0qgSUwGfB+t8yH+Iuti7IFR26juUAYRPPw==}
 
   '@floating-ui/core@1.7.2':
     resolution: {integrity: sha512-wNB5ooIKHQc+Kui96jE/n69rHFWAVoxn5CAzL1Xdd8FG03cgY3MLO+GF9U3W737fYDSgPWA6MReKhBQBop6Pcw==}
@@ -2671,24 +2662,6 @@ snapshots:
 
   '@esbuild/win32-x64@0.25.5':
     optional: true
-
-  '@flame00/vue3-async-handler-hooks@1.0.3(@types/node@22.16.0)(typescript@5.8.3)(yaml@2.8.0)':
-    dependencies:
-      vite: 7.0.0(@types/node@22.16.0)(yaml@2.8.0)
-      vue: 3.5.17(typescript@5.8.3)
-    transitivePeerDependencies:
-      - '@types/node'
-      - jiti
-      - less
-      - lightningcss
-      - sass
-      - sass-embedded
-      - stylus
-      - sugarss
-      - terser
-      - tsx
-      - typescript
-      - yaml
 
   '@floating-ui/core@1.7.2':
     dependencies:
