@@ -10,22 +10,56 @@ export default defineConfig({
   themeConfig: {
     logo: '/logo.svg',
     nav: [
-      { text: 'Home', link: '/' },
-      { text: 'Examples', link: '/markdown-examples' }
+      { text: '指南', link: '/fingerpost/' },
+      { text: '演示', link: '/demo/basic' },
+      { text: 'API', link: '/API/' }
     ],
-
+    docFooter: {
+      prev: '上一页',
+      next: '下一页'
+    },
+    editLink: {
+      pattern: 'https://github.com/fslflame/vue3-async-handler-hooks',
+      text: '在 GitHub 上编辑此页面'
+    },
+    externalLinkIcon: true,
+    search: {
+      provider: 'local',
+    },
+    lastUpdated: {
+      text: '最后更改',
+      formatOptions: {
+        dateStyle: 'medium',
+        timeStyle: 'short'
+      }
+    },
+    outline: {
+      level: 'deep',
+      label: '目录'
+    },
     sidebar: [
       {
-        text: 'Examples',
+        text: '指南',
         items: [
-          { text: 'Markdown Examples', link: '/markdown-examples' },
-          { text: 'Runtime API Examples', link: '/api-examples' }
+          { text: '使用说明', link: '/fingerpost/' },
+        ]
+      },
+      {
+        text: '演示',
+        items: [
+          { text: '基本使用', link: '/demo/basic' },
+        ]
+      },
+      {
+        text: 'API',
+        items: [
+          { text: 'API', link: '/API/' },
         ]
       }
     ],
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/vuejs/vitepress' }
+      { icon: 'github', link: 'https://github.com/fslflame/vue3-async-handler-hooks' }
     ]
   },
   markdown: {
