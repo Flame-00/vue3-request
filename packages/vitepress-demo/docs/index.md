@@ -10,23 +10,26 @@ hero:
   actions:
     - theme: brand
       text: 开始
-      link: /markdown-examples
-    - theme: alt
+      link: /introduce/
+    - theme: brand
       text: 演示
-      link: /api-examples
+      link: /demo/basic
 
 features:
   - icon: 🚀
-    title: Reactivity
-    details: 你得到的数据完全是响应式的，不用再为数据的不响应而操心
+    title: 所有数据都具有响应式
   - icon: 🛠
     title: 缓存 & SWR
-    details: 会将当前请求成功的数据缓存起来。下次组件初始化时，如果有缓存数据，我们会优先返回缓存数据，然后在背后发送新请求，也就是 SWR 的能力
-  - icon:
-      src: /error.svg
-    title: 错误重试
-    details: 默认使用二进制指数退避算法来帮你计算出合适的间隔时间
+  - icon: 🤖
+    title: 自动处理错误重试
   - icon: 📠
-    title: Type Strong
-    details: 完全使用 Typescript 编写，具有友好的类型支持
+    title: 完全使用 Typescript 编写
+  - icon: 🔄
+    title: 轮询请求
+  - icon: 🎯
+    title: 聚焦页面时自动重新请求
+  - icon: 🍃
+    title: 轻量化
+  - icon: 📦
+    title: 开箱即用
 ---

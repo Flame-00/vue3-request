@@ -2,6 +2,10 @@
     <div>
         <h1>Child{{ data }}</h1>
     </div>
+    <div class="demo">
+        <div>操作</div>
+        <pre>{{ data }}</pre>
+    </div>
 </template>
 
 <script setup lang="ts">
@@ -23,6 +27,9 @@ const { data, isLoading } = useAsyncHandler(() => testService, {
     }
 })
 
+JSON.stringify(data, null, 2)
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+
+</style>

@@ -1,7 +1,20 @@
-html.dark {
-  --vp-code-block-bg: var(--vp-c-bg-alt, #161618);
+:root {
+  --vp-home-hero-image-background-image: linear-gradient(
+    -45deg,
+    #bd34fe,
+    #41d1ff
+  );
+  --vp-home-hero-name-color: transparent;
+  --vp-home-hero-name-background: -webkit-linear-gradient(
+    50deg,
+    #bd34fe,
+    #41d1ff
+  );
+  --vp-home-hero-image-filter: blur(72px);
 }
-
+.VPButton.brand {
+  background-color: #853ef5 !important;
+}
 /* vp-doc style */
 .vp-doc table {
   display: table !important;
@@ -14,4 +27,7 @@ html.dark {
 
 .vp-doc th {
   color: unset !important;
+}
+pre {
+  white-space: break-spaces !important;
 }

@@ -10,7 +10,7 @@ export default defineConfig({
   themeConfig: {
     logo: '/logo.svg',
     nav: [
-      { text: '指南', link: '/fingerpost/' },
+      { text: '指南', link: '/introduce/' },
       { text: '演示', link: '/demo/basic' },
       { text: 'API', link: '/API/' }
     ],
@@ -41,7 +41,8 @@ export default defineConfig({
       {
         text: '指南',
         items: [
-          { text: '使用说明', link: '/fingerpost/' },
+          { text: '介绍', link: '/introduce/' },
+          { text: '起步', link: '/starting/' },
         ]
       },
       {

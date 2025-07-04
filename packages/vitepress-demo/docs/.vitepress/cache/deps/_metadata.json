@@ -1,43 +1,49 @@
 {
-  "hash": "decba40d",
+  "hash": "d45259e8",
   "configHash": "d75262d2",
-  "lockfileHash": "f45842cf",
-  "browserHash": "4535da55",
+  "lockfileHash": "675cd544",
+  "browserHash": "8d0b0a6c",
   "optimized": {
     "vue": {
       "src": "../../../../../../node_modules/.pnpm/vue@3.5.17_typescript@5.8.3/node_modules/vue/dist/vue.runtime.esm-bundler.js",
       "file": "vue.js",
-      "fileHash": "200ae0ee",
+      "fileHash": "b436e47e",
       "needsInterop": false
     },
     "vitepress > @vue/devtools-api": {
       "src": "../../../../../../node_modules/.pnpm/@vue+devtools-api@7.7.7/node_modules/@vue/devtools-api/dist/index.js",
       "file": "vitepress___@vue_devtools-api.js",
-      "fileHash": "1f8e3b2d",
+      "fileHash": "ffe1387f",
       "needsInterop": false
     },
     "vitepress > @vueuse/core": {
       "src": "../../../../../../node_modules/.pnpm/@vueuse+core@12.8.2_typescript@5.8.3/node_modules/@vueuse/core/index.mjs",
       "file": "vitepress___@vueuse_core.js",
-      "fileHash": "e89f7f81",
+      "fileHash": "0aba1cac",
       "needsInterop": false
     },
     "vitepress > @vueuse/integrations/useFocusTrap": {
       "src": "../../../../../../node_modules/.pnpm/@vueuse+integrations@12.8.2_df663f4367436853847d29eaaab201f6/node_modules/@vueuse/integrations/useFocusTrap.mjs",
       "file": "vitepress___@vueuse_integrations_useFocusTrap.js",
-      "fileHash": "67f382b5",
+      "fileHash": "9900e7e1",
       "needsInterop": false
     },
     "vitepress > mark.js/src/vanilla.js": {
       "src": "../../../../../../node_modules/.pnpm/mark.js@8.11.1/node_modules/mark.js/src/vanilla.js",
       "file": "vitepress___mark__js_src_vanilla__js.js",
-      "fileHash": "f42aa018",
+      "fileHash": "ad7c59f3",
       "needsInterop": false
     },
     "vitepress > minisearch": {
       "src": "../../../../../../node_modules/.pnpm/minisearch@7.1.2/node_modules/minisearch/dist/es/index.js",
       "file": "vitepress___minisearch.js",
-      "fileHash": "f78f1999",
+      "fileHash": "9208fa5c",
+      "needsInterop": false
+    },
+    "@flame00/vue3-async-handler": {
+      "src": "../../../../../../node_modules/.pnpm/@flame00+vue3-async-handler@1.0.7_typescript@5.8.3/node_modules/@flame00/vue3-async-handler/dist/vue3-async-handler.es.js",
+      "file": "@flame00_vue3-async-handler.js",
+      "fileHash": "6a413b70",
       "needsInterop": false
     }
   },
