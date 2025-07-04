@@ -7,7 +7,7 @@
   <div>{{ data }}</div>
 </template>
 <script setup lang="ts">
-import { useAsyncHandler } from "@flame00/vue3-async-handler-hooks";
+import { useAsyncHandler } from "@flame00/vue3-async-handler";
 
 const requestOptions = {
   method: "GET",

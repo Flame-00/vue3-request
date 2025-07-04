@@ -13,9 +13,9 @@ export default defineConfig({
   build: {
     lib: {
       entry: path.resolve(__dirname, 'packages/request/useAsyncHandler.ts'),
-      name: 'vue3-async-handler-hooks',
+      name: 'vue3-async-handler',
       formats: ['es', 'cjs'],
-      fileName: (format) => `vue3-async-handler-hooks.${format}.js`
+      fileName: (format) => `vue3-async-handler.${format}.js`
     },
     rollupOptions: {
       external: ['vue'],

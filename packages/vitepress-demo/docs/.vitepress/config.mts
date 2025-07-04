@@ -1,11 +1,11 @@
 import { defineConfig } from 'vitepress'
 import { demoblockPlugin, demoblockVitePlugin } from 'vitepress-theme-demoblock'
 export default defineConfig({
-  title: "Vue3AsyncHandlerHooks",
+  title: "Vue3AsyncHandler",
   description: "A Vue3 asynchronous request processing library, designed to simplify your asynchronous operations and API calls.",
-  base: '/vue3-async-handler-hooks',
+  base: '/vue3-async-handler',
   head: [
-    ['link', { rel: 'icon', href: '/vue3-async-handler-hooks/logo.svg' }]
+    ['link', { rel: 'icon', href: '/vue3-async-handler/logo.svg' }]
   ],
   themeConfig: {
     logo: '/logo.svg',
@@ -19,7 +19,7 @@ export default defineConfig({
       next: '下一页'
     },
     editLink: {
-      pattern: 'https://github.com/fslflame/vue3-async-handler-hooks',
+      pattern: 'https://github.com/fslflame/vue3-async-handler',
       text: '在 GitHub 上编辑此页面'
     },
     externalLinkIcon: true,
@@ -59,7 +59,7 @@ export default defineConfig({
     ],
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/fslflame/vue3-async-handler-hooks' }
+      { icon: 'github', link: 'https://github.com/fslflame/vue3-async-handler' }
     ]
   },
   markdown: {

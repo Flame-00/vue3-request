@@ -1,4 +1,4 @@
-# vue3-async-handler-hooks
+# vue3-async-handler
 
 一个Vue3的异步请求处理库，旨在简化你的异步操作和api调用
 
