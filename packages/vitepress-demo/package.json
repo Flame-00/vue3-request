@@ -8,7 +8,7 @@
     "build": "pnpm register:components && vitepress build docs",
     "serve": "vitepress serve docs",
     "register:components": "vitepress-rc",
-    "rf": "rimraf node_modules && rimraf dist"
+    "rf": "rimraf node_modules"
   },
   "keywords": [],
   "author": "",
@@ -19,6 +19,7 @@
     "vitepress-theme-demoblock": "^3.1.3"
   },
   "dependencies": {
-    "@async-handler/request": "workspace:*"
+    "@async-handler/request": "workspace:*",
+    "@flame00/vue3-async-handler": "^1.0.7"
   }
 }
