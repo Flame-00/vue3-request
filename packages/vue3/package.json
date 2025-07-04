@@ -8,7 +8,8 @@
     "build": "run-p type-check \"build-only {@}\" --",
     "preview": "vite preview",
     "build-only": "vite build",
-    "type-check": "vue-tsc --build"
+    "type-check": "vue-tsc --build",
+    "rf": "rimraf node_modules && rimraf dist"
   },
   "dependencies": {
     "@async-handler/request": "workspace:*",
