@@ -1,3 +1,3 @@
 {
-  "include": ["packages/**/*.ts", "packages/**/*.vue"],
+  "include": ["packages/**/*"],
 }

@@ -1,5 +1,6 @@
 import { defineConfig } from 'vitepress'
 import { demoblockPlugin, demoblockVitePlugin } from 'vitepress-theme-demoblock'
+import { fileURLToPath } from 'node:url'
 export default defineConfig({
   title: "Vue3AsyncHandler",
   description: "A Vue3 asynchronous request processing library, designed to simplify your asynchronous operations and API calls.",
@@ -78,5 +79,10 @@ export default defineConfig({
   vite: {
     // @ts-ignore
     plugins: [demoblockVitePlugin()],
+    resolve: {
+      alias: {
+        '@': fileURLToPath(new URL('../../docs', import.meta.url))
+      }
+    }
   }
 })

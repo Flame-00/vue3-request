@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@async-handler/request": "workspace:*",
+    "@flame00/vue3-async-handler": "^1.0.10",
     "axios": "^1.10.0",
     "vfonts": "^0.0.3"
   }

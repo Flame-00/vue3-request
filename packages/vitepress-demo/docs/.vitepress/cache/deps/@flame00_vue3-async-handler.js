@@ -7,10 +7,10 @@ import {
 } from "./chunk-GRXRH4YQ.js";
 import "./chunk-PZ5AY32C.js";
 
-// ../../node_modules/.pnpm/@flame00+vue3-async-handler@1.0.9_typescript@5.8.3/node_modules/@flame00/vue3-async-handler/dist/vue3-async-handler.es.js
+// ../../node_modules/.pnpm/@flame00+vue3-async-handler@1.0.10_typescript@5.8.3/node_modules/@flame00/vue3-async-handler/dist/vue3-async-handler.es.js
 var C = /* @__PURE__ */ new Map();
-var Re = (n, { data: l, params: r, time: c }) => {
-  C.set(n, { data: l, params: r, time: c });
+var Re = (n, { data: l, params: r, time: i }) => {
+  C.set(n, { data: l, params: r, time: i });
 };
 var U = (n) => {
   if (n)
@@ -20,20 +20,20 @@ var U = (n) => {
 var X = (n) => {
   C.delete(n);
 };
-var i = /* @__PURE__ */ new Map();
+var c = /* @__PURE__ */ new Map();
 var ye = (n, { data: l, params: r }) => {
   var _a;
-  i.has(n) && ((_a = i.get(n)) == null ? void 0 : _a.forEach((f) => f({ data: l, params: r, time: Date.now() })));
+  c.has(n) && ((_a = c.get(n)) == null ? void 0 : _a.forEach((f) => f({ data: l, params: r, time: Date.now() })));
 };
 var Y = (n, l) => {
   var _a;
-  return i.has(n) || i.set(n, /* @__PURE__ */ new Set()), (_a = i.get(n)) == null ? void 0 : _a.add(l), () => {
-    const r = i.get(n);
-    r == null ? void 0 : r.delete(l), (r == null ? void 0 : r.size) === 0 && i.delete(n);
+  return c.has(n) || c.set(n, /* @__PURE__ */ new Set()), (_a = c.get(n)) == null ? void 0 : _a.add(l), () => {
+    const r = c.get(n);
+    r == null ? void 0 : r.delete(l), (r == null ? void 0 : r.size) === 0 && c.delete(n);
   };
 };
 function Ee(n, l) {
-  let r = null, c = null, f = 0, A = true, D = true, v = null, R = null;
+  let r = null, i = null, f = 0, A = true, D = true, v = null, R = null;
   const o = shallowRef(), I = shallowRef(false), b = shallowRef(false), d = shallowRef(false), L = shallowRef(null), s = shallowRef([]), S = {
     manual: false,
     defaultParams: [],
@@ -58,14 +58,14 @@ function Ee(n, l) {
   }, ae = async () => {
     await T(...s.value);
   }, _ = () => {
-    c && window.clearInterval(c);
+    i && window.clearInterval(i);
   };
   function $(e) {
     return e === void 0 ? e : typeof e == "number" && !isNaN(e);
   }
   const le = () => {
     const { is: e, value: t } = g(toValue(k));
-    e && (_(), c = window.setInterval(y, t));
+    e && (_(), i = window.setInterval(y, t));
   }, j = (e) => new Promise((t) => setTimeout(t, e)), G = async () => {
     const { is: e, value: t } = g(toValue(ee));
     e && (await j(t), y());
@@ -90,14 +90,14 @@ function Ee(n, l) {
       params: s.value
     }), v = null;
   };
-  function ce() {
+  function ie() {
     if (!a) return;
     const e = U(a);
     e && (o.value = e.data, s.value = e.params), R = Y(a, (t) => {
       o.value = t.data, s.value = t.params;
     });
   }
-  const ie = () => {
+  const ce = () => {
     if (!a) return {
       // 没有设置缓存key
       isReturnRequest: false
@@ -114,9 +114,9 @@ function Ee(n, l) {
       cache: null
     };
   };
-  ce();
+  ie();
   const T = async (...e) => {
-    const { cache: t, isReturnRequest: de } = ie();
+    const { cache: t, isReturnRequest: de } = ce();
     if (de && t) {
       const { data: m, params: w } = t;
       return N == null ? void 0 : N(w), o.value = m, w.value = w, O == null ? void 0 : O(m, w), q(m), m;
@@ -181,11 +181,12 @@ function Ee(n, l) {
       value: 0
     });
   }
-  const J = () => {
+  function J() {
     s.value = [], o.value = null, L.value = null, I.value = false, b.value = false, d.value = false;
-  }, ve = () => {
-    r = null, c = null, v = null, R = null, window.removeEventListener("focus", E), window.document.removeEventListener("visibilitychange", E);
-  };
+  }
+  function ve() {
+    r = null, i = null, v = null, R = null, window.removeEventListener("focus", E), window.document.removeEventListener("visibilitychange", E);
+  }
   return onScopeDispose(() => {
     R == null ? void 0 : R(), P(), J(), ve();
   }, version.startsWith("3.5") ? true : void 0), {

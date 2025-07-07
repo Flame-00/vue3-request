@@ -44,22 +44,22 @@ const { data, error, loading } = useAsyncHandler(testService); // [!code error]
   <section>
     <h3>模拟请求</h3>
     <Loading v-if="isLoading" />
-    <pre>{{ data }}</pre>
-    <pre>{{ error }}</pre>
+    <pre v-if="data">{{ data }}</pre>
+    <pre v-if="error">{{ error }}</pre>
   </section>
   <hr />
   <section>
     <h3>axios</h3>
     <Loading v-if="isLoadingAxios" />
-    <pre>{{ dataAxios?.data }}</pre>
-    <pre>{{ errorAxios }}</pre>
+    <pre v-if="dataAxios">{{ dataAxios?.data }}</pre>
+    <pre v-if="errorAxios">{{ errorAxios }}</pre>
   </section>
   <hr />
   <section>
     <h3>fetch</h3>
     <Loading v-if="isLoadingFetch" />
-    <pre>{{ dataFetch }}</pre>
-    <pre>{{ errorFetch }}</pre>
+    <pre v-if="dataFetch">{{ dataFetch }}</pre>
+    <pre v-if="errorFetch">{{ errorFetch }}</pre>
   </section>
 </template>
 <script setup lang="ts">
@@ -180,14 +180,15 @@ runAsync()
   <Button type="primary" @click="() => search(city)">查询</Button>
   <section>
     <Loading v-if="isLoading" />
-    <pre>{{ cityData?.data.data }}</pre>
-    <pre>{{ error }}</pre>
+    <pre v-if="cityData">{{ cityData?.data }}</pre>
+    <pre v-if="error">{{ error }}</pre>
   </section>
 </template>
 <script setup lang="ts">
 import { useAsyncHandler } from "@flame00/vue3-async-handler";
 import axios from "axios";
 import { ref } from "vue";
+import message from "@/utils/message";
 
 const city = ref("");
 
@@ -210,7 +211,7 @@ interface ICity {
 
 const testService = (city: string): Promise<ICity> => {
   const testUrl = `https://v2.xxapi.cn/api/weather${
-    Math.random() > 0.5 ? "" : "error"
+    Math.random() > 0.5 ? "" : "error" // 模拟错误
   }`;
   return axios.get(testUrl, {
     params: {
@@ -229,9 +230,11 @@ const {
   manual: true,
   onSuccess: (data, params) => {
     console.log(data, params);
+    message.success(`${data.data.msg}-----${params}`);
   },
   onError: (error, params) => {
     console.log(error, params);
+    message.error(`${error}-----${params}`);
   },
 });
 </script>

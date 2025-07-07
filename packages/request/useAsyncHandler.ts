@@ -215,6 +215,7 @@ export function useAsyncHandler<T extends CallbackType>(
 
   // 异步执行
   const runAsync = async (...args: ParamsType): Promise<DataType | Error> => {
+    reset() // 重置响应式状态
     const { cache, isReturnRequest } = checkCache()
 
     if (isReturnRequest && cache) { // 如果保鲜时间未过期并且有缓存 那么停止请求并返回缓存数据 
@@ -236,7 +237,6 @@ export function useAsyncHandler<T extends CallbackType>(
       return promise
     }
 
-    reset() // 重置响应式状态
 
     params.value = args.length ? args : defaultParams as ParamsType
     // 中止之前的请求

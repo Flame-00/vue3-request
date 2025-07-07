@@ -85,7 +85,6 @@
     // fetch需处理返回格式
     return fetch(url2, configFetch).then((response) => response.json());
   };
-  
   const {
     data: dataFetch,
     error: errorFetch,
