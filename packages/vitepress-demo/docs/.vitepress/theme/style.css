@@ -15,11 +15,19 @@
   --vp-font-family-base: "v-sans";
 }
 
-
 .VPButton.brand {
   background-color: #853ef5 !important;
 }
 
+.ipt {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  transition: all 0.3s;
+}
+.ipt:focus {
+  border-color: var(--vp-c-brand-1);
+}
 /* vp-doc style */
 .vp-doc table {
   display: table !important;
@@ -37,23 +45,22 @@ pre {
   white-space: break-spaces !important;
   box-shadow: 0 0 10px 0 var(--vp-c-gray-1);
   padding: 15px;
-  border-radius: 25px;
 }
-
 
 .xl-button {
   cursor: pointer;
   border: 1px solid;
   outline: none;
-  padding: 12px 20px;
+  padding: 8px 20px;
   border-radius: 4px;
   color: #fff;
   font-weight: 500;
-  transition: all .3s;
+  margin: 0 10px;
+  transition: all 0.3s;
 }
 
 .xl-button:hover {
-  opacity: .8;
+  opacity: 0.8;
 }
 
 .xl-button:active {

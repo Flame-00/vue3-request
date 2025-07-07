@@ -236,6 +236,8 @@ export function useAsyncHandler<T extends CallbackType>(
       return promise
     }
 
+    reset() // 重置响应式状态
+
     params.value = args.length ? args : defaultParams as ParamsType
     // 中止之前的请求
     abort()
@@ -359,6 +361,15 @@ export function useAsyncHandler<T extends CallbackType>(
     }
   }
 
+  const reset = () => {
+    params.value = [] as ParamsType
+    data.value = null
+    error.value = null
+    isLoading.value = false
+    isFinished.value = false
+    isAborted.value = false
+  }
+
   // 停止
   const stop = () => {
     controller = null
@@ -372,6 +383,7 @@ export function useAsyncHandler<T extends CallbackType>(
   onScopeDispose(() => {
     unSubscribe?.()
     abort()
+    reset()
     stop()
   }, version.startsWith('3.5') ? true : undefined)
 

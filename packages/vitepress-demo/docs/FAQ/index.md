@@ -11,8 +11,6 @@
 ::: details 点我查看代码
 
 ```js
-// 标准异步函数
-
 // ✅ 异步函数的标志​​：函数声明前的 async 关键字
 const fn = async () => {
   return 666;

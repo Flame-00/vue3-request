@@ -28,18 +28,19 @@ const testService = (): Promise<string> => {
 const { data, error, loading } = useAsyncHandler(() => testService);
 
 // ❌ 直接返回一个异步函数
-const { data, error, loading } = useAsyncHandler(testService);
+const { data, error, loading } = useAsyncHandler(testService); // [!code error]
 ```
 
-::: info
-打开控制台, 查看组件初始化后自动执行的 testService 函数
+### `Vue3 + TS`示例代码
+
+::: tip
+打开控制台, 查看组件初始化后自动执行的 `testService` 函数
 :::
 
 :::demo
 
 ```vue
 <template>
-  <hr />
   <section>
     <h3>模拟请求</h3>
     <Loading v-if="isLoading" />
@@ -138,3 +139,105 @@ const {
 ```
 
 :::
+
+## 手动触发
+
+如果设置了 `options.manual = true`，则 `useAsyncHandler` 不会默认执行，需要通过 `run` 或者 `runAsync` 来触发执行。
+
+```ts
+const { loading, run, runAsync } = useAsyncHandler(() => testService, {
+  manual: true, // [!code ++]
+});
+```
+
+::: info `run` 与 `runAsync` 的区别在于：
+
+- `run` 是一个普通的同步函数，我们会自动捕获异常，你可以通过 `options.onError` 来处理异常时的行为。
+- `runAsync` 是一个返回 Promise 的异步函数，如果使用 `runAsync` 来调用，则意味着你需要自己捕获异常。
+
+```ts
+runAsync()
+  .then((data) => {
+    console.log(data);
+  })
+  .catch((error) => {
+    console.log(error);
+  });
+```
+
+:::
+
+接下来我们通过获取城市天气这个简单的场景，来演示 useAsyncHandler 手动触发模式，以及 `run` 与 `runAsync` 的区别。
+
+### run
+
+#### `Vue3 + TS`示例代码
+
+在这个例子中，我们通过 `run(city)` 来修改用户名，通过 `onSuccess` 和 `onError `来处理成功和失败。
+:::demo
+
+```vue
+<template>
+  <input class="ipt" type="text" placeholder="搜索城市天气" v-model="city" />
+  <Button type="primary" @click="() => search(city)">查询</Button>
+  <section>
+    <Loading v-if="isLoading" />
+    <pre v-if="cityData && isFinished">{{ cityData?.data.data }}</pre>
+    <pre v-if="error">{{ error }}</pre>
+  </section>
+</template>
+<script setup lang="ts">
+import { useAsyncHandler } from "@flame00/vue3-async-handler";
+import axios from "axios";
+import { ref } from "vue";
+
+const city = ref("");
+
+// 请求接口示例
+const url = "https://v2.xxapi.cn/api/weather";
+
+// axios
+
+interface ICity {
+  code: number;
+  msg: string;
+  data: {
+    city: string;
+    data: {
+      date: string;
+      temperature: string;
+      weather: string;
+      wind: string;
+      air_quality: string;
+    }[];
+  };
+  request_id: string;
+}
+
+const testService = (city: string): Promise<ICity> => {
+  const testUrl = `https://v2.xxapi.cn/api/weather${
+    Math.random() > 0.5 ? "" : "error"
+  }`;
+  return axios.get(testUrl, {
+    params: {
+      city: city || "杭州市",
+    },
+  });
+};
+const {
+  run: search,
+  data: cityData,
+  error,
+  isLoading,
+  isFinished,
+} = useAsyncHandler(() => testService, {
+  manual: true,
+});
+</script>
+
+<style></style>
+```
+
+:::
+
+### runAsync

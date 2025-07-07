@@ -54,6 +54,9 @@ importers:
       '@flame00/vue3-async-handler':
         specifier: ^1.0.7
         version: 1.0.7(typescript@5.8.3)
+      axios:
+        specifier: ^1.10.0
+        version: 1.10.0
       vue:
         specifier: ^3.5.17
         version: 3.5.17(typescript@5.8.3)
