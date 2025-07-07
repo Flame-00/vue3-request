@@ -5,6 +5,7 @@ import {
   version,
   watch
 } from "./chunk-GRXRH4YQ.js";
+import "./chunk-PZ5AY32C.js";
 
 // ../../node_modules/.pnpm/@flame00+vue3-async-handler@1.0.7_typescript@5.8.3/node_modules/@flame00/vue3-async-handler/dist/vue3-async-handler.es.js
 var g = /* @__PURE__ */ new Map();

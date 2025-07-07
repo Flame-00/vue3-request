@@ -11,10 +11,15 @@
     #41d1ff
   );
   --vp-home-hero-image-filter: blur(72px);
+  --vp-code-color: var(--vp-c-red-2);
+  --vp-font-family-base: "v-sans";
 }
+
+
 .VPButton.brand {
   background-color: #853ef5 !important;
 }
+
 /* vp-doc style */
 .vp-doc table {
   display: table !important;
@@ -30,4 +35,62 @@
 }
 pre {
   white-space: break-spaces !important;
+  box-shadow: 0 0 10px 0 var(--vp-c-gray-1);
+  padding: 15px;
+  border-radius: 25px;
+}
+
+
+.xl-button {
+  cursor: pointer;
+  border: 1px solid;
+  outline: none;
+  padding: 12px 20px;
+  border-radius: 4px;
+  color: #fff;
+  font-weight: 500;
+  transition: all .3s;
+}
+
+.xl-button:hover {
+  opacity: .8;
+}
+
+.xl-button:active {
+  opacity: 1;
+}
+
+.xl-button + .xl-button {
+  margin-left: 10px;
+}
+
+.xl-button--default {
+  color: #606266;
+  background: #fff;
+  border-color: #dcdfe6;
+}
+
+.xl-button--primary {
+  background: #1890ff;
+  border-color: #1890ff;
+}
+
+.xl-button--success {
+  background: #52c41a;
+  border-color: #52c41a;
+}
+
+.xl-button--info {
+  background: #909399;
+  border-color: #909399;
+}
+
+.xl-button--warning {
+  background: #faad14;
+  border-color: #faad14;
+}
+
+.xl-button--danger {
+  background: #f5222d;
+  border-color: #f5222d;
 }

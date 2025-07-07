@@ -12,7 +12,7 @@ export default defineConfig({
     nav: [
       { text: '指南', link: '/introduce/' },
       { text: '演示', link: '/demo/basic' },
-      { text: 'API', link: '/API/' }
+      { text: 'API', link: '/API/' },
     ],
     docFooter: {
       prev: '上一页',
@@ -49,12 +49,19 @@ export default defineConfig({
         text: '演示',
         items: [
           { text: '基本使用', link: '/demo/basic' },
+          { text: '取消请求', link: '/demo/cancel-request' },
         ]
       },
       {
         text: 'API',
         items: [
           { text: 'API', link: '/API/' },
+        ]
+      },
+      {
+        text: 'FAQ',
+        items: [
+          { text: 'FAQ', link: '/FAQ/' },
         ]
       }
     ],
