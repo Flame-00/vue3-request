@@ -1,67 +1,94 @@
 <template>
-    <input class="ipt" type="text" placeholder="搜索城市天气" v-model="city" />
-    <Button type="primary" @click="() => search(city)">查询</Button>
     <section>
-        <h3>axios</h3>
-        <Loading v-if="isLoading" />
-        <pre v-if="cityData && isFinished">{{ cityData?.data.data }}</pre>
-        <pre v-if="error">{{ error }}</pre>
+      <h3>模拟请求</h3>
+      <!-- <Loading v-if="isLoading" /> -->
+      <pre>{{ data }}</pre>
+      <pre>{{ error }}</pre>
     </section>
-</template>
-<script setup lang="ts">
-import { useAsyncHandler } from "@async-handler/request/useAsyncHandler";
-import axios from "axios";
-import { ref } from "vue";
-import Loading from "./../../vitepress-demo/docs/components/Loading.vue";
-import Button from "./../../vitepress-demo/docs/components/Button.vue";
-
-const city = ref("");
-
-// 请求接口示例
-const url = "https://v2.xxapi.cn/api/weather";
-
-// axios
-const normalObj = ref({ a: 123 });
-interface ICity {
+    <hr />
+    <section>
+      <h3>axios</h3>
+      <!-- <Loading v-if="isLoadingAxios" /> -->
+      <pre>{{ dataAxios?.data }}</pre>
+      <pre>{{ errorAxios }}</pre>
+    </section>
+    <hr />
+    <section>
+      <h3>fetch</h3>
+      <!-- <Loading v-if="isLoadingFetch" /> -->
+      <pre>{{ dataFetch }}</pre>
+      <pre>{{ errorFetch }}</pre>
+    </section>
+  </template>
+  <script setup lang="ts">
+  import { useAsyncHandler } from "@flame00/vue3-async-handler";
+  import axios from "axios";
+  
+  // 模拟请求示例
+  const testService = (): Promise<{
     code: number;
     msg: string;
-    data: {
-        city: string;
-        data: {
-            date: string;
-            temperature: string;
-            weather: string;
-            wind: string;
-            air_quality: string;
-        }[];
-    };
+    data: string;
     request_id: string;
-}
-
-const testService = (city: string): Promise<ICity> => {
-    const testUrl = `https://v2.xxapi.cn/api/weather${Math.random() > 0.5 ? "" : "error"}`;
-    return axios.get(testUrl, {
-        params: {
-            city: city || "杭州市",
-        },
+  }> => {
+    return new Promise((resolve) => {
+      console.log("testService");
+      setTimeout(() => {
+        resolve({
+          code: 200,
+          msg: "数据请求成功",
+          data: "我是假数据",
+          request_id: "278c3c4d23e30b38a11df8ed",
+        });
+      }, 2500);
     });
-};
-
-const {
-    run: search,
-    data: cityData,
-    error,
-    isLoading,
-    isFinished
-} = useAsyncHandler(() => testService, {
-    manual: true,
-    onSuccess: (data, params) => {
-        console.log(data, params);
-    },
-    onError: (error, params) => {
-        console.log(error, params);
-    }
-});
-
-
-</script>
+  };
+  
+  const { run, data, error, isLoading } = useAsyncHandler(() => testService);
+  
+  // 请求接口示例
+  const url1 = "https://v2.xxapi.cn/api/renjian";
+  const url2 = "https://v2.xxapi.cn/api/aiqinggongyu";
+  
+  // axios
+  const configAxios = {
+    method: "GET",
+    url: url1,
+  };
+  
+  const testServiceAxios = (): Promise<{
+    code: number;
+    msg: string;
+    data: string;
+    request_id: string;
+  }> => {
+    return axios(configAxios);
+  };
+  
+  const {
+    data: dataAxios,
+    error: errorAxios,
+    isLoading: isLoadingAxios,
+  } = useAsyncHandler(() => testServiceAxios);
+  
+  // fetch
+  const configFetch = {
+    method: "GET",
+  };
+  
+  const testServiceFetch = (): Promise<{
+    code: number;
+    msg: string;
+    data: string;
+    request_id: string;
+  }> => {
+    // fetch需处理返回格式
+    return fetch(url2, configFetch).then((response) => response.json());
+  };
+  
+  const {
+    data: dataFetch,
+    error: errorFetch,
+    isLoading: isLoadingFetch,
+  } = useAsyncHandler(() => testServiceFetch);
+  </script>

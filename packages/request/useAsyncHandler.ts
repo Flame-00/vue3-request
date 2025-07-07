@@ -361,7 +361,7 @@ export function useAsyncHandler<T extends CallbackType>(
     }
   }
 
-  const reset = () => {
+  function reset() {
     params.value = [] as ParamsType
     data.value = null
     error.value = null
@@ -371,7 +371,7 @@ export function useAsyncHandler<T extends CallbackType>(
   }
 
   // 停止
-  const stop = () => {
+  function stop() {
     controller = null
     intervalId = null
     promise = null

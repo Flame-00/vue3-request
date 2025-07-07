@@ -44,22 +44,22 @@ const { data, error, loading } = useAsyncHandler(testService); // [!code error]
   <section>
     <h3>模拟请求</h3>
     <Loading v-if="isLoading" />
-    <pre v-else>{{ data }}</pre>
-    <pre v-if="error">{{ error }}</pre>
+    <pre>{{ data }}</pre>
+    <pre>{{ error }}</pre>
   </section>
   <hr />
   <section>
     <h3>axios</h3>
     <Loading v-if="isLoadingAxios" />
     <pre>{{ dataAxios?.data }}</pre>
-    <pre v-if="errorAxios">{{ errorAxios }}</pre>
+    <pre>{{ errorAxios }}</pre>
   </section>
   <hr />
   <section>
     <h3>fetch</h3>
     <Loading v-if="isLoadingFetch" />
     <pre>{{ dataFetch }}</pre>
-    <pre v-if="errorFetch">{{ errorFetch }}</pre>
+    <pre>{{ errorFetch }}</pre>
   </section>
 </template>
 <script setup lang="ts">
@@ -108,7 +108,6 @@ const testServiceAxios = (): Promise<{
 };
 
 const {
-  run: runAxios,
   data: dataAxios,
   error: errorAxios,
   isLoading: isLoadingAxios,
@@ -130,7 +129,6 @@ const testServiceFetch = (): Promise<{
 };
 
 const {
-  run: runFetch,
   data: dataFetch,
   error: errorFetch,
   isLoading: isLoadingFetch,
@@ -182,8 +180,8 @@ runAsync()
   <Button type="primary" @click="() => search(city)">查询</Button>
   <section>
     <Loading v-if="isLoading" />
-    <pre v-if="cityData && isFinished">{{ cityData?.data.data }}</pre>
-    <pre v-if="error">{{ error }}</pre>
+    <pre>{{ cityData?.data.data }}</pre>
+    <pre>{{ error }}</pre>
   </section>
 </template>
 <script setup lang="ts">
@@ -193,11 +191,7 @@ import { ref } from "vue";
 
 const city = ref("");
 
-// 请求接口示例
-const url = "https://v2.xxapi.cn/api/weather";
-
 // axios
-
 interface ICity {
   code: number;
   msg: string;
@@ -224,6 +218,7 @@ const testService = (city: string): Promise<ICity> => {
     },
   });
 };
+
 const {
   run: search,
   data: cityData,
@@ -232,6 +227,12 @@ const {
   isFinished,
 } = useAsyncHandler(() => testService, {
   manual: true,
+  onSuccess: (data, params) => {
+    console.log(data, params);
+  },
+  onError: (error, params) => {
+    console.log(error, params);
+  },
 });
 </script>
 
