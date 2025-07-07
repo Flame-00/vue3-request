@@ -31,8 +31,6 @@ const { data, error, loading } = useAsyncHandler(() => testService);
 const { data, error, loading } = useAsyncHandler(testService); // [!code error]
 ```
 
-### `Vue3 + TS`示例代码
-
 ::: tip
 打开控制台, 查看组件初始化后自动执行的 `testService` 函数
 :::
@@ -148,7 +146,7 @@ const { loading, run, runAsync } = useAsyncHandler(() => testService, {
 });
 ```
 
-::: info `run` 与 `runAsync` 的区别在于：
+`run` 与 `runAsync` 的区别在于：
 
 - `run` 是一个普通的同步函数，我们会自动捕获异常，你可以通过 `options.onError` 来处理异常时的行为。
 - `runAsync` 是一个返回 Promise 的异步函数，如果使用 `runAsync` 来调用，则意味着你需要自己捕获异常。
@@ -163,21 +161,17 @@ runAsync()
   });
 ```
 
-:::
-
 接下来我们通过获取城市天气这个简单的场景，来演示 useAsyncHandler 手动触发模式，以及 `run` 与 `runAsync` 的区别。
 
 ### run
 
-#### `Vue3 + TS`示例代码
-
-在这个例子中，我们通过 `run(city)` 来修改用户名，通过 `onSuccess` 和 `onError `来处理成功和失败。
+在这个例子中，我们通过 `run(city)` 来获取城市天气，通过 `onSuccess` 和 `onError `来处理成功和失败。
 :::demo
 
 ```vue
 <template>
   <input class="ipt" type="text" placeholder="搜索城市天气" v-model="city" />
-  <Button type="primary" @click="() => search(city)">查询</Button>
+  <Button type="primary" @click="() => run(city)">查询</Button>
   <section>
     <Loading v-if="isLoading" />
     <pre v-if="cityData">{{ cityData?.data }}</pre>
@@ -194,19 +188,21 @@ const city = ref("");
 
 // axios
 interface ICity {
-  code: number;
-  msg: string;
   data: {
-    city: string;
+    code: number;
+    msg: string;
     data: {
-      date: string;
-      temperature: string;
-      weather: string;
-      wind: string;
-      air_quality: string;
-    }[];
+      city: string;
+      data: {
+        date: string;
+        temperature: string;
+        weather: string;
+        wind: string;
+        air_quality: string;
+      }[];
+    };
+    request_id: string;
   };
-  request_id: string;
 }
 
 const testService = (city: string): Promise<ICity> => {
@@ -221,7 +217,7 @@ const testService = (city: string): Promise<ICity> => {
 };
 
 const {
-  run: search,
+  run,
   data: cityData,
   error,
   isLoading,
@@ -245,3 +241,169 @@ const {
 :::
 
 ### runAsync
+
+在这个例子中，我们通过 `runAsync(city)` 来获取城市天气，此时必须通过 catch 来自行处理异常。
+:::demo
+
+```vue
+<template>
+  <input class="ipt" type="text" placeholder="搜索城市天气" v-model="city" />
+  <Button type="primary" @click="onClick">查询</Button>
+  <section>
+    <Loading v-if="isLoading" />
+    <pre v-if="cityData">{{ cityData?.data }}</pre>
+    <pre v-if="error">{{ error }}</pre>
+  </section>
+</template>
+<script setup lang="ts">
+import { useAsyncHandler } from "@flame00/vue3-async-handler";
+import axios from "axios";
+import { ref } from "vue";
+import message from "@/utils/message";
+
+const city = ref("");
+
+// axios
+interface ICity {
+  data: {
+    code: number;
+    msg: string;
+    data: {
+      city: string;
+      data: {
+        date: string;
+        temperature: string;
+        weather: string;
+        wind: string;
+        air_quality: string;
+      }[];
+    };
+    request_id: string;
+  };
+}
+
+const testService = (city: string): Promise<ICity> => {
+  const testUrl = `https://v2.xxapi.cn/api/weather${
+    Math.random() > 0.5 ? "" : "error" // 模拟错误
+  }`;
+  return axios.get(testUrl, {
+    params: {
+      city: city || "杭州市",
+    },
+  });
+};
+
+const {
+  runAsync,
+  params,
+  data: cityData,
+  error,
+  isLoading,
+  isFinished,
+} = useAsyncHandler(() => testService, {
+  manual: true,
+});
+
+async function onClick() {
+  try {
+    const res = await runAsync(city.value);
+    message.success(`${res.data.msg}-----${params.value}`);
+  } catch (error) {
+    message.error(`${error}-----${params.value}`);
+  }
+}
+</script>
+
+<style></style>
+```
+
+:::
+
+## 生命周期
+
+`useAsyncHandler` 提供了以下几个生命周期配置项，供你在异步函数的不同阶段做一些处理。
+
+- `onBefore`：请求之前触发
+- `onSuccess`：请求成功触发
+- `onError`：请求失败触发
+- `onFinally`：请求完成触发
+
+:::demo
+
+```vue
+<template>
+  <input class="ipt" type="text" placeholder="搜索城市天气" v-model="city" />
+  <Button type="primary" @click="() => run(city)">查询</Button>
+  <section>
+    <Loading v-if="isLoading" />
+    <pre v-if="cityData">{{ cityData?.data }}</pre>
+    <pre v-if="error">{{ error }}</pre>
+  </section>
+</template>
+<script setup lang="ts">
+import { useAsyncHandler } from "@flame00/vue3-async-handler";
+import axios from "axios";
+import { ref } from "vue";
+import message from "@/utils/message";
+
+const city = ref("");
+
+// axios
+interface ICity {
+  data: {
+    code: number;
+    msg: string;
+    data: {
+      city: string;
+      data: {
+        date: string;
+        temperature: string;
+        weather: string;
+        wind: string;
+        air_quality: string;
+      }[];
+    };
+    request_id: string;
+  };
+}
+
+const testService = (city: string): Promise<ICity> => {
+  const testUrl = `https://v2.xxapi.cn/api/weather${
+    Math.random() > 0.5 ? "" : "error" // 模拟错误
+  }`;
+  return axios.get(testUrl, {
+    params: {
+      city: city || "杭州市",
+    },
+  });
+};
+
+const {
+  run,
+  data: cityData,
+  error,
+  isLoading,
+  isFinished,
+} = useAsyncHandler(() => testService, {
+  manual: true,
+  onBefore: (params) => {
+    message.info(`Start Request: ${params}`);
+  },
+  onSuccess: (data, params) => {
+    console.log(data, params);
+    message.success(`${data.data.msg}-----${params}`);
+  },
+  onError: (error, params) => {
+    console.log(error, params);
+    message.error(`${error}-----${params}`);
+  },
+  onFinally: ({ params, data, error }) => {
+    message.info(`Request finish`, params, data, error);
+  },
+});
+</script>
+
+<style></style>
+```
+
+:::

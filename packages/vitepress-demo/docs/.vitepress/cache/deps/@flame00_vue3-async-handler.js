@@ -7,7 +7,7 @@ import {
 } from "./chunk-GRXRH4YQ.js";
 import "./chunk-PZ5AY32C.js";
 
-// ../../node_modules/.pnpm/@flame00+vue3-async-handler@1.0.10_typescript@5.8.3/node_modules/@flame00/vue3-async-handler/dist/vue3-async-handler.es.js
+// ../../node_modules/.pnpm/@flame00+vue3-async-handler@1.0.11_typescript@5.8.3/node_modules/@flame00/vue3-async-handler/dist/vue3-async-handler.es.js
 var C = /* @__PURE__ */ new Map();
 var Re = (n, { data: l, params: r, time: i }) => {
   C.set(n, { data: l, params: r, time: i });
@@ -116,6 +116,7 @@ function Ee(n, l) {
   };
   ie();
   const T = async (...e) => {
+    J();
     const { cache: t, isReturnRequest: de } = ce();
     if (de && t) {
       const { data: m, params: w } = t;
@@ -123,7 +124,7 @@ function Ee(n, l) {
     }
     if (v)
       return v;
-    J(), s.value = e.length ? e : x, P();
+    s.value = e.length ? e : x, P();
     const { signal: me } = se();
     return K(true), le(), v = new Promise((m, w) => {
       (async () => {

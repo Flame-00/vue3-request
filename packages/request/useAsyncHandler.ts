@@ -164,11 +164,12 @@ export function useAsyncHandler<T extends CallbackType>(
     isErrorRetry = false
   }
   // 请求完成
-  const onFinally = <D>(data: D) => {
-    loading(isAbortError(data) && !isAborted.value || false)
+  const onFinally = () => {
+    loading(isAbortError(data.value) && !isAborted.value || false)
     finalOptions.onFinally?.({
-      data,
-      params: params.value
+      data: data.value,
+      params: params.value,
+      error: error.value
     })
     promise = null
   }
@@ -228,7 +229,7 @@ export function useAsyncHandler<T extends CallbackType>(
 
       onSuccess?.(res, params)
 
-      onFinally(res)
+      onFinally()
 
       return res
     }
@@ -260,7 +261,7 @@ export function useAsyncHandler<T extends CallbackType>(
 
           resolve(res)
 
-          onFinally(res)
+          onFinally()
 
           if (cacheKey) {
             const cache = { data: data.value, params: params.value, time: Date.now() }
@@ -283,7 +284,7 @@ export function useAsyncHandler<T extends CallbackType>(
 
           reject(e)
 
-          onFinally(e)
+          onFinally()
         }
       })()
     })
