@@ -30,8 +30,8 @@ importers:
         specifier: workspace:*
         version: link:../request
       '@flame00/vue3-async-handler':
-        specifier: ^1.0.7
-        version: 1.0.7(typescript@5.8.3)
+        specifier: ^1.0.8
+        version: 1.0.8(typescript@5.8.3)
       axios:
         specifier: ^1.10.0
         version: 1.10.0
@@ -52,8 +52,8 @@ importers:
         specifier: workspace:*
         version: link:../request
       '@flame00/vue3-async-handler':
-        specifier: ^1.0.7
-        version: 1.0.7(typescript@5.8.3)
+        specifier: ^1.0.8
+        version: 1.0.8(typescript@5.8.3)
       axios:
         specifier: ^1.10.0
         version: 1.10.0
@@ -621,8 +621,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@flame00/vue3-async-handler@1.0.7':
-    resolution: {integrity: sha512-glpaFeuaPyYoLkM1tqE2HiDJLERWQNCARqZ3yYz30sYZLdUWgKw0tZmLrMBIKOvQS/ejnSBsFtgHhiY/4Fa7XQ==}
+  '@flame00/vue3-async-handler@1.0.8':
+    resolution: {integrity: sha512-1Ks5Amsk2b7H7WL1ovEI+NwDWxQ+NBOxVbzH+0wNyiYJGgEwC+LIo/GF0DB8+SZb5/1OZ6AaVfOrZlu7PmrChA==}
 
   '@floating-ui/core@1.7.2':
     resolution: {integrity: sha512-wNB5ooIKHQc+Kui96jE/n69rHFWAVoxn5CAzL1Xdd8FG03cgY3MLO+GF9U3W737fYDSgPWA6MReKhBQBop6Pcw==}
@@ -2773,7 +2773,7 @@ snapshots:
   '@esbuild/win32-x64@0.25.5':
     optional: true
 
-  '@flame00/vue3-async-handler@1.0.7(typescript@5.8.3)':
+  '@flame00/vue3-async-handler@1.0.8(typescript@5.8.3)':
     dependencies:
       vue: 3.5.17(typescript@5.8.3)
     transitivePeerDependencies:
