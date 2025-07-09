@@ -1,78 +1,60 @@
 <template>
-  <input class="ipt" type="text" placeholder="搜索城市天气" v-model="city" />
-  <Button type="primary" @click="onClick">查询</Button>
-  <section>
-    <Loading v-if="isLoading" />
-    <pre v-if="cityData">{{ cityData?.data }}</pre>
-    <pre v-if="error">{{ error }}</pre>
-  </section>
+  <ChildComponent v-if="show" />
+  <hr>
+  <Button type="primary" @click="show = !show">{{ show ? '隐藏组件' : '显示组件' }}</Button>
 </template>
 <script setup lang="ts">
-import { useAsyncHandler } from "@flame00/vue3-async-handler";
-import axios from "axios";
+import { useAsyncHandler } from "@async-handler/request/useAsyncHandler";
+import message from '../../vitepress-demo/docs/utils/message';// 文档示例message,不用理会
+import { h } from "vue";
+import Loading from './components/Loading.vue' // 文档示例组件,不用理会
+import Button from './components/Button.vue' // 文档示例组件,不用理会
 import { ref } from "vue";
-// import message from "@/utils/message";
 
-const city = ref("");
+const show = ref(true)
 
-// axios
-interface ICity {
-  data: {
-    code: number;
-    msg: string;
-    data: {
-      city: string;
-      data: {
-        date: string;
-        temperature: string;
-        weather: string;
-        wind: string;
-        air_quality: string;
-      }[]
-    };
-    request_id: string;
-  };
-}
-
-const testService = (city: string): Promise<ICity> => {
-  const testUrl = `https://v2.xxapi.cn/api/weather${Math.random() > 0.5 ? "" : "error" // 模拟错误
-    }`;
-  return axios.get(testUrl, {
-    params: {
-      city: city || "杭州市",
-    },
+const testService = async (): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (Math.random() > 0.5) {
+        resolve('我是数据');
+      } else {
+        reject(new Error('接口错误'));
+      }
+    }, 1500);
   });
 };
 
-const {
-  runAsync,
-  params,
-  data: cityData,
-  error,
-  isLoading,
-  isFinished,
-} = useAsyncHandler(() => testService, {
-  manual: true,
-  onSuccess: (data, params) => {
-    console.log(data, params);
-    // message.success(`${data.data.msg}-----${params}`);
-  },
-  onError: (error, params) => {
-    console.log(error, params);
-    // message.error(`${error}-----${params}`);
-  },
-});
-
-async function onClick() {
-  try {
-    const res = await runAsync(city.value) as ICity
-    console.log(res.data.msg)
-    // message.success(`${res.data.msg}-----${params.value}`);
-  } catch (error) {
-    console.log(error)
-    // message.error(`${error}-----${params.value}`);
+function generateComponent() {
+  return {
+    setup() {
+      const { run, data, error, isLoading, cancel } = useAsyncHandler(() => testService, {
+        manual: true,
+        onSuccess: (data) => {
+          message.success(data);
+        },
+        onError: (error) => {
+          message.error(error);
+        },
+      });
+      return () => {
+        return h('div', [
+          h(Button, { type: 'primary', onClick: run }, {
+            default: () => '点击请求'
+          }),
+          h(Button, { type: 'danger', onClick: cancel }, {
+            default: () => '取消响应'
+          }),
+          h("div", { style: "margin: 10px" }, [
+            data.value && h("h3", data.value),
+            error.value && h("h3", { id: "error" }, error.value.message),
+            isLoading.value && h("div", h(Loading)),
+          ]),
+        ])
+      }
+    }
   }
 }
-</script>
+const ChildComponent = generateComponent()
 
-<style></style>
+</script>

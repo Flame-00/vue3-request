@@ -9,7 +9,7 @@
 [为什么要用工厂函数返回一个异步函数, 而不是直接返回异步函数?](../FAQ/#为什么要用工厂函数返回一个异步函数)
 
 ```ts
-import { useAsyncHandler } from "@flame00/vue3-async-handler";
+import { useAsyncHandler } from "@async-handler/request/useAsyncHandler";
 
 // 模拟异步请求
 const testService = (): Promise<string> => {
@@ -61,7 +61,7 @@ const { data, error, loading } = useAsyncHandler(testService); // [!code error]
   </section>
 </template>
 <script setup lang="ts">
-import { useAsyncHandler } from "@flame00/vue3-async-handler";
+import { useAsyncHandler } from "@async-handler/request/useAsyncHandler";
 import axios from "axios";
 
 // 模拟请求示例
@@ -83,28 +83,17 @@ const testService = (): Promise<{
     }, 2500);
   });
 };
-
 const { run, data, error, isLoading } = useAsyncHandler(() => testService);
 
-// 请求接口示例
-const url1 = "https://v2.xxapi.cn/api/renjian";
-const url2 = "https://v2.xxapi.cn/api/aiqinggongyu";
-
 // axios
-const configAxios = {
-  method: "GET",
-  url: url1,
-};
-
 const testServiceAxios = (): Promise<{
   code: number;
   msg: string;
   data: string;
   request_id: string;
 }> => {
-  return axios(configAxios);
+  return axios.get("https://v2.xxapi.cn/api/renjian");
 };
-
 const {
   data: dataAxios,
   error: errorAxios,
@@ -112,10 +101,6 @@ const {
 } = useAsyncHandler(() => testServiceAxios);
 
 // fetch
-const configFetch = {
-  method: "GET",
-};
-
 const testServiceFetch = (): Promise<{
   code: number;
   msg: string;
@@ -123,9 +108,10 @@ const testServiceFetch = (): Promise<{
   request_id: string;
 }> => {
   // fetch需处理返回格式
-  return fetch(url2, configFetch).then((response) => response.json());
+  return fetch("https://v2.xxapi.cn/api/aiqinggongyu", {
+    method: "GET",
+  }).then((response) => response.json());
 };
-
 const {
   data: dataFetch,
   error: errorFetch,
@@ -161,249 +147,134 @@ runAsync()
   });
 ```
 
-接下来我们通过获取城市天气这个简单的场景，来演示 useAsyncHandler 手动触发模式，以及 `run` 与 `runAsync` 的区别。
+接下来我们通过根据姓氏生成随机姓名，来演示 `useAsyncHandler` 手动触发模式，以及 `run` 与 `runAsync` 的区别。
 
 ### run
 
-在这个例子中，我们通过 `run(city)` 来获取城市天气，通过 `onSuccess` 和 `onError `来处理成功和失败。
+在这个例子中，我们通过 `run(xing)` 来生成随机姓名，通过 `onSuccess` 和 `onError `来处理成功和失败。
 :::demo
 
 ```vue
 <template>
-  <input class="ipt" type="text" placeholder="搜索城市天气" v-model="city" />
-  <Button type="primary" @click="() => run(city)">查询</Button>
+  <input id="ipt" type="text" placeholder="输入姓氏" v-model="xing" />
+  <Button type="primary" @click="() => run(xing)">生成姓名</Button>
   <section>
     <Loading v-if="isLoading" />
-    <pre v-if="cityData">{{ cityData?.data }}</pre>
-    <pre v-if="error">{{ error }}</pre>
+    <pre v-if="data">{{ data?.data.data ?? data?.data.msg }}</pre>
+    <pre id="error" v-if="error">{{ error }}</pre>
   </section>
 </template>
 <script setup lang="ts">
-import { useAsyncHandler } from "@flame00/vue3-async-handler";
+import { useAsyncHandler } from "@async-handler/request/useAsyncHandler";
 import axios from "axios";
 import { ref } from "vue";
 import message from "@/utils/message";
+import delay from "@/utils/delay";
 
-const city = ref("");
+const xing = ref("范");
 
-// axios
-interface ICity {
+interface IName {
   data: {
     code: number;
     msg: string;
-    data: {
-      city: string;
-      data: {
-        date: string;
-        temperature: string;
-        weather: string;
-        wind: string;
-        air_quality: string;
-      }[];
-    };
-    request_id: string;
+    data: string[];
   };
 }
 
-const testService = (city: string): Promise<ICity> => {
-  const testUrl = `https://v2.xxapi.cn/api/weather${
-    Math.random() > 0.5 ? "" : "error" // 模拟错误
-  }`;
-  return axios.get(testUrl, {
-    params: {
-      city: city || "杭州市",
-    },
-  });
+const testService = async (xing: string): Promise<IName> => {
+  if (Math.random() > 0.5) {
+    // 模拟50%的几率出错
+    await delay(1000); // 延时函数
+    return Promise.reject(new Error("接口错误"));
+  }
+  return axios.get(
+    "https://api.pearktrue.cn/api/name/generate?sex=all&count=5",
+    {
+      params: {
+        xing,
+      },
+    }
+  );
 };
 
-const {
-  run,
-  data: cityData,
-  error,
-  isLoading,
-  isFinished,
-} = useAsyncHandler(() => testService, {
+const { run, data, error, isLoading } = useAsyncHandler(() => testService, {
   manual: true,
   onSuccess: (data, params) => {
-    console.log(data, params);
-    message.success(`${data.data.msg}-----${params}`);
+    message.success(`The xing was changed to "${params}"`);
   },
   onError: (error, params) => {
-    console.log(error, params);
     message.error(`${error}-----${params}`);
   },
 });
 </script>
-
-<style></style>
 ```
 
 :::
 
 ### runAsync
 
-在这个例子中，我们通过 `runAsync(city)` 来获取城市天气，此时必须通过 catch 来自行处理异常。
+在这个例子中，我们通过 `runAsync(xing)` 来生成随机姓名，此时必须通过 `catch` 来自行处理异常。
 :::demo
 
 ```vue
 <template>
-  <input class="ipt" type="text" placeholder="搜索城市天气" v-model="city" />
-  <Button type="primary" @click="onClick">查询</Button>
+  <input id="ipt" type="text" placeholder="输入姓氏" v-model="xing" />
+  <Button type="primary" @click="onClick">生成姓名</Button>
   <section>
     <Loading v-if="isLoading" />
-    <pre v-if="cityData">{{ cityData?.data }}</pre>
-    <pre v-if="error">{{ error }}</pre>
+    <pre v-if="data">{{ data?.data.data ?? data?.data.msg }}</pre>
+    <pre id="error" v-if="error">{{ error }}</pre>
   </section>
 </template>
 <script setup lang="ts">
-import { useAsyncHandler } from "@flame00/vue3-async-handler";
+import { useAsyncHandler } from "@async-handler/request/useAsyncHandler";
 import axios from "axios";
 import { ref } from "vue";
 import message from "@/utils/message";
+import delay from "@/utils/delay";
 
-const city = ref("");
+const xing = ref("范");
 
-// axios
-interface ICity {
+interface IName {
   data: {
     code: number;
     msg: string;
-    data: {
-      city: string;
-      data: {
-        date: string;
-        temperature: string;
-        weather: string;
-        wind: string;
-        air_quality: string;
-      }[];
-    };
-    request_id: string;
+    data: string[];
   };
 }
 
-const testService = (city: string): Promise<ICity> => {
-  const testUrl = `https://v2.xxapi.cn/api/weather${
-    Math.random() > 0.5 ? "" : "error" // 模拟错误
-  }`;
-  return axios.get(testUrl, {
-    params: {
-      city: city || "杭州市",
-    },
-  });
+const testService = async (xing: string): Promise<IName> => {
+  if (Math.random() > 0.5) {
+    // 模拟50%的几率出错
+    await delay(1000); // 延时函数
+    return Promise.reject(new Error("接口错误"));
+  }
+  return axios.get(
+    "https://api.pearktrue.cn/api/name/generate?sex=all&count=5",
+    {
+      params: {
+        xing,
+      },
+    }
+  );
 };
 
-const {
-  runAsync,
-  params,
-  data: cityData,
-  error,
-  isLoading,
-  isFinished,
-} = useAsyncHandler(() => testService, {
-  manual: true,
-});
+const { runAsync, data, error, isLoading, params } = useAsyncHandler(
+  () => testService,
+  {
+    manual: true,
+  }
+);
 
 async function onClick() {
   try {
-    const res = await runAsync(city.value);
-    message.success(`${res.data.msg}-----${params.value}`);
+    const res = await runAsync(xing.value);
+    message.success(`The xing was changed to "${params.value}"`);
   } catch (error) {
     message.error(`${error}-----${params.value}`);
   }
 }
 </script>
-
-<style></style>
-```
-
-:::
-
-## 生命周期
-
-`useAsyncHandler` 提供了以下几个生命周期配置项，供你在异步函数的不同阶段做一些处理。
-
-- `onBefore`：请求之前触发
-- `onSuccess`：请求成功触发
-- `onError`：请求失败触发
-- `onFinally`：请求完成触发
-
-:::demo
-
-```vue
-<template>
-  <input class="ipt" type="text" placeholder="搜索城市天气" v-model="city" />
-  <Button type="primary" @click="() => run(city)">查询</Button>
-  <section>
-    <Loading v-if="isLoading" />
-    <pre v-if="cityData">{{ cityData?.data }}</pre>
-    <pre v-if="error">{{ error }}</pre>
-  </section>
-</template>
-<script setup lang="ts">
-import { useAsyncHandler } from "@flame00/vue3-async-handler";
-import axios from "axios";
-import { ref } from "vue";
-import message from "@/utils/message";
-
-const city = ref("");
-
-// axios
-interface ICity {
-  data: {
-    code: number;
-    msg: string;
-    data: {
-      city: string;
-      data: {
-        date: string;
-        temperature: string;
-        weather: string;
-        wind: string;
-        air_quality: string;
-      }[];
-    };
-    request_id: string;
-  };
-}
-
-const testService = (city: string): Promise<ICity> => {
-  const testUrl = `https://v2.xxapi.cn/api/weather${
-    Math.random() > 0.5 ? "" : "error" // 模拟错误
-  }`;
-  return axios.get(testUrl, {
-    params: {
-      city: city || "杭州市",
-    },
-  });
-};
-
-const {
-  run,
-  data: cityData,
-  error,
-  isLoading,
-  isFinished,
-} = useAsyncHandler(() => testService, {
-  manual: true,
-  onBefore: (params) => {
-    message.info(`Start Request: ${params}`);
-  },
-  onSuccess: (data, params) => {
-    console.log(data, params);
-    message.success(`${data.data.msg}-----${params}`);
-  },
-  onError: (error, params) => {
-    console.log(error, params);
-    message.error(`${error}-----${params}`);
-  },
-  onFinally: ({ params, data, error }) => {
-    message.info(`Request finish`, params, data, error);
-  },
-});
-</script>
-
-<style></style>
 ```
 
 :::

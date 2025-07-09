@@ -18,6 +18,9 @@ hero:
 features:
   - icon: 🚀
     title: 所有数据都具有响应式
+  - icon:
+      src: /cancel.svg
+    title: 自动管理生成signal中止requset
   - icon: 🛠
     title: 缓存 & SWR
   - icon: 🤖

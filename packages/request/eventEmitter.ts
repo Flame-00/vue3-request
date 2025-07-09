@@ -7,10 +7,10 @@ type CallbackType<D = any, P = any> = ({ data, params, time }: ParamsType<D, P>)
 
 const events = new Map<string, Set<CallbackType>>()
 
-const emit = <D, P>(key: string, { data, params }: ParamsType<D, P>) => {
+const emit = <D, P>(key: string, { data, params, time }: ParamsType<D, P>) => {
     if (events.has(key)) {
         const callbacks = events.get(key)
-        callbacks?.forEach(callback => callback({ data, params, time: Date.now() }))
+        callbacks?.forEach(callback => callback({ data, params, time }))
     }
 }
 

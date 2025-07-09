@@ -1,6 +1,6 @@
 import { onScopeDispose, watch, toValue, shallowRef, version } from 'vue'
-import type { ShallowRef, Ref, Reactive } from 'vue'
-import { setCache, getCache, clearCache } from './cache'
+import type { Ref, Reactive } from 'vue'
+import { setCache, getCache, clearCache, type CacheType } from './cache'
 import { on, emit } from './eventEmitter'
 
 // 从嵌套函数中正确提取数据类型
@@ -50,10 +50,10 @@ export function useAsyncHandler<T extends CallbackType>(
   let needErrorCount = 0
   let isErrorRetry = true
   let isRefocusing = true
-  let promise: Promise<DataType | Error> | null = null
   let unSubscribe: (() => void) | null = null
+  let currentRequestId = 0 // 请求ID追踪，用于竞态取消
 
-  const data = shallowRef() as ShallowRef<DataType>
+  const data = shallowRef<DataType>()
   const isLoading = shallowRef(false)
   const isFinished = shallowRef(false)
   const isAborted = shallowRef(false)
@@ -72,18 +72,27 @@ export function useAsyncHandler<T extends CallbackType>(
 
   const { onBefore, onSuccess, onError, manual, defaultParams, refreshDeps, refreshDepsAction, pollingInterval, errorRetryCount, errorRetryInterval, refreshOnWindowFocus, refocusTimespan, cacheKey, staleTime } = finalOptions
 
+  params.value = defaultParams as ParamsType
+
   // 检查是否是取消错误
   const isAbortError = (error: any) => {
     return error?.name === 'AbortError' ||
       error?.code === 'ERR_CANCELED' ||
       error?.name === 'CanceledError'
   }
+
   // 中止请求
   const abort = () => {
     if (controller && !controller.signal.aborted && !isFinished.value) {
       controller.abort()
       isAborted.value = controller.signal.aborted
     }
+  }
+
+  // 取消 - 只是递增requestId来忽略后续响应
+  const cancel = () => {
+    currentRequestId++ // 递增请求ID，使当前所有进行中的请求变为过期
+    loading(false)
   }
 
   // 设置加载状态
@@ -166,12 +175,11 @@ export function useAsyncHandler<T extends CallbackType>(
   // 请求完成
   const onFinally = () => {
     loading(isAbortError(data.value) && !isAborted.value || false)
-    finalOptions.onFinally?.({
-      data: data.value,
-      params: params.value,
-      error: error.value
-    })
-    promise = null
+    finalOptions.onFinally?.(
+      params.value,
+      data.value,
+      error.value
+    )
   }
   // 恢复缓存
   function recoverCache() {
@@ -187,11 +195,14 @@ export function useAsyncHandler<T extends CallbackType>(
     })
   }
   // 检查缓存是否过期
-  const checkCache = () => {
+  const checkCache = (): { isReturnRequest: boolean, cache: CacheType<DataType, ParamsType> | null } => {
     if (!cacheKey) return { // 没有设置缓存key
       isReturnRequest: false,
+      cache: null
     }
+
     const cache = getCache(cacheKey); // 获取缓存
+
     if (cache) {
       if ((Date.now() - cache.time) > staleTime) { // 缓存已过期
         clearCache(cacheKey) // 清除缓存
@@ -215,29 +226,28 @@ export function useAsyncHandler<T extends CallbackType>(
   recoverCache()
 
   // 异步执行
-  const runAsync = async (...args: ParamsType): Promise<DataType | Error> => {
-    reset() // 重置响应式状态
+  const runAsync = async (...args: ParamsType): Promise<DataType | undefined> => {
+    reset() // 重置状态
+
     const { cache, isReturnRequest } = checkCache()
 
     if (isReturnRequest && cache) { // 如果保鲜时间未过期并且有缓存 那么停止请求并返回缓存数据 
-      const { data: res, params } = cache
-      onBefore?.(params)
+      const { data: cacheData, params: cacheParams } = cache
+      onBefore?.(cacheParams)
 
-      data.value = res
+      data.value = cacheData
 
-      params.value = params
+      params.value = cacheParams
 
-      onSuccess?.(res, params)
+      onSuccess?.(cacheData, cacheParams)
 
       onFinally()
 
-      return res
+      return cacheData
     }
 
-    if (promise) {
-      return promise
-    }
-
+    // 生成新的请求ID，用于竞态取消
+    const requestId = ++currentRequestId
 
     params.value = args.length ? args : defaultParams as ParamsType
     // 中止之前的请求
@@ -248,47 +258,52 @@ export function useAsyncHandler<T extends CallbackType>(
 
     startPolling() // 开始轮询
 
-    promise = new Promise((resolve, reject) => {
-      (async () => {
-        try {
-          onBefore?.(params.value)
+    try {
+      onBefore?.(params.value)
 
-          const res = await callback(signal)(...params.value)
+      const res = await callback(signal)(...params.value)
 
-          data.value = res
+      // 检查请求ID是否已递增（竞态取消）
+      if (requestId !== currentRequestId) {
+        return    // 请求已过期，返回undefined
+      }
 
-          onSuccess?.(res, params.value)
+      data.value = res
 
-          resolve(res)
+      onSuccess?.(res, params.value)
 
-          onFinally()
+      onFinally()
 
-          if (cacheKey) {
-            const cache = { data: data.value, params: params.value, time: Date.now() }
-            unSubscribe?.() // 取消旧的订阅
-            unSubscribe = on<DataType, ParamsType>(cacheKey, (cache) => { // 订阅新的缓存
-              data.value = cache.data
-              params.value = cache.params
-            })
-            setCache(cacheKey, cache) // 设置缓存
-            emit(cacheKey, cache) // 触发缓存
-          }
-        } catch (err) {
-          const e = err as Error
+      if (cacheKey) {
+        const cache = { data: data.value, params: params.value, time: Date.now() }
+        unSubscribe?.() // 取消旧的订阅
+        unSubscribe = on<DataType, ParamsType>(cacheKey, (cache) => { // 订阅新的缓存
+          data.value = cache.data
+          params.value = cache.params
+        })
+        setCache(cacheKey, cache) // 设置缓存
+        emit(cacheKey, cache) // 触发缓存
+      }
 
-          error.value = isAbortError(e) && !isAborted.value ? null : e
+      return res
+    } catch (err) {
+      const e = err as Error
 
-          onError?.(e, params.value)
+      // 检查请求ID是否已递增（竞态取消）
+      if (requestId !== currentRequestId) {
+        return // 请求已过期，返回undefined而不是抛出错误
+      }
 
-          isErrorRetry ? errorRetry() : (isErrorRetry = true)
+      error.value = isAbortError(e) && !isAborted.value ? null : e
 
-          reject(e)
+      onError?.(e, params.value)
 
-          onFinally()
-        }
-      })()
-    })
-    return promise
+      isErrorRetry ? errorRetry() : (isErrorRetry = true)
+
+      onFinally()
+
+      throw e // 抛出错误
+    }
   }
   // 同步执行
   const run = (...args: ParamsType) => {
@@ -369,14 +384,23 @@ export function useAsyncHandler<T extends CallbackType>(
     isLoading.value = false
     isFinished.value = false
     isAborted.value = false
+    // 注意：不重置currentRequestId，因为它用于区分不同请求的竞态取消
   }
 
   // 停止
   function stop() {
+    // 清理对象引用
     controller = null
     intervalId = null
-    promise = null
     unSubscribe = null
+
+    // 重置基本数据类型状态
+    isErrorRetry = true
+    isRefocusing = true
+    needErrorCount = 0
+    currentRequestId = 0 // 组件销毁时重置，此时不会再有新请求
+    
+    // 移除事件监听器
     window.removeEventListener('focus', refocus)
     window.document.removeEventListener('visibilitychange', refocus)
   }
@@ -384,7 +408,6 @@ export function useAsyncHandler<T extends CallbackType>(
   onScopeDispose(() => {
     unSubscribe?.()
     abort()
-    reset()
     stop()
   }, version.startsWith('3.5') ? true : undefined)
 
@@ -395,6 +418,7 @@ export function useAsyncHandler<T extends CallbackType>(
     isFinished,
     isAborted,
     error,
+    cancel,
     abort,
     run,
     runAsync,

@@ -50,7 +50,14 @@ export default defineConfig({
         text: '演示',
         items: [
           { text: '基本使用', link: '/demo/basic' },
-          { text: '取消请求', link: '/demo/cancel-request' },
+          { text: '参数管理', link: '/demo/parameter-management' },
+          { text: '生命周期', link: '/demo/lifecycle' },
+          { text: '刷新（重复上一次请求）', link: '/demo/refresh' },
+          { text: '取消响应', link: '/demo/cancel-response' },
+          { text: '中止请求', link: '/demo/abort-request' },
+          { text: '轮询', link: '/demo/polling' },
+          { text: '缓存 & SWR', link: '/demo/cache' },
+          { text: '请求重试', link: '/demo/retry' },
         ]
       },
       {

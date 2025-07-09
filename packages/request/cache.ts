@@ -1,4 +1,4 @@
-type CacheType<D = any, P = any> = {
+export type CacheType<D = any, P = any> = {
     data: D
     params: P
     time: number
