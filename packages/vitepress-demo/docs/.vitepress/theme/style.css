@@ -24,6 +24,7 @@
   border: 1px solid #ccc;
   border-radius: 5px;
   transition: all 0.3s;
+  margin: 0 10px;
 }
 #ipt:focus {
   border-color: var(--vp-c-brand-1);
@@ -59,7 +60,7 @@ pre {
   border-radius: 4px;
   color: #fff;
   font-weight: 500;
-  margin: 0 10px;
+
   transition: all 0.3s;
 }
 

@@ -1,8 +1,10 @@
 # 基础用法
 
-这一小节我们会介绍 `vue3-async-handler` 最核心，最基础的能力，也就是 `vue3-async-handler` 内核的能力。
+这一小节我们会介绍 vue3-async-handler 最核心，最基础的能力，也就是 vue3-async-handler 内核的能力。
 
 ## 默认请求
+
+`useAsyncHandler` 是一个强大的异步数据管理的 Hooks
 
 默认情况下，`useAsyncHandler` 第一个参数是一个工厂函数返回一个[异步函数](../FAQ/#什么是异步函数?)，在组件初始化时，会自动执行该工厂函数 并在其参数内部生成一个`signal(可选)`提供给开发者用来[中止请求](./abort-request.md)。同时自动管理该工厂函数返回的异步函数的 `loading`, `data`, `error` 等状态。
 

@@ -6,7 +6,7 @@
 
 ### NPM
 
-推荐使用 `pnpm` 安装极速体验 `Vue3AsyncHandler`
+推荐使用 `pnpm` 安装极速体验 vue3-async-handler
 
 ::: code-group
 
