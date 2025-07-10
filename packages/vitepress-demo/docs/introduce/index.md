@@ -29,5 +29,4 @@ Vue3AsyncHandler 的目的是为开发人员提供一种方便、快速的方式
 感谢他们为我们提供了灵感
 
 - https://attojs.com/
-- https://xxapi.cn/
-- https://api.pearktrue.cn
+- https://ahooks.js.org/zh-CN/hooks/use-request/index
