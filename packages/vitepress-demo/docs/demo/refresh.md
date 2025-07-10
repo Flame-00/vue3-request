@@ -16,7 +16,7 @@
   <section>
     <Loading v-if="isLoading" />
     <p v-if="params">{{ params }}</p>
-    <pre v-if="data">{{ data?.data.data }}</pre>
+    <pre v-if="data">{{ data.data }}</pre>
   </section>
 </template>
 <script setup lang="ts">
@@ -33,9 +33,15 @@ interface IName {
   };
 }
 
+const axiosInstance = axios.create({
+  // ...
+});
+
+axiosInstance.interceptors.response.use((response) => response.data); // 响应拦截器，自己业务项目想怎么配置都可以
+
 const testService = (xing: string): Promise<IName> => {
   console.log("use-request-refresh-xing", xing);
-  return axios.get(
+  return axiosInstance.get(
     "https://api.pearktrue.cn/api/name/generate?sex=all&count=5",
     {
       params: {

@@ -48,6 +48,7 @@ pre {
   white-space: break-spaces !important;
   box-shadow: 0 0 10px 0 var(--vp-c-gray-1);
   padding: 15px;
+  font-size: 16px;
 }
 
 .xl-button {

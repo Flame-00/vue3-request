@@ -15,7 +15,7 @@
   <Button type="primary" @click="() => run(xing)">生成姓名</Button>
   <section>
     <Loading v-if="isLoading" />
-    <pre v-if="data">{{ data?.data.data ?? data?.data.msg }}</pre>
+    <pre v-if="data">{{ data.data ?? data.msg }}</pre>
     <pre id="error" v-if="error">{{ error }}</pre>
   </section>
 </template>
@@ -36,13 +36,19 @@ interface IName {
   };
 }
 
+const axiosInstance = axios.create({
+  // ...
+});
+
+axiosInstance.interceptors.response.use((response) => response.data); // 响应拦截器，自己业务项目想怎么配置都可以
+
 const testService = async (xing: string): Promise<IName> => {
   if (Math.random() > 0.5) {
     // 模拟50%的几率出错
     await delay(1000); // 延时函数
     return Promise.reject(new Error("接口错误"));
   }
-  return axios.get(
+  return axiosInstance.get(
     "https://api.pearktrue.cn/api/name/generate?sex=all&count=5",
     {
       params: {

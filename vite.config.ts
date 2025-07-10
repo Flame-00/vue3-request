@@ -10,11 +10,14 @@ export default defineConfig({
       outDir: path.resolve(__dirname, 'dist')
     })
   ],
+  esbuild: {
+    drop: ['console', 'debugger']
+  },
   build: {
     lib: {
       entry: path.resolve(__dirname, 'packages/request/useAsyncHandler.ts'),
-      name: 'vue3-async-handler',
-      formats: ['es', 'cjs'],
+      name: 'Vue3AsyncHandler',
+      formats: ['es', 'cjs', 'umd'],
       fileName: (format) => `vue3-async-handler.${format}.js`
     },
     rollupOptions: {
@@ -24,6 +27,6 @@ export default defineConfig({
           vue: 'Vue'
         }
       }
-    }
+    },
   }
 })

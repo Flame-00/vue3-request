@@ -22,7 +22,7 @@
   <section>
     <Loading v-if="isLoading" />
     <h4 v-if="params">params: {{ params }}</h4>
-    <pre v-if="data">{{ data?.data.data }}</pre>
+    <pre v-if="data">{{ data.data }}</pre>
   </section>
 </template>
 <script setup lang="ts">
@@ -40,8 +40,14 @@ interface IName {
   };
 }
 
+const axiosInstance = axios.create({
+  // ...
+});
+
+axiosInstance.interceptors.response.use((response) => response.data); // 响应拦截器，自己业务项目想怎么配置都可以
+
 const testService = (xing: string): Promise<IName> => {
-  return axios.get(
+  return axiosInstance.get(
     "https://api.pearktrue.cn/api/name/generate?sex=all&count=5",
     {
       params: {
@@ -64,11 +70,17 @@ const { run, data, params, isLoading } = useAsyncHandler(() => testService, {
 `useAsyncHandler`使用 run 或者 runAsync 传参有两种形式，随你喜欢，想用哪种都可以， 两种传参形式都有 **TS 类型提示**
 
 ```ts
+const axiosInstance = axios.create({
+  // ...
+});
+
+axiosInstance.interceptors.response.use((response) => response.data); // 响应拦截器
+
 const xing = ref<string>("范");
 
 // 异步函数
 const testService = (xing: string, signal?: AbortSignal): Promise<IName> => {
-  return axios.get(
+  return axiosInstance.get(
     "https://api.pearktrue.cn/api/name/generate?sex=all&count=5",
     {
       params: {
