@@ -23,6 +23,7 @@
   },
   "scripts": {
     "dev": "vite",
+    "dev:all": "pnpm --parallel --filter @async-handler/vue3 --filter @async-handler/docs dev",
     "dev:vue3": "pnpm --filter @async-handler/vue3 dev",
     "dev:docs": "pnpm --filter @async-handler/docs dev",
     "build": "vite build",

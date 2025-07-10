@@ -34,7 +34,7 @@
   }}</Button>
 </template>
 <script setup lang="ts">
-import { useAsyncHandler } from "@async-handler/request/useAsyncHandler";
+import { useAsyncHandler } from "@flame00/vue3-async-handler";
 import message from "@/utils/message"; // 文档示例message,不用理会
 import { h, ref } from "vue";
 import Loading from "../components/Loading.vue"; // 文档示例组件,不用理会

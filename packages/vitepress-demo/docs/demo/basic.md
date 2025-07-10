@@ -9,7 +9,7 @@
 [为什么要用工厂函数返回一个异步函数, 而不是直接返回异步函数?](../FAQ/#为什么要用工厂函数返回一个异步函数)
 
 ```ts
-import { useAsyncHandler } from "@async-handler/request/useAsyncHandler";
+import { useAsyncHandler } from "@flame00/vue3-async-handler";
 
 // 模拟异步请求
 const testService = (): Promise<string> => {
@@ -61,7 +61,7 @@ const { data, error, loading } = useAsyncHandler(testService); // [!code error]
   </section>
 </template>
 <script setup lang="ts">
-import { useAsyncHandler } from "@async-handler/request/useAsyncHandler";
+import { useAsyncHandler } from "@flame00/vue3-async-handler";
 import axios from "axios";
 
 // 模拟请求示例
@@ -171,7 +171,7 @@ runAsync()
   </section>
 </template>
 <script setup lang="ts">
-import { useAsyncHandler } from "@async-handler/request/useAsyncHandler";
+import { useAsyncHandler } from "@flame00/vue3-async-handler";
 import axios from "axios";
 import { ref } from "vue";
 import message from "@/utils/message";
@@ -239,7 +239,7 @@ const { run, data, error, isLoading } = useAsyncHandler(() => testService, {
   </section>
 </template>
 <script setup lang="ts">
-import { useAsyncHandler } from "@async-handler/request/useAsyncHandler";
+import { useAsyncHandler } from "@flame00/vue3-async-handler";
 import axios from "axios";
 import { ref } from "vue";
 import message from "@/utils/message";

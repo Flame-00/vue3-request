@@ -20,7 +20,7 @@
   </section>
 </template>
 <script setup lang="ts">
-import { useAsyncHandler } from "@async-handler/request/useAsyncHandler";
+import { useAsyncHandler } from "@flame00/vue3-async-handler";
 import axios from "axios";
 import { onMounted } from "vue";
 import message from "@/utils/message";

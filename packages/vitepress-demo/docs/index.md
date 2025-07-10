@@ -41,7 +41,7 @@ features:
 
 推荐使用 `pnpm` 安装极速体验 `Vue3AsyncHandler`
 
-**vue3-async-handler是隶属于@flame00组织下的一个包、不必关心@flame00前缀**
+**vue3-async-handler 是隶属于@flame00 组织下的一个包、不必关心@flame00 前缀**
 ::: code-group
 
 ```sh [pnpm]
@@ -65,6 +65,8 @@ yarn add @flame00/vue3-async-handler
 ## `Vue3+TS+Axios+Vue3AsyncHandler` 基础 demo
 
 [在线沙盒演示](https://codesandbox.io/p/sandbox/admiring-ride-4sz9l7)
+
+:::details 查看代码
 
 ```vue
 <template>
@@ -161,3 +163,5 @@ const {
 } = useAsyncHandler(() => testServiceFetch);
 </script>
 ```
+
+:::

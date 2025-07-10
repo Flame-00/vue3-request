@@ -42,7 +42,7 @@ async function fn() {
 
 在执行 useAsyncHandler 的时候,无论是自动还是手动调用, 工厂函数都会其参数内部生成一个`signal(可选)`参数提供给开发者用来取消请求<br/>
 
-这样可以省去开发者自己定义 `new AbortController()`的繁琐, 还可以让`signal(可选)`参数与业务 API 函数参数解耦
+这样可以省去开发者自己定义 `new AbortController()`的繁琐, 还可以让`signal(可选)`参数与业务api参数解耦
 
 ::: warning
 **每次自动或手动调用工厂函数生成的 signal 都是一份新的引用**
