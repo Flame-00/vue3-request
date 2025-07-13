@@ -47,10 +47,10 @@ export class Request<D, P extends any[]> {
     loading = (isLoading: boolean) => {
         this.setState({ isLoading, isFinished: !isLoading })
     }
-
+    
     // 请求完成
     onFinished = () => {
-        this.loading(isAbortError(this.state.data) && !this.state.isAborted || false)
+        this.loading(isAbortError(this.state.error) && !this.state.isAborted || false)
         this.options?.onFinally?.(this.state.params, this.state.data, this.state.error)
     }
 
