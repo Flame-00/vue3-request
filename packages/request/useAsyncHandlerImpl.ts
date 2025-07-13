@@ -20,11 +20,10 @@ export function useAsyncHandlerImpl<D, P extends any[]>(
         service,
         requestOptions,
     )
-    requestInstance.options = requestOptions
-
+    console.log(requestInstance.options, 333)
     onMounted(() => {
         if (!manual) {
-            requestInstance.run(...requestInstance.state.params)
+            requestInstance.run(...requestOptions.defaultParams)
         }
     })
 
