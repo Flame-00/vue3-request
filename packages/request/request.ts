@@ -47,7 +47,7 @@ export class Request<D, P extends any[]> {
     loading = (isLoading: boolean) => {
         this.setState({ isLoading, isFinished: !isLoading })
     }
-    
+
     // 请求完成
     onFinished = () => {
         this.loading(isAbortError(this.state.error) && !this.state.isAborted || false)
@@ -57,7 +57,9 @@ export class Request<D, P extends any[]> {
     runAsync = async (...params: P): Promise<D> => {
         const requestId = ++this.currentRequestId
 
-        this.setState({ params })
+        if (params.length) {
+            this.setState({ params })
+        }
 
         this.loading(true)
 
