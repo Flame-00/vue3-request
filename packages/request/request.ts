@@ -54,10 +54,10 @@ export class Request<D, P extends any[]> {
         this.options?.onFinally?.(this.state.params, this.state.data, this.state.error)
     }
 
-    runAsync = async (...args: P): Promise<D> => {
+    runAsync = async (...params: P): Promise<D> => {
         const requestId = ++this.currentRequestId
 
-        this.setState({ params: args.length ? args : this.state.params })
+        this.setState({ params })
 
         this.loading(true)
 
