@@ -1,4 +1,4 @@
-import { onScopeDispose, watch, toValue, shallowRef, version } from 'vue'
+import { onScopeDispose, watch, toValue, version, ref } from 'vue'
 import type { Ref, Reactive } from 'vue'
 import { setCache, getCache, clearCache, type CacheType } from './cache'
 import { on, emit } from './eventEmitter'
@@ -53,12 +53,12 @@ export function useAsyncHandler<T extends CallbackType>(
   let unSubscribe: (() => void) | null = null
   let currentRequestId = 0 // 请求ID追踪，用于竞态取消
 
-  const data = shallowRef<DataType>()
-  const isLoading = shallowRef(false)
-  const isFinished = shallowRef(false)
-  const isAborted = shallowRef(false)
-  const error = shallowRef<Error | null>(null)
-  const params = shallowRef([]) as Ref<ParamsType>
+  const data = ref<DataType>()
+  const isLoading = ref(false)
+  const isFinished = ref(false)
+  const isAborted = ref(false)
+  const error = ref<Error | null>(null)
+  const params = ref([]) as Ref<ParamsType>
 
   const finalOptions = {
     manual: false,
@@ -399,7 +399,7 @@ export function useAsyncHandler<T extends CallbackType>(
     isRefocusing = true
     needErrorCount = 0
     currentRequestId = 0 // 组件销毁时重置，此时不会再有新请求
-    
+
     // 移除事件监听器
     window.removeEventListener('focus', refocus)
     window.document.removeEventListener('visibilitychange', refocus)
