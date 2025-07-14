@@ -295,7 +295,6 @@ export function useAsyncHandler<T extends CallbackType>(
       }
 
       error.value = isAbortError(e) && !isAborted.value ? null : e
-
       onError?.(e, params.value)
 
       isErrorRetry ? errorRetry() : (isErrorRetry = true)

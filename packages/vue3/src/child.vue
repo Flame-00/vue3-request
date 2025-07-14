@@ -1,45 +1,69 @@
 <template>
   <section>
     <h3>模拟请求</h3>
-    <Loading v-if="isLoading" />
-    <pre v-if="data">{{ data }}</pre>
-    <pre v-if="error">{{ error }}</pre>
-    <pre v-if="isFinished">{{ isFinished }}</pre>
-    <pre v-if="isAborted">{{ isAborted }}</pre>
-
     <button @click="request">请求</button>
+    <button @click="abort">中止</button>
+    <button @click="cancel">取消</button>
+    <Loading v-if="isLoading" />
+    <h2 v-if="data">{{ data }}</h2>
+    <h3 v-if="error">{{ error }}</h3>
+    <h3>isFinished: 已完成<em>{{ isFinished }}</em></h3>
+    <h3>isAborted: 中止<em>{{ isAborted }}</em></h3>
+    <h3>isLoading: 加载中<em>{{ isLoading }}</em></h3>
+
   </section>
 </template>
 <script setup lang="ts">
-import { useAsyncHandler } from "@async-handler/request";
+import { useAsyncHandler, type Plugin } from "@async-handler/request/useAsyncHandler";
+import axios from "axios";
+// axios
+const axiosInstance = axios.create({
+  // ...
+});
+
+axiosInstance.interceptors.response.use((response) => response.data); // 响应拦截器，自己业务项目想怎么配置都可以
 
 // 模拟请求示例
-const testService = ({ name }: { name: string }): Promise<{
+const testService = (signal?: AbortSignal): Promise<{
   code: number;
   msg: string;
   data: string;
   request_id: string;
 }> => {
-  console.log('name', name)
-  return new Promise((resolve) => {
-    console.log("testService");
-    setTimeout(() => {
-      resolve({
-        code: 200,
-        msg: "数据请求成功",
-        data: name,
-        request_id: "278c3c4d23e30b38a11df8ed",
-      });
-    }, 2000);
-  });
+  return axiosInstance.get('https://v2.xxapi.cn/api/renjian', {
+    signal
+  })
 };
-const { data, error, isLoading, isFinished, isAborted, runAsync } = useAsyncHandler(() => testService, {
-  manual: true
-});
+
+const customPlugin: Plugin<{
+  code: number;
+  msg: string;
+  data: string;
+  request_id: string;
+}> = (requestInstance, options) => {
+  return {
+    onBefore: (params) => {
+      console.log('customPlugin-onBefore', params)
+    },
+    onSuccess: (data, params) => {
+      // console.log('onSuccess', data, params)
+    }
+  }
+}
+
+
+const { data, error, isLoading, isFinished, isAborted, run, abort, cancel } = useAsyncHandler((signal) => () => testService(signal), {
+  manual: true,
+  onSuccess: (data, params) => {
+    console.log('onSuccess', data, params)
+  }
+}, [
+  customPlugin
+]);
+
 
 const request = async () => {
-  const res = await runAsync({ name: 'zs' })
-  console.log('data', res)
+  run()
 }
 
 </script>

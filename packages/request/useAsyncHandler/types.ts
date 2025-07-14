@@ -1,4 +1,5 @@
 import { Ref, Reactive } from 'vue'
+import { Request } from './request'
 
 // 从嵌套函数中正确提取返回数据类型
 export type ExtractResultDataType<T> = T extends (signal?: AbortSignal) => () => Promise<infer P>
@@ -11,16 +12,16 @@ export type ExtractResultDataType<T> = T extends (signal?: AbortSignal) => () =>
 export type ExtractInnerFunctionParams<T> = T extends (signal?: AbortSignal) => (...args: infer P) => any
     ? P
     : T extends (signal?: AbortSignal) => () => any
-    ? []
+    ? any[]
     : never;
 
 // 回调函数类型定义
 export type CallbackType<T = any> = (signal?: AbortSignal) => (...args: any[]) => Promise<T>
 
-export type IOptions<T, P> = Partial<{
+export type IOptions<D, P extends any[]> = Partial<{
     onBefore: (params: P) => void // 请求前
-    onSuccess: (data: T, params: P) => void // 请求成功
-    onFinally: (params: P, data: T, error: Error) => void // 请求完成
+    onSuccess: (data: D, params: P) => void // 请求成功
+    onFinally: (params: P, data: D, error: Error) => void // 请求完成
     onError: (error: Error, params: P) => void // 请求失败
     manual: boolean // 是否手动调用
     defaultParams: P // 默认参数
@@ -35,13 +36,28 @@ export type IOptions<T, P> = Partial<{
     staleTime: number // 保鲜时间
 }>
 
-export interface IState<T, P> {
-    data: T | undefined
+export interface IState<D, P extends any[]> {
+    data: D | undefined
     isLoading: boolean
     isFinished: boolean
     isAborted: boolean
     error: Error | undefined
     params: P
 }
-export type DataType<D> = ExtractResultDataType<D>
-export type ParamsType<P> = ExtractInnerFunctionParams<P>   
+export type DataType<T> = ExtractResultDataType<T>
+export type ParamsType<T> = ExtractInnerFunctionParams<T>
+
+
+export type Plugin<D = any, P extends any[] = any> = (
+    requestInstance: Request<D, P>,
+    options: IOptions<D, P>,
+) => PluginReturn<D, P>
+
+export type PluginReturn<D, P extends any[]> = Partial<{
+    onBefore: (params: P) => void // 请求前
+    onSuccess: (data: D, params: P) => void // 请求成功
+    onFinally: (params: P, data: D, error: Error) => void // 请求完成
+    onError: (error: Error, params: P) => void // 请求失败
+    onCancel: () => void // 取消请求
+    [key: string]: any
+}>
