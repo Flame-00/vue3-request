@@ -1,45 +1,50 @@
-import { Plugin } from "../types"
+import { Plugin } from "../types";
 
-let controller: AbortController | null = null
+let controller: AbortController | null = null;
 
 export const useAbort: Plugin = (requestInstance) => {
-    const { setState } = requestInstance
-    
-    // 初始化信号
-    const initSignal = () => {
-        controller = new AbortController()
+  const { setState } = requestInstance;
 
-        setState({ isAborted: controller.signal.aborted })
+  // 初始化信号
+  const initSignal = () => {
+    controller = new AbortController();
 
-        const signal = controller.signal
+    setState({ isAborted: controller.signal.aborted });
 
-        return {
-            signal,
-        }
-    }
+    const signal = controller.signal;
 
-    // 中止请求
-    const abort = () => {
-        if (controller && !controller.signal.aborted && !requestInstance.state.isFinished) {
-            controller.abort()
-
-            setState({ isAborted: controller.signal.aborted })
-        }
-    }
     return {
-        abort,
-        onBefore: () => {
-            abort()
+      signal,
+    };
+  };
 
-            const { signal } = initSignal()
+  // 中止请求
+  const abort = () => {
+    if (
+      controller &&
+      !controller.signal.aborted &&
+      !requestInstance.state.isFinished
+    ) {
+      controller.abort();
 
-            return {
-                signal,
-            }
-        },
-        onCancel: () => {
-            abort()
-            controller = null
-        }
+      setState({ isAborted: controller.signal.aborted });
     }
-}
+  };
+
+  return {
+    abort,
+    onBefore: () => {
+      abort();
+      
+      const { signal } = initSignal();
+      return {
+        signal,
+      };
+    },
+    onCancel: () => {
+      console.log("onCancel");
+      abort();
+      controller = null;
+    },
+  };
+};

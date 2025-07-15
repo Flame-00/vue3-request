@@ -1,6 +1,7 @@
 <template>
     <Child v-if="show">
     </Child>
+    <button @click="show = !show">切换</button>
 </template>
 <script setup lang="ts">
 import Child from './child.vue'

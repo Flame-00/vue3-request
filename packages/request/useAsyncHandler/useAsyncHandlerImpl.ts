@@ -1,52 +1,45 @@
-import type { IOptions, CallbackType, Plugin } from './types'
-import { onUnmounted, toRefs } from 'vue'
-import { Request } from './request'
-import { useAbort } from './plugins/useAbort'
+import type { IOptions, CallbackType, Plugin } from "./types";
+import { onUnmounted, toRefs } from "vue";
+import { Request } from "./request";
+import { useAbort } from "./plugins/useAbort";
 
 export function useAsyncHandlerImpl<D, P extends any[]>(
-    service: CallbackType<D>,
-    options: IOptions<D, P>,
-    plugins: Plugin<D, P>[]
+  service: CallbackType<D>,
+  options: IOptions<D, P>,
+  plugins: Plugin<D, P>[]
 ) {
-    const requestOptions = {
-        manual: false,
-        ...options,
-    }
+  const requestOptions = {
+    manual: false,
+    defaultParams: [] as P,
+    ...options,
+  };
 
-    const { manual } = requestOptions
+  const requestInstance = new Request<D, P>(service, requestOptions);
 
-    const requestInstance = new Request<D, P>(
-        service,
-        requestOptions
-    )
+  requestInstance.pluginImpls = plugins.map((plugin) =>
+    plugin(requestInstance, requestOptions)
+  );
 
-    requestInstance.pluginImpls = plugins.map(p => p(requestInstance, options))
+  console.log("requestInstance.pluginImpls", requestInstance.pluginImpls);
 
-    console.log(requestInstance.pluginImpls)
-    
-    if (!manual) {
-        requestInstance.run(...requestOptions.defaultParams)
-    }
+  if (!requestOptions.manual) {
+    requestInstance.run(...requestOptions.defaultParams);
+  }
 
-    onUnmounted(() => {
-        requestInstance.cancel()
-    })
+  onUnmounted(() => {
+    console.log("onUnmounted");
+    requestInstance.cancel();
+  });
 
-    const {
-        run,
-        cancel,
-        refresh,
-        runAsync,
-        refreshAsync,
-    } = requestInstance
+  const { run, cancel, refresh, runAsync, refreshAsync } = requestInstance;
 
-    return {
-        ...toRefs(requestInstance.state),
-        run,
-        cancel,
-        refresh,
-        runAsync,
-        abort: useAbort(requestInstance, requestOptions).abort,
-        refreshAsync,
-    }
+  return {
+    ...toRefs(requestInstance.state),
+    run,
+    cancel,
+    refresh,
+    runAsync,
+    abort: useAbort(requestInstance, requestOptions).abort,
+    refreshAsync,
+  };
 }

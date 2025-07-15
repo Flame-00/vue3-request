@@ -16,6 +16,7 @@
 <script setup lang="ts">
 import { useAsyncHandler, type Plugin } from "@async-handler/request/useAsyncHandler";
 import axios from "axios";
+import { reactive, ref } from "vue";
 // axios
 const axiosInstance = axios.create({
   // ...
@@ -30,8 +31,13 @@ const testService = (signal?: AbortSignal): Promise<{
   data: string;
   request_id: string;
 }> => {
-  return axiosInstance.get('https://v2.xxapi.cn/api/renjian', {
-    signal
+  // return axiosInstance.get('https://v2.xxapi.cn/api/aiqinggongyu', {
+  //   signal
+  // })
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      reject(new Error('test'))
+    }, 1000)
   })
 };
 
@@ -41,6 +47,7 @@ const customPlugin: Plugin<{
   data: string;
   request_id: string;
 }> = (requestInstance, options) => {
+
   return {
     onBefore: (params) => {
       console.log('customPlugin-onBefore', params)
@@ -51,11 +58,13 @@ const customPlugin: Plugin<{
   }
 }
 
-
 const { data, error, isLoading, isFinished, isAborted, run, abort, cancel } = useAsyncHandler((signal) => () => testService(signal), {
   manual: true,
   onSuccess: (data, params) => {
     console.log('onSuccess', data, params)
+  },
+  onFinally: (params, data, error) => {
+    console.log('onFinally', params, data, error)
   }
 }, [
   customPlugin

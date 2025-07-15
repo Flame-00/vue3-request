@@ -28,4 +28,7 @@ export function warn(originalValue: unknown, infinite?: boolean): { is: boolean,
         is: true,
         value: ((originalValue === 0 || (originalValue && originalValue as number < 0)) ? 0 : originalValue) as number
     }
+}  // 延迟
+export const delay = (ms: number) => {
+  return new Promise((resolve) => setTimeout(resolve, ms))
 }
