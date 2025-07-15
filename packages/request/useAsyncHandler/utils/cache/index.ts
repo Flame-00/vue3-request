@@ -8,14 +8,10 @@ export const setCache = <D, P>(
   cache.set(key, { data, params, time });
 };
 
-export const getCache = (key?: string) => {
-  if (key) {
-    return cache.get(key);
-  } else {
-    cache.clear();
-  }
+export const getCache = (key: string) => {
+  return cache.get(key);
 };
 
-export const clearCache = (key: string) => {
-  cache.delete(key);
+export const clearCache = (key?: string) => {
+  key ? cache.delete(key) : cache.clear();
 };
