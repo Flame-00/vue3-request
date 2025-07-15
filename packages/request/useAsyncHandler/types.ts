@@ -66,7 +66,7 @@ export type PluginReturn<D, P extends any[]> = Partial<{
   onFinally: (params: P, data: D, error: Error) => void; // 请求完成
   onError: (error: Error, params: P) => void; // 请求失败
   onCancel: () => void; // 取消请求
-  [key: string]: any;
+  abort: () => void; // 中止请求
 }>;
 
 export type CacheParamsType<D = any, P = any> = {

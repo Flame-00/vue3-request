@@ -5,7 +5,7 @@ import { ref } from "vue";
 
 export const useCachePlugin: Plugin = (
   requestInstance,
-  { cacheKey, staleTime = new Date(0).setMinutes(3), onBefore, onSuccess }
+  { cacheKey, staleTime = 0, onBefore, onSuccess }
 ) => {
   const { setState } = requestInstance;
   const unSubscribe = ref<() => void | null>(null);
@@ -14,6 +14,7 @@ export const useCachePlugin: Plugin = (
   function recoverCache() {
     if (!cacheKey) return;
     const cache = getCache(cacheKey); // 获取缓存
+    console.log('cache', cache)
     if (cache) {
       setState({
         data: cache.data,
@@ -58,6 +59,7 @@ export const useCachePlugin: Plugin = (
 
       // 如果保鲜时间未过期并且有缓存 那么停止请求
       const { data: cacheData, params: cacheParams } = cache;
+      console.log('cache', cache)
 
       onBefore?.(cacheParams);
 
@@ -84,6 +86,7 @@ export const useCachePlugin: Plugin = (
       };
       unSubscribe.value?.(); // 取消旧的订阅
       unSubscribe.value = on(cacheKey, (cache) => {
+        console.log('cachecache', cache)
         // 订阅新的缓存
         setState({
           data: cache.data,

@@ -28,8 +28,7 @@ export class Request<D, P extends any[]> {
 
   executePlugin = (event: keyof PluginReturn<D, P>, ...rest: any[]) => {
     // 执行插件里的方法
-    const r = this.pluginImpls.map((i) => i[event]?.(...rest)).filter(Boolean);
-
+    const r = this.pluginImpls.map((plugin) => plugin[event]?.apply(plugin, rest)).filter(Boolean);
     return Object.assign({}, ...r);
   };
 
@@ -66,7 +65,7 @@ export class Request<D, P extends any[]> {
       this.state.params
     ); // 执行插件的onBefore方法
 
-    console.log(444, signal, returnNow);
+    console.log(444, returnNow);
 
     if (returnNow) {
       return this.state.data;
@@ -78,7 +77,7 @@ export class Request<D, P extends any[]> {
       const res = await this.service(signal)(...this.state.params);
 
       if (requestId !== this.currentRequestId) {
-        return new Promise(() => {});
+        return new Promise(() => { });
       }
 
       this.setState({ data: res });
@@ -88,11 +87,11 @@ export class Request<D, P extends any[]> {
       this.options.onSuccess?.(res, this.state.params);
 
       this.onFinished();
-      
+
       return res;
     } catch (err) {
       if (requestId !== this.currentRequestId) {
-        return new Promise(() => {});
+        return new Promise(() => { });
       }
 
       const error = err as Error;

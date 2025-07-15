@@ -66,7 +66,7 @@ export function useAsyncHandler<T extends CallbackType>(
     errorRetryCount: 0,
     errorRetryInterval: 1000 * Math.pow(2, needErrorCount), // 错误重试间隔 指数增长
     refocusTimespan: 5000, // 重新聚焦时间
-    staleTime: new Date(0).setMinutes(3), // 3分钟
+    staleTime: 0, // 3分钟
     ...options
   }
 

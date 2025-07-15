@@ -14,7 +14,7 @@
   </section>
 </template>
 <script setup lang="ts">
-import { useAsyncHandler, type Plugin } from "@async-handler/request/useAsyncHandler";
+import { useAsyncHandler, } from "@async-handler/request/useAsyncHandler";
 import axios from "axios";
 import { reactive, ref } from "vue";
 // axios
@@ -28,43 +28,29 @@ axiosInstance.interceptors.response.use((response) => response.data); // 响应�
 const testService = (signal?: AbortSignal): Promise<{
   code: number;
   msg: string;
-  data: string;
+  data: number;
   request_id: string;
 }> => {
-  // return axiosInstance.get('https://v2.xxapi.cn/api/aiqinggongyu', {
-  //   signal
-  // })
+  console.log('testService')
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      reject(new Error('test'))
-    }, 1000)
+      resolve({
+        code: 200,
+        msg: 'success',
+        data: Date.now(),
+        request_id: '123'
+      })
+    }, 2000)
   })
 };
 
-const customPlugin: Plugin<{
-  code: number;
-  msg: string;
-  data: string;
-  request_id: string;
-}> = (requestInstance, options) => {
-
-  return {
-    onBefore: (params) => {
-      console.log('customPlugin-onBefore', params)
-    },
-    onSuccess: (data, params) => {
-      // console.log('onSuccess', data, params)
-    }
-  }
-}
-
 const { data, error, isLoading, isFinished, isAborted, run, abort, cancel } = useAsyncHandler((signal) => () => testService(signal), {
+  cacheKey: 'test',
   manual: true,
   onSuccess: (data, params) => {
     console.log('onSuccess', data, params)
   },
   onFinally: (params, data, error) => {
-    console.log('onFinally', params, data, error)
   }
 }
 )

@@ -42,9 +42,10 @@ export const useAbortPlugin: Plugin = (requestInstance) => {
       };
     },
     onCancel: () => {
-      console.log("onCancel");
       abort();
       controller = null;
+    },
+    onFinally: (params, data, error) => {
     },
   };
 };
