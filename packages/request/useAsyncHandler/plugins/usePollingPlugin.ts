@@ -2,7 +2,7 @@ import { Plugin } from "../types";
 import { toValue } from "vue";
 import { warn } from "../utils";
 
-export const usePolling: Plugin = (requestInstance, { pollingInterval }) => {
+export const usePollingPlugin: Plugin = (requestInstance, { pollingInterval }) => {
   const { refresh } = requestInstance;
   let intervalId: number | null = null;
   // 开始轮询

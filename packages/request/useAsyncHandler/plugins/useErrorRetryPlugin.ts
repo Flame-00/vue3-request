@@ -2,7 +2,7 @@ import { computed, ref, toValue } from "vue";
 import { Plugin } from "../types";
 import { warn, delay } from "../utils";
 
-export const useErrorRetry: Plugin = (
+export const useErrorRetryPlugin: Plugin = (
   requestInstance,
   { errorRetryCount = 0, errorRetryInterval }
 ) => {

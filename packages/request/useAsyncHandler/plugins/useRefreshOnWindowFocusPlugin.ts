@@ -2,7 +2,7 @@ import { Plugin } from "../types";
 import { warn, delay } from "../utils";
 import { ref } from "vue";
 
-export const useRefreshOnWindowFocus: Plugin = (
+export const useRefreshOnWindowFocusPlugin: Plugin = (
   requestInstance,
   { refocusTimespan = 5000, refreshOnWindowFocus }
 ) => {

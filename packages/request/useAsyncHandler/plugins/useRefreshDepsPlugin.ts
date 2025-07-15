@@ -2,7 +2,7 @@ import { watch } from "vue";
 import { Plugin } from "../types";
 
 // 监听依赖变化 并执行刷新
-export const useRefreshDeps: Plugin = (
+export const useRefreshDepsPlugin: Plugin = (
   requestInstance,
   { refreshDeps = [], refreshDepsAction }
 ) => {

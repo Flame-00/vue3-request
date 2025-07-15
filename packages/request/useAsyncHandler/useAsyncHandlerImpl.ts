@@ -1,7 +1,7 @@
 import type { IOptions, CallbackType, Plugin } from "./types";
 import { onUnmounted, toRefs } from "vue";
 import { Request } from "./request";
-import { useAbort } from "./plugins/useAbort";
+import { useAbortPlugin } from "./plugins/useAbortPlugin";
 import { clearCache } from "./utils/cache";
 
 export function useAsyncHandlerImpl<D, P extends any[]>(
@@ -40,7 +40,7 @@ export function useAsyncHandlerImpl<D, P extends any[]>(
     cancel,
     refresh,
     runAsync,
-    abort: useAbort(requestInstance, requestOptions).abort,
+    abort: useAbortPlugin(requestInstance, requestOptions).abort,
     refreshAsync,
     clearCache
   };

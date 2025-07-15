@@ -2,7 +2,7 @@ import { Plugin } from "../types";
 
 let controller: AbortController | null = null;
 
-export const useAbort: Plugin = (requestInstance) => {
+export const useAbortPlugin: Plugin = (requestInstance) => {
   const { setState } = requestInstance;
 
   // 初始化信号

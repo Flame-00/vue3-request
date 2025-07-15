@@ -66,9 +66,8 @@ const { data, error, isLoading, isFinished, isAborted, run, abort, cancel } = us
   onFinally: (params, data, error) => {
     console.log('onFinally', params, data, error)
   }
-}, [
-  customPlugin
-]);
+}
+)
 
 
 const request = async () => {

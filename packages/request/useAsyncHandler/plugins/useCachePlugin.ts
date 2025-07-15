@@ -3,7 +3,7 @@ import { clearCache, getCache, setCache } from "../utils/cache";
 import { emit, on } from "../utils/cache/eventEmitter";
 import { ref } from "vue";
 
-export const useCache: Plugin = (
+export const useCachePlugin: Plugin = (
   requestInstance,
   { cacheKey, staleTime = new Date(0).setMinutes(3), onBefore, onSuccess }
 ) => {
