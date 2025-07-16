@@ -23,7 +23,6 @@ export const useRefreshDepsPlugin: Plugin = (
 
   return {
     onCancel: () => {
-      console.log("onCancel-useRefreshDeps");
       unwatch();
     },
   };

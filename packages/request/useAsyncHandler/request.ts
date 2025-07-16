@@ -1,6 +1,6 @@
 import type { CallbackType, IOptions, IState, PluginReturn } from "./types";
 import { reactive } from "vue";
-
+import { composeMiddleware } from "./utils";
 export class Request<D, P extends any[]> {
   currentRequestId: number = 0;
 
@@ -27,9 +27,21 @@ export class Request<D, P extends any[]> {
   };
 
   executePlugin = (event: keyof PluginReturn<D, P>, ...rest: any[]) => {
-    // 执行插件里的方法
-    const r = this.pluginImpls.map((plugin) => plugin[event]?.apply(plugin, rest)).filter(Boolean);
-    return Object.assign({}, ...r);
+    if (event === "onRequest") {
+      const servicePromise = composeMiddleware(
+        this.pluginImpls.map((plugin) => plugin.onRequest).filter(Boolean),
+        rest[0]
+      );
+      return {
+        servicePromise,
+      };
+    } else {
+      // 执行插件里的方法
+      const r = this.pluginImpls
+        .map((plugin) => plugin[event]?.apply(plugin, rest))
+        .filter(Boolean);
+      return Object.assign({}, ...r);
+    }
   };
 
   // 设置加载状态
@@ -74,10 +86,21 @@ export class Request<D, P extends any[]> {
     this.options.onBefore?.(this.state.params);
 
     try {
-      const res = await this.service(signal)(...this.state.params);
+      const serviceWrapper = () => this.service(signal)(...this.state.params);
+
+      let { servicePromise } = this.executePlugin("onRequest", serviceWrapper);
+
+      // 如果onRequest没有返回servicePromise，则使用原始service
+      if (!servicePromise) {
+        servicePromise = serviceWrapper();
+      }
+      console.log("servicePromise", servicePromise);
+
+      const res = await servicePromise;
 
       if (requestId !== this.currentRequestId) {
-        return new Promise(() => { });
+        console.log("xxxxxxxxxxxx");
+        return new Promise(() => {});
       }
 
       this.setState({ data: res });
@@ -91,7 +114,7 @@ export class Request<D, P extends any[]> {
       return res;
     } catch (err) {
       if (requestId !== this.currentRequestId) {
-        return new Promise(() => { });
+        return new Promise(() => {});
       }
 
       const error = err as Error;

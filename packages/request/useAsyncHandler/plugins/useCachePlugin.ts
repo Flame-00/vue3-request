@@ -2,6 +2,7 @@ import { Plugin, CacheParamsType } from "../types";
 import { clearCache, getCache, setCache } from "../utils/cache";
 import { emit, on } from "../utils/cache/eventEmitter";
 import { ref } from "vue";
+import { getRequestCache, setRequestCache } from "../utils/cache/requestCache";
 
 export const useCachePlugin: Plugin = (
   requestInstance,
@@ -9,12 +10,10 @@ export const useCachePlugin: Plugin = (
 ) => {
   const { setState } = requestInstance;
   const unSubscribe = ref<() => void | null>(null);
-
   // 恢复缓存
   function recoverCache() {
     if (!cacheKey) return;
     const cache = getCache(cacheKey); // 获取缓存
-    console.log('cache', cache)
     if (cache) {
       setState({
         data: cache.data,
@@ -59,7 +58,6 @@ export const useCachePlugin: Plugin = (
 
       // 如果保鲜时间未过期并且有缓存 那么停止请求
       const { data: cacheData, params: cacheParams } = cache;
-      console.log('cache', cache)
 
       onBefore?.(cacheParams);
 
@@ -76,6 +74,17 @@ export const useCachePlugin: Plugin = (
         returnNow: true,
       };
     },
+    onRequest: <D>(service: () => Promise<D>) => {
+      if (!cacheKey) return service;
+      let servicePromise = getRequestCache(cacheKey);
+
+      if (servicePromise) {
+        return () => servicePromise;
+      }
+      servicePromise = service();
+      setRequestCache(cacheKey, servicePromise);
+      return () => servicePromise;
+    },
     onSuccess: (data, params) => {
       if (!cacheKey) return;
 
@@ -86,7 +95,6 @@ export const useCachePlugin: Plugin = (
       };
       unSubscribe.value?.(); // 取消旧的订阅
       unSubscribe.value = on(cacheKey, (cache) => {
-        console.log('cachecache', cache)
         // 订阅新的缓存
         setState({
           data: cache.data,

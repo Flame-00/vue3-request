@@ -21,14 +21,11 @@ export function useAsyncHandlerImpl<D, P extends any[]>(
     plugin(requestInstance, requestOptions)
   );
 
-  console.log("requestInstance.pluginImpls", requestInstance.pluginImpls);
-
   if (!requestOptions.manual) {
     requestInstance.run(...requestOptions.defaultParams);
   }
 
   onUnmounted(() => {
-    console.log("onUnmounted");
     requestInstance.cancel();
   });
 

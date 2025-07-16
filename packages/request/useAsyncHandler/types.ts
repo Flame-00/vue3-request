@@ -20,9 +20,10 @@ export type ExtractInnerFunctionParams<T> = T extends (
   : never;
 
 // 回调函数类型定义
-export type CallbackType<T = any> = (
-  signal?: AbortSignal
-) => (...args: any[]) => Promise<T>;
+
+export type ServiceType<D> = (...args: any[]) => Promise<D>;
+
+export type CallbackType<T = any> = (signal?: AbortSignal) => ServiceType<T>;
 
 export type IOptions<D, P extends any[]> = Partial<{
   onBefore: (params: P) => void; // 请求前
@@ -66,6 +67,7 @@ export type PluginReturn<D, P extends any[]> = Partial<{
   onFinally: (params: P, data: D, error: Error) => void; // 请求完成
   onError: (error: Error, params: P) => void; // 请求失败
   onCancel: () => void; // 取消请求
+  onRequest: (service: ServiceType<D>) => void; // 请求
   abort: () => void; // 中止请求
 }>;
 

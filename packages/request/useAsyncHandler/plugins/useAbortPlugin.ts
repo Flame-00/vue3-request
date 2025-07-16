@@ -35,17 +35,20 @@ export const useAbortPlugin: Plugin = (requestInstance) => {
     abort,
     onBefore: () => {
       abort();
-      
+
       const { signal } = initSignal();
       return {
         signal,
       };
     },
+    onRequest: (service) => {
+      console.log("serviceserviceservice", service);
+      return service;
+    },
     onCancel: () => {
       abort();
       controller = null;
     },
-    onFinally: (params, data, error) => {
-    },
+    onFinally: (params, data, error) => {},
   };
 };
