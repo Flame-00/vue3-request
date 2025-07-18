@@ -21,7 +21,7 @@ export type ExtractInnerFunctionParams<T> = T extends (
 
 // 回调函数类型定义
 
-export type ServiceType<D> = (...args: any[]) => Promise<D>;
+export type ServiceType<D = any> = (...args: any[]) => Promise<D>;
 
 export type CallbackType<T = any> = (signal?: AbortSignal) => ServiceType<T>;
 
@@ -40,7 +40,11 @@ export type IOptions<D, P extends any[]> = Partial<{
   refreshOnWindowFocus: boolean; // 窗口聚焦时刷新
   refocusTimespan: number; // 重新聚焦时间
   cacheKey: string; // 缓存key
+  cacheTime: number; // 缓存时间
   staleTime: number; // 保鲜时间
+  ready: Ref<boolean> | (() => boolean); // 是否准备好
+  debounceWait: number; // 防抖等待时间
+  throttleWait: number; // 节流等待时间
 }>;
 
 export interface IState<D, P extends any[]> {
@@ -67,8 +71,14 @@ export type PluginReturn<D, P extends any[]> = Partial<{
   onFinally: (params: P, data: D, error: Error) => void; // 请求完成
   onError: (error: Error, params: P) => void; // 请求失败
   onCancel: () => void; // 取消请求
-  onRequest: (service: ServiceType<D>) => void; // 请求
-  abort: () => void; // 中止请求
+  onRequest: (service: ServiceType<D>) => ServiceType<D>; // 请求
+}>;
+
+export type PluginMethodsReturn<D> = Partial<{
+  servicePromise?: ReturnType<ServiceType<D>>;
+  signal?: AbortSignal;
+  isStale?: boolean;
+  isReady?: boolean;
 }>;
 
 export type CacheParamsType<D = any, P = any> = {

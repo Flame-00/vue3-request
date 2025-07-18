@@ -1,9 +1,8 @@
 import { Plugin } from "../types";
 
-let controller: AbortController | null = null;
-
 export const useAbortPlugin: Plugin = (requestInstance) => {
-  const { setState } = requestInstance;
+  let controller: AbortController | null = null;
+  let { setState } = requestInstance;
 
   // 初始化信号
   const initSignal = () => {
@@ -19,7 +18,7 @@ export const useAbortPlugin: Plugin = (requestInstance) => {
   };
 
   // 中止请求
-  const abort = () => {
+  requestInstance.abort = () => {
     if (
       controller &&
       !controller.signal.aborted &&
@@ -32,9 +31,8 @@ export const useAbortPlugin: Plugin = (requestInstance) => {
   };
 
   return {
-    abort,
     onBefore: () => {
-      abort();
+      requestInstance.abort();
 
       const { signal } = initSignal();
       return {
@@ -42,13 +40,11 @@ export const useAbortPlugin: Plugin = (requestInstance) => {
       };
     },
     onRequest: (service) => {
-      console.log("serviceserviceservice", service);
       return service;
     },
     onCancel: () => {
-      abort();
+      requestInstance.abort();
       controller = null;
     },
-    onFinally: (params, data, error) => {},
   };
 };

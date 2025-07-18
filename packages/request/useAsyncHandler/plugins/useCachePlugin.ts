@@ -1,4 +1,4 @@
-import { Plugin, CacheParamsType } from "../types";
+import { Plugin } from "../types";
 import { clearCache, getCache, setCache } from "../utils/cache";
 import { emit, on } from "../utils/cache/eventEmitter";
 import { ref } from "vue";
@@ -6,10 +6,25 @@ import { getRequestCache, setRequestCache } from "../utils/cache/requestCache";
 
 export const useCachePlugin: Plugin = (
   requestInstance,
-  { cacheKey, staleTime = 0, onBefore, onSuccess }
+  { cacheKey, cacheTime = new Date(0).setMinutes(5), staleTime = 0 }
 ) => {
   const { setState } = requestInstance;
   const unSubscribe = ref<() => void | null>(null);
+  let clearCacheTimer: number | null = null;
+  // 设置缓存数据回收时间
+  const setClearCacheTime = (time: number) => {
+    if (!cacheKey) return;
+    if (clearCacheTimer) {
+      window.clearTimeout(clearCacheTimer);
+      clearCacheTimer = null;
+    }
+
+    clearCacheTimer = window.setTimeout(() => {
+      clearCache(cacheKey);
+      clearCacheTimer = null;
+    }, time);
+  };
+
   // 恢复缓存
   function recoverCache() {
     if (!cacheKey) return;
@@ -29,8 +44,8 @@ export const useCachePlugin: Plugin = (
   }
   recoverCache();
 
-  // 检查缓存是否过期
-  const checkCache = (): CacheParamsType | null => {
+  // 保鲜时间检查
+  const checkStaleTime = () => {
     if (!cacheKey) return null;
 
     const cache = getCache(cacheKey); // 获取缓存
@@ -38,50 +53,29 @@ export const useCachePlugin: Plugin = (
     if (!cache) return null;
 
     if (Date.now() - cache.time > staleTime) {
-      clearCache(cacheKey);
+      // 保鲜时间过期，可以继续请求
       return null;
     }
-
-    // 有缓存且未过期
-    return cache;
+    return true;
   };
 
   return {
     onBefore: () => {
-      const cache = checkCache();
+      const isStaleTime = checkStaleTime();
 
-      if (!cache) {
-        return {
-          returnNow: false,
-        };
-      }
+      if (!isStaleTime) return { isStale: false };
 
-      // 如果保鲜时间未过期并且有缓存 那么停止请求
-      const { data: cacheData, params: cacheParams } = cache;
-
-      onBefore?.(cacheParams);
-
-      setState({
-        data: cacheData,
-        params: cacheParams,
-      });
-
-      onSuccess?.(cacheData, cacheParams);
-
-      requestInstance.onFinished();
-
-      return {
-        returnNow: true,
-      };
+      return { isStale: true }; // 返回true 表示停止请求
     },
     onRequest: <D>(service: () => Promise<D>) => {
       if (!cacheKey) return service;
       let servicePromise = getRequestCache(cacheKey);
-
       if (servicePromise) {
+        console.log("缓存servicePromise ->", servicePromise);
         return () => servicePromise;
       }
-      servicePromise = service();
+      servicePromise = service(); // 新的promise执行,后续会添加.then方法去等待他的返回值
+      console.log("新的servicePromise ->", servicePromise);
       setRequestCache(cacheKey, servicePromise);
       return () => servicePromise;
     },
@@ -103,6 +97,7 @@ export const useCachePlugin: Plugin = (
       });
       setCache(cacheKey, cache); // 设置缓存
       emit(cacheKey, cache); // 触发缓存
+      setClearCacheTime(cacheTime); // 设置缓存数据回收时间
     },
     onCancel: () => {
       unSubscribe.value?.();

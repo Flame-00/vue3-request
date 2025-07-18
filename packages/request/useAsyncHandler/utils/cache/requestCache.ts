@@ -1,11 +1,21 @@
-const requestCache = new Map<string, Promise<any>>();
+import { ServiceType } from "../../types";
 
-export const setRequestCache = (key: string, service: Promise<any>) => {
+const requestCache = new Map<string, ReturnType<ServiceType>>();
+
+export const setRequestCache = <D>(
+  key: string,
+  service: ReturnType<ServiceType<D>>
+) => {
   requestCache.set(key, service);
 
-  service.finally(() => {
-    requestCache.delete(key);
-  });
+  console.log("注册->finally, 请求完成后删除缓存", key);
+  service
+    .then(() => {})
+    .catch(() => {})
+    .finally(() => {
+      console.log("删了requestCache finally", key);
+      clearRequestCache(key);
+    });
 };
 
 export const getRequestCache = (key: string) => {

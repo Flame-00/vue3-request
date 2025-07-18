@@ -1,12 +1,20 @@
-import type { CallbackType, IOptions, IState, PluginReturn } from "./types";
+import type {
+  CallbackType,
+  IOptions,
+  IState,
+  PluginMethodsReturn,
+  PluginReturn,
+} from "./types";
 import { reactive } from "vue";
-import { composeMiddleware } from "./utils";
+import { composeMiddleware, neverPromise } from "./utils";
 export class Request<D, P extends any[]> {
   currentRequestId: number = 0;
 
   pluginImpls: PluginReturn<D, P>[] = [];
 
   state: IState<D, P>;
+
+  abort: () => void;
 
   constructor(
     public service: CallbackType<D>,
@@ -26,9 +34,12 @@ export class Request<D, P extends any[]> {
     Object.assign(this.state, s);
   };
 
-  executePlugin = (event: keyof PluginReturn<D, P>, ...rest: any[]) => {
+  executePlugin = (
+    event: keyof PluginReturn<D, P>,
+    ...rest: any[]
+  ): PluginMethodsReturn<D> => {
     if (event === "onRequest") {
-      const servicePromise = composeMiddleware(
+      const servicePromise = composeMiddleware<D>(
         this.pluginImpls.map((plugin) => plugin.onRequest).filter(Boolean),
         rest[0]
       );
@@ -68,21 +79,24 @@ export class Request<D, P extends any[]> {
   runAsync = async (...params: P): Promise<D> => {
     const requestId = ++this.currentRequestId;
 
-    this.loading(true);
-
-    params.length && this.setState({ params });
-
-    const { signal, returnNow } = this.executePlugin(
+    const { signal, isStale, isReady } = this.executePlugin(
       "onBefore",
       this.state.params
     ); // 执行插件的onBefore方法
+    console.log("isReadyisReadyisReadyisReady", isReady);
+    if (!isReady) {
+      return neverPromise();
+    }
+    params.length && this.setState({ params });
 
-    console.log(444, returnNow);
+    console.log("params.value", this.state.params);
 
-    if (returnNow) {
+    this.loading(true);
+
+    if (isStale) {
+      this.loading(false);
       return this.state.data;
     }
-
     this.options.onBefore?.(this.state.params);
 
     try {
@@ -94,13 +108,16 @@ export class Request<D, P extends any[]> {
       if (!servicePromise) {
         servicePromise = serviceWrapper();
       }
-      console.log("servicePromise", servicePromise);
-
       const res = await servicePromise;
 
+      console.log(
+        "success 竞态取消 ->",
+        requestId !== this.currentRequestId
+          ? `已取消 -> requestId: ${requestId} !== currentRequestId: ${this.currentRequestId}`
+          : `成功请求 -> requestId: ${requestId} === currentRequestId: ${this.currentRequestId}`
+      );
       if (requestId !== this.currentRequestId) {
-        console.log("xxxxxxxxxxxx");
-        return new Promise(() => {});
+        return neverPromise();
       }
 
       this.setState({ data: res });
@@ -113,10 +130,16 @@ export class Request<D, P extends any[]> {
 
       return res;
     } catch (err) {
-      if (requestId !== this.currentRequestId) {
-        return new Promise(() => {});
-      }
+      console.log(
+        "error 竞态取消 ->",
+        requestId !== this.currentRequestId
+          ? `已取消 -> requestId: ${requestId} !== currentRequestId: ${this.currentRequestId}`
+          : `成功请求 -> requestId: ${requestId} === currentRequestId: ${this.currentRequestId}`
+      );
 
+      if (requestId !== this.currentRequestId) {
+        return neverPromise();
+      }
       const error = err as Error;
 
       this.setState({ error });

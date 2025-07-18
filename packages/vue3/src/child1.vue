@@ -31,27 +31,15 @@ const testService1 = (): Promise<{
   data: number;
   request_id: string;
 }> => {
-  console.log('testService1')
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      resolve({
-        code: 200,
-        msg: 'success',
-        data: Date.now(),
-        request_id: '123'
-      })
-    }, 4000)
-  })
+  return axiosInstance.get('https://v2.xxapi.cn/api/renjian')
 };
 
 const { data, error, isLoading, isFinished, isAborted, run, abort, cancel } = useAsyncHandler(() => testService1, {
   cacheKey: 'test1',
   manual: true,
   onSuccess: (data, params) => {
-    console.log('onSuccess', data, params)
+    console.log('onSuccess->child1', data, params)
   },
-  onFinally: (params, data, error) => {
-  }
 }
 )
 

@@ -1,11 +1,11 @@
 <template>
+    <button @click="show = !show">切换</button>
     <template v-if="show">
         <Child />
-        <Child />
+        <!-- <Child /> -->
         <hr>
-        <Child1 />
+        <!-- <Child1 /> -->
     </template>
-    <button @click="show = !show">切换</button>
 
     <!-- <button @click="t1">测试1</button>
     <Loading v-if="loading1" />

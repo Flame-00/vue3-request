@@ -1,6 +1,10 @@
+import { ServiceType } from "../types";
+
+export const isNil = (value: unknown) => value === undefined || value === null;
+
 // 验证值
 function validate(value: unknown) {
-  if (value === undefined) return value;
+  if (isNil(value)) return value;
   return typeof value === "number" && !isNaN(value);
 }
 // 警告
@@ -40,11 +44,16 @@ export const delay = (ms: number) => {
 };
 // 洋葱模型
 // 1. 从后往前执行，执行到第一个中间件时，执行service并返回结果
-export const composeMiddleware = (middlewares: any[], service: any) => {
+export const composeMiddleware = <D>(
+  middlewares: ((service: ServiceType<D>) => ServiceType<D>)[],
+  service: ServiceType<D>
+) => {
   let next = service;
   for (let i = middlewares.length; i-- > 0; ) {
     const middleware = middlewares[i];
     next = middleware(next);
   }
-  return next()
+  return next?.();
 };
+
+export const neverPromise = () => new Promise<any>(() => {});
