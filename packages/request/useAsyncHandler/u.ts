@@ -14,7 +14,7 @@ export function useAsyncHandler<T extends CallbackType>(
   plugins?: Plugin<DataType<T>, ParamsType<T>>[]
 ) {
   return useAsyncHandlerImpl<DataType<T>, ParamsType<T>>(service, options, [
-    ...defaultPlugins,
     ...(plugins || []),
+    ...defaultPlugins,
   ]);
 }
