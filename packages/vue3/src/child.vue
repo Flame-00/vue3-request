@@ -14,16 +14,17 @@
     <h3>isLoading: 加载中<em>{{ isLoading }}</em></h3>
 
 
-    <button @click="test(() => {
-      console.log('debounce')
-    })">debounce</button>
-    <button @click="test2">throttle</button>
+    <div>
+      <button @click="throttleTest">throttleTest</button>
+      <button @click="throttleWait += 1000">throttleWait + 1000</button>
+      <button @click="throttleOptions.leading = !throttleOptions.leading">throttleOptions.leading</button>
+    </div>
   </section>
 </template>
 <script setup lang="ts">
 import { useAsyncHandler, } from "@async-handler/request/useAsyncHandler";
 import axios from "axios";
-import { ref } from "vue";
+import { reactive, ref, watch, watchEffect } from "vue";
 import { throttle, debounce } from "xe-utils";
 
 // axios
@@ -46,11 +47,13 @@ const testService = (params: { age: number }, signal?: AbortSignal): Promise<{
   })
 };
 const ready1 = ref(false)
-
+const throttleWait = ref(1500)
+const throttleOptions = reactive({
+  leading: true,
+})
 const { data, error, isLoading, isFinished, isAborted, run, abort, cancel, runAsync, params } = useAsyncHandler((signal) => (params: { age: number }) => testService(params, signal), {
-  cacheKey: 'test',
+  throttleWait,
   manual: true,
-  ready: ready1,
   onSuccess: (data, params) => {
     console.log('onSuccess->child', data, params)
   },
@@ -61,18 +64,14 @@ const { data, error, isLoading, isFinished, isAborted, run, abort, cancel, runAs
 )
 
 const request = async () => {
-  // run({ age: 17 }) 
-  const res = await runAsync({ age: 17 })
-  console.log("runAsync -> res", res,)
+  run({ age: 17 })
 }
 
-const test = debounce((f) => f(), 1000)
-console.log(test)
-const test2 = throttle(() => {
+const throttleTest = throttle(() => {
   console.log('throttle')
-}, 1000)
-
-
-
+}, 1500, {
+  leading: true,
+  trailing: false,
+})
 
 </script>

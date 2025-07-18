@@ -83,14 +83,10 @@ export class Request<D, P extends any[]> {
       "onBefore",
       this.state.params
     ); // 执行插件的onBefore方法
-    console.log("isReadyisReadyisReadyisReady", isReady);
     if (!isReady) {
       return neverPromise();
     }
     params.length && this.setState({ params });
-
-    console.log("params.value", this.state.params);
-
     this.loading(true);
 
     if (isStale) {

@@ -1,5 +1,6 @@
 import { Ref, Reactive } from "vue";
 import { Request } from "./request";
+import { debounce } from "xe-utils";
 
 // 从嵌套函数中正确提取返回数据类型
 export type ExtractResultDataType<T> = T extends (
@@ -43,9 +44,20 @@ export type IOptions<D, P extends any[]> = Partial<{
   cacheTime: number; // 缓存时间
   staleTime: number; // 保鲜时间
   ready: Ref<boolean> | (() => boolean); // 是否准备好
-  debounceWait: number; // 防抖等待时间
-  throttleWait: number; // 节流等待时间
+  debounceWait: Ref<number> | number; // 防抖等待时间
+  debounceOptions: Reactive<DebounceOptionsType> | DebounceOptionsType;
+  throttleWait: Ref<number> | number; // 节流等待时间
+  throttleOptions: Reactive<ThrottleOptionsType> | ThrottleOptionsType;
 }>;
+
+type DebounceOptionsType = {
+  leading?: boolean;
+  trailing?: boolean;
+};
+type ThrottleOptionsType = {
+  leading?: boolean;
+  trailing?: boolean;
+};
 
 export interface IState<D, P extends any[]> {
   data: D | undefined;

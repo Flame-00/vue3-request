@@ -5,6 +5,8 @@ import { usePollingPlugin } from "./usePollingPlugin";
 import { useRefreshDepsPlugin } from "./useRefreshDepsPlugin";
 import { useRefreshOnWindowFocusPlugin } from "./useRefreshOnWindowFocusPlugin";
 import { useReadyPlugin } from "./useReadyPlugin";
+import { useDebouncePlugin } from "./useDebouncePlugin";
+import { useThrottlePlugin } from "./useThrottlePlugin";
 export default [
   useErrorRetryPlugin,
   usePollingPlugin,
@@ -12,5 +14,7 @@ export default [
   useRefreshOnWindowFocusPlugin,
   useAbortPlugin,
   useReadyPlugin,
+  useDebouncePlugin,
+  useThrottlePlugin,
   useCachePlugin,
 ];
