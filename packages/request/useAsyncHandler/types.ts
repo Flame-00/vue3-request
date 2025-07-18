@@ -89,7 +89,7 @@ export type PluginReturn<D, P extends any[]> = Partial<{
 export type PluginMethodsReturn<D> = Partial<{
   servicePromise?: ReturnType<ServiceType<D>>;
   signal?: AbortSignal;
-  isStale?: boolean;
+  isStaleTime?: boolean;
   isReady?: boolean;
 }>;
 

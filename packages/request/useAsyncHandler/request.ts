@@ -29,11 +29,9 @@ export class Request<D, P extends any[]> {
       params: options?.defaultParams || [],
     }) as IState<D, P>;
   }
-
   setState = (s: Partial<IState<D, P>>) => {
     Object.assign(this.state, s);
   };
-
   executePlugin = (
     event: keyof PluginReturn<D, P>,
     ...rest: any[]
@@ -54,12 +52,10 @@ export class Request<D, P extends any[]> {
       return Object.assign({}, ...r);
     }
   };
-
   // 设置加载状态
   loading = (isLoading: boolean) => {
     this.setState({ isLoading, isFinished: !isLoading });
   };
-
   // 请求完成
   onFinished = () => {
     this.executePlugin(
@@ -75,21 +71,20 @@ export class Request<D, P extends any[]> {
       this.state.error
     );
   };
-
   runAsync = async (...params: P): Promise<D> => {
     const requestId = ++this.currentRequestId;
-
-    const { signal, isStale, isReady } = this.executePlugin(
+    const { signal, isStaleTime, isReady } = this.executePlugin(
       "onBefore",
       this.state.params
     ); // 执行插件的onBefore方法
     if (!isReady) {
       return neverPromise();
     }
+
     params.length && this.setState({ params });
     this.loading(true);
 
-    if (isStale) {
+    if (isStaleTime) {
       this.loading(false);
       return this.state.data;
     }
@@ -117,11 +112,8 @@ export class Request<D, P extends any[]> {
       }
 
       this.setState({ data: res });
-
       this.executePlugin("onSuccess", res, this.state.params); // 执行插件的onSuccess方法
-
       this.options.onSuccess?.(res, this.state.params);
-
       this.onFinished();
 
       return res;
@@ -137,13 +129,9 @@ export class Request<D, P extends any[]> {
         return neverPromise();
       }
       const error = err as Error;
-
       this.setState({ error });
-
       this.executePlugin("onError", error, this.state.params); // 执行插件的onError方法
-
       this.options.onError?.(error, this.state.params);
-
       this.onFinished();
 
       throw error;
