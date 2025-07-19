@@ -16,10 +16,10 @@
   </section>
 </template>
 <script setup lang="ts">
-import { useRequest } from "@async-handler/request/vue3-request";
+// import { useRequest } from "@async-handler/request/vue3-request";
 import axios from "axios";
 import { reactive, ref, watch, watchEffect } from "vue";
-// import { useRequest } from "vue3-request";
+import { useRequest } from "vue3-request";
 
 // import { useRequest } from "vue-request";
 
@@ -48,9 +48,6 @@ const throttleOptions = reactive({
 })
 const { data, params, error, isLoading, isFinished, isAborted, run, abort, cancel, runAsync } = useRequest((signal) => (params: { age: number }) => testService(params, signal), {
   throttleWait: 2000,
-  throttleOptions: {
-    leading: false,
-  },
   manual: true,
   onSuccess: (data, params) => {
     console.log('onSuccess->child', data, params)

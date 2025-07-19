@@ -57,6 +57,9 @@ importers:
       vue-request:
         specifier: ^2.0.4
         version: 2.0.4(vue@3.5.17(typescript@5.8.3))
+      vue3-request:
+        specifier: ^1.0.18
+        version: 1.0.18(typescript@5.8.3)
     devDependencies:
       '@tsconfig/node22':
         specifier: ^22.0.2
@@ -2284,6 +2287,9 @@ packages:
     hasBin: true
     peerDependencies:
       typescript: '>=5.0.0'
+
+  vue3-request@1.0.18:
+    resolution: {integrity: sha512-GKOOw/2XOXvA7Ya+ptKrULKhINhzUibA6eBEqV8jCYIzNAb1wjE0ywvqv/WczuGojjppNKmwmvZDFXcgDngRxg==}
 
   vue@3.5.17:
     resolution: {integrity: sha512-LbHV3xPN9BeljML+Xctq4lbz2lVHCR6DtbpTf5XIO6gugpXUN49j2QQPcMj086r9+AkJ0FfUT8xjulKKBkkr9g==}
@@ -4763,6 +4769,12 @@ snapshots:
       '@volar/typescript': 2.4.15
       '@vue/language-core': 2.2.12(typescript@5.8.3)
       typescript: 5.8.3
+
+  vue3-request@1.0.18(typescript@5.8.3):
+    dependencies:
+      vue: 3.5.17(typescript@5.8.3)
+    transitivePeerDependencies:
+      - typescript
 
   vue@3.5.17(typescript@5.8.3):
     dependencies:
