@@ -2,9 +2,9 @@ import { ServiceType } from "../../types";
 
 const requestCache = new Map<string, ReturnType<ServiceType>>();
 
-export const setRequestCache = <D>(
+export const setRequestCache = <D, P extends any[]>(
   key: string,
-  service: ReturnType<ServiceType<D>>
+  service: ReturnType<ServiceType<D, P>>
 ) => {
   requestCache.set(key, service);
 

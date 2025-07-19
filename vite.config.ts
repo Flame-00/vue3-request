@@ -5,7 +5,7 @@ export default defineConfig({
   plugins: [
     dts({
       insertTypesEntry: true,
-      include: ['packages/request/useAsyncHandler.ts'],
+      include: ['packages/request/vue3-request/index.ts'],
       rollupTypes: true,
       outDir: path.resolve(__dirname, 'dist')
     })
@@ -15,10 +15,10 @@ export default defineConfig({
   },
   build: {
     lib: {
-      entry: path.resolve(__dirname, 'packages/request/useAsyncHandler.ts'),
-      name: 'Vue3AsyncHandler',
+      entry: path.resolve(__dirname, 'packages/request/vue3-request/index.ts'),
+      name: 'Vue3Request',
       formats: ['es', 'cjs', 'umd'],
-      fileName: (format) => `vue3-async-handler.${format}.js`
+      fileName: (format) => `vue3-request.${format}.js`
     },
     rollupOptions: {
       external: ['vue'],

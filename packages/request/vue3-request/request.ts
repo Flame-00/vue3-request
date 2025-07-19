@@ -151,7 +151,7 @@ export class Request<D, P extends any[]> {
   };
 
   refreshAsync = async () => {
-    await this.runAsync(...this.state.params);
+    return await this.runAsync(...this.state.params);
   };
 
   cancel = () => {

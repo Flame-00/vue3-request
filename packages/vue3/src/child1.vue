@@ -14,7 +14,7 @@
   </section>
 </template>
 <script setup lang="ts">
-import { useAsyncHandler, } from "@async-handler/request/useAsyncHandler";
+import { useRequest } from "@async-handler/request/vue3-request";
 import axios from "axios";
 import { reactive, ref } from "vue";
 // axios
@@ -34,7 +34,7 @@ const testService1 = (): Promise<{
   return axiosInstance.get('https://v2.xxapi.cn/api/renjian')
 };
 
-const { data, params, error, isLoading, isFinished, isAborted, run, abort, cancel } = useAsyncHandler(() => testService1, {
+const { data, params, error, isLoading, isFinished, isAborted, run, abort, cancel } = useRequest(() => testService1, {
   cacheKey: 'test1',
   manual: true,
   onSuccess: (data, params) => {

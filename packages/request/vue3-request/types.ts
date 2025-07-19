@@ -1,4 +1,4 @@
-import { Ref, Reactive } from "vue";
+import { Ref, Reactive, ToRefs } from "vue";
 import { Request } from "./request";
 
 // 从嵌套函数中正确提取返回数据类型
@@ -21,9 +21,13 @@ import { Request } from "./request";
 
 // 回调函数类型定义
 
-export type ServiceType<D, P extends any[]> = (...args: P) => Promise<D>;
+export type ServiceType<D = any, P extends any[] = any> = (
+  ...args: P
+) => Promise<D>;
 
-export type CallbackType<D, P extends any[]> = (signal?: AbortSignal) => ServiceType<D, P>;
+export type CallbackType<D = any, P extends any[] = any> = (
+  signal?: AbortSignal
+) => ServiceType<D, P>;
 
 export type IOptions<D, P extends any[]> = Partial<{
   onBefore: (params: P) => void; // 请求前
@@ -65,6 +69,17 @@ export interface IState<D, P extends any[]> {
   isAborted: boolean;
   error: Error | undefined;
   params: P;
+}
+
+// 添加 useRequest 返回类型定义
+export interface UseRequestReturnType<D, P extends any[]> extends ToRefs<IState<D, P>> {
+  run: (...args: P) => void;
+  cancel: () => void;
+  refresh: () => void;
+  runAsync: (...args: P) => Promise<D>;
+  abort: () => void;
+  refreshAsync: () => Promise<D>;
+  clearCache: () => void;
 }
 
 // export type DataType<T> = ExtractResultDataType<T>;

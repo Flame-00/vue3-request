@@ -4,16 +4,17 @@ import type {
   // DataType,
   // ParamsType,
   Plugin,
+  UseRequestReturnType,
 } from "./types";
-import { useAsyncHandlerImpl } from "./useAsyncHandlerImpl";
+import { useRequestImpl } from "./useRequestImpl";
 import defaultPlugins from "./plugins";
 
-export function useAsyncHandler<D, P extends any[]>(
+export function useRequest<D, P extends any[]>(
   service: CallbackType<D, P>,
   options?: IOptions<D, P>,
   plugins?: Plugin<D, P>[]
-) {
-  return useAsyncHandlerImpl<D, P>(service, options, [
+): UseRequestReturnType<D, P> {
+  return useRequestImpl<D, P>(service, options, [
     ...(plugins || []),
     ...defaultPlugins,
   ]);

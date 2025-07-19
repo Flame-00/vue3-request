@@ -1,13 +1,13 @@
-import type { IOptions, CallbackType, Plugin } from "./types";
+import type { IOptions, CallbackType, Plugin, UseRequestReturnType } from "./types";
 import { onUnmounted, toRefs } from "vue";
 import { Request } from "./request";
 import { clearCache } from "./utils/cache";
 
-export function useAsyncHandlerImpl<D, P extends any[]>(
+export function useRequestImpl<D, P extends any[]>(
   service: CallbackType<D, P>,
   options: IOptions<D, P>,
   plugins: Plugin<D, P>[]
-) {
+): UseRequestReturnType<D, P> {
   const requestOptions = {
     manual: false,
     defaultParams: [] as P,

@@ -1,21 +1,21 @@
 {
-  "name": "@flame00/vue3-async-handler",
-  "version": "1.0.13",
+  "name": "vue3-request",
+  "version": "1.0.14",
   "type": "module",
   "description": "A Vue3 asynchronous request processing library, designed to simplify your asynchronous operations and API calls.",
-  "main": "dist/vue3-async-handler.es.js",
-  "types": "dist/vue3-async-handler.es.d.ts",
-  "unpkg": "dist/vue3-async-handler.umd.js",
+  "main": "dist/vue3-request.es.js",
+  "types": "dist/vue3-request.es.d.ts",
+  "unpkg": "dist/vue3-request.umd.js",
   "files": [
     "dist"
   ],
-  "module": "dist/vue3-async-handler.es.js",
+  "module": "dist/vue3-request.es.js",
   "exports": {
     ".": {
-      "browser": "./dist/vue3-async-handler.umd.js",
-      "types": "./dist/vue3-async-handler.es.d.ts",
-      "import": "./dist/vue3-async-handler.es.js",
-      "require": "./dist/vue3-async-handler.cjs.js"
+      "browser": "./dist/vue3-request.umd.js",
+      "types": "./dist/vue3-request.es.d.ts",
+      "import": "./dist/vue3-request.es.js",
+      "require": "./dist/vue3-request.cjs.js"
     }
   },
   "publishConfig": {
@@ -39,8 +39,7 @@
     "hooks",
     "async",
     "handler",
-    "vue3-request",
-    "flame00"
+    "vue3-request"
   ],
   "author": "flame00",
   "license": "ISC",
