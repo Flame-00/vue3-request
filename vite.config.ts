@@ -5,7 +5,7 @@ export default defineConfig({
   plugins: [
     dts({
       insertTypesEntry: true,
-      include: ['packages/request/vue3-request/index.ts'],
+      include: ['packages/request/vue3-request/**/*.ts'],
       rollupTypes: true,
       outDir: path.resolve(__dirname, 'dist')
     })

@@ -26,7 +26,7 @@
 import axios from "axios";
 import { reactive, ref, watch, watchEffect } from "vue";
 import { throttle, debounce } from "xe-utils";
-import { useRequest } from "@async-handler/request/vue3-request";
+import { useRequest } from "vue3-request";
 
 // import { useRequest } from "vue-request";
 
