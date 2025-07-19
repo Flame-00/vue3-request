@@ -34,7 +34,7 @@ const testService1 = (): Promise<{
   return axiosInstance.get('https://v2.xxapi.cn/api/renjian')
 };
 
-const { data, error, isLoading, isFinished, isAborted, run, abort, cancel } = useAsyncHandler(() => testService1, {
+const { data, params, error, isLoading, isFinished, isAborted, run, abort, cancel } = useAsyncHandler(() => testService1, {
   cacheKey: 'test1',
   manual: true,
   onSuccess: (data, params) => {

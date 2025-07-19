@@ -4,7 +4,7 @@ import { Request } from "./request";
 import { clearCache } from "./utils/cache";
 
 export function useAsyncHandlerImpl<D, P extends any[]>(
-  service: CallbackType<D>,
+  service: CallbackType<D, P>,
   options: IOptions<D, P>,
   plugins: Plugin<D, P>[]
 ) {

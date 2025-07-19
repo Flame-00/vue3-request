@@ -17,7 +17,7 @@ export class Request<D, P extends any[]> {
   abort: () => void;
 
   constructor(
-    public service: CallbackType<D>,
+    public service: CallbackType<D, P>,
     public options?: IOptions<D, P>
   ) {
     this.state = reactive({
@@ -35,7 +35,7 @@ export class Request<D, P extends any[]> {
   executePlugin = (
     event: keyof PluginReturn<D, P>,
     ...rest: any[]
-  ): PluginMethodsReturn<D> => {
+  ): PluginMethodsReturn<D, P> => {
     if (event === "onRequest") {
       const servicePromise = composeMiddleware<D>(
         this.pluginImpls.map((plugin) => plugin.onRequest).filter(Boolean),

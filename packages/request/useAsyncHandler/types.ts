@@ -1,30 +1,29 @@
 import { Ref, Reactive } from "vue";
 import { Request } from "./request";
-import { debounce } from "xe-utils";
 
 // 从嵌套函数中正确提取返回数据类型
-export type ExtractResultDataType<T> = T extends (
-  signal?: AbortSignal
-) => () => Promise<infer P>
-  ? P
-  : T extends (signal?: AbortSignal) => (...args: any[]) => Promise<infer P>
-  ? P
-  : never;
+// export type ExtractResultDataType<T> = T extends (
+//   signal?: AbortSignal
+// ) => () => Promise<infer P>
+//   ? P
+//   : T extends (signal?: AbortSignal) => (...args: any[]) => Promise<infer P>
+//   ? P
+//   : never;
 
 // 提取内部函数的参数类型
-export type ExtractInnerFunctionParams<T> = T extends (
-  signal?: AbortSignal
-) => (...args: infer P) => any
-  ? P
-  : T extends (signal?: AbortSignal) => () => any
-  ? any[]
-  : never;
+// export type ExtractInnerFunctionParams<T> = T extends (
+//   signal?: AbortSignal
+// ) => (...args: infer P) => any
+//   ? P
+//   : T extends (signal?: AbortSignal) => () => any
+//   ? any[]
+//   : never;
 
 // 回调函数类型定义
 
-export type ServiceType<D = any> = (...args: any[]) => Promise<D>;
+export type ServiceType<D, P extends any[]> = (...args: P) => Promise<D>;
 
-export type CallbackType<T = any> = (signal?: AbortSignal) => ServiceType<T>;
+export type CallbackType<D, P extends any[]> = (signal?: AbortSignal) => ServiceType<D, P>;
 
 export type IOptions<D, P extends any[]> = Partial<{
   onBefore: (params: P) => void; // 请求前
@@ -68,9 +67,9 @@ export interface IState<D, P extends any[]> {
   params: P;
 }
 
-export type DataType<T> = ExtractResultDataType<T>;
+// export type DataType<T> = ExtractResultDataType<T>;
 
-export type ParamsType<T> = ExtractInnerFunctionParams<T>;
+// export type ParamsType<T> = ExtractInnerFunctionParams<T>;
 
 export type Plugin<D = any, P extends any[] = any> = (
   requestInstance: Request<D, P>,
@@ -83,11 +82,11 @@ export type PluginReturn<D, P extends any[]> = Partial<{
   onFinally: (params: P, data: D, error: Error) => void; // 请求完成
   onError: (error: Error, params: P) => void; // 请求失败
   onCancel: () => void; // 取消请求
-  onRequest: (service: ServiceType<D>) => ServiceType<D>; // 请求
+  onRequest: (service: ServiceType<D, P>) => ServiceType<D, P>; // 请求
 }>;
 
-export type PluginMethodsReturn<D> = Partial<{
-  servicePromise?: ReturnType<ServiceType<D>>;
+export type PluginMethodsReturn<D, P extends any[]> = Partial<{
+  servicePromise?: ReturnType<ServiceType<D, P>>;
   signal?: AbortSignal;
   isStaleTime?: boolean;
   isReady?: boolean;

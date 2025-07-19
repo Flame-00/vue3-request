@@ -26,6 +26,7 @@ import { useAsyncHandler, } from "@async-handler/request/useAsyncHandler";
 import axios from "axios";
 import { reactive, ref, watch, watchEffect } from "vue";
 import { throttle, debounce } from "xe-utils";
+import { useRequest } from "vue-request";
 
 // axios
 const axiosInstance = axios.create({
@@ -51,7 +52,7 @@ const throttleWait = ref(1500)
 const throttleOptions = reactive({
   leading: true,
 })
-const { data, error, isLoading, isFinished, isAborted, run, abort, cancel, runAsync, params } = useAsyncHandler((signal) => (params: { age: number }) => testService(params, signal), {
+const { data, params, error, isLoading, isFinished, isAborted, run, abort, cancel, runAsync } = useAsyncHandler((signal) => (params: { age: number }) => testService(params, signal), {
   throttleWait,
   manual: true,
   onSuccess: (data, params) => {
@@ -63,8 +64,16 @@ const { data, error, isLoading, isFinished, isAborted, run, abort, cancel, runAs
 }
 )
 
+const { data: data2, error: error2, } = useRequest(() => testService({ age: 17 }), {
+  manual: true,
+  onSuccess: (data, params) => {
+    console.log('onSuccess->child', data, params)
+  },
+})
+
 const request = async () => {
   run({ age: 17 })
+  const res = await runAsync({ age: 17 })
 }
 
 const throttleTest = throttle(() => {
