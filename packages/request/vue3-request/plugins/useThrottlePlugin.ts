@@ -1,5 +1,5 @@
 import { Plugin } from "../types";
-import { throttle } from "xe-utils";
+import { throttle } from '../utils/xe-utils/throttle';
 import { computed, toValue, watchEffect, onWatcherCleanup } from "vue";
 import { isNil } from "../utils";
 

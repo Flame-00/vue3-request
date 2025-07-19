@@ -16,10 +16,10 @@
   </section>
 </template>
 <script setup lang="ts">
-// import { useRequest } from "@async-handler/request/vue3-request";
+import { useRequest } from "@async-handler/request/vue3-request";
 import axios from "axios";
 import { reactive, ref, watch, watchEffect } from "vue";
-import { useRequest } from "vue3-request";
+// import { useRequest } from "vue3-request";
 
 // import { useRequest } from "vue-request";
 
@@ -43,12 +43,14 @@ const testService = (params: { age: number }, signal?: AbortSignal): Promise<{
   })
 };
 const ready1 = ref(false)
-const throttleWait = ref(1500)
 const throttleOptions = reactive({
   leading: true,
 })
 const { data, params, error, isLoading, isFinished, isAborted, run, abort, cancel, runAsync } = useRequest((signal) => (params: { age: number }) => testService(params, signal), {
-  throttleWait,
+  throttleWait: 2000,
+  throttleOptions: {
+    leading: false,
+  },
   manual: true,
   onSuccess: (data, params) => {
     console.log('onSuccess->child', data, params)
@@ -68,7 +70,7 @@ const { data, params, error, isLoading, isFinished, isAborted, run, abort, cance
 
 const request = async () => {
   run({ age: 17 })
-  const res = await runAsync({ age: 17 })
+  // const res = await runAsync({ age: 17 })
 }
 
 

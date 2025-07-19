@@ -1,5 +1,5 @@
 import { Plugin } from "../types";
-import { debounce } from "xe-utils";
+import { debounce } from '../utils/xe-utils/debounce';
 import { isNil } from "../utils";
 import { computed, toValue, watchEffect, onWatcherCleanup } from "vue";
 
