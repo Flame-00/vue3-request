@@ -11,9 +11,6 @@ importers:
       vue:
         specifier: ^3.5.17
         version: 3.5.17(typescript@5.8.3)
-      xe-utils:
-        specifier: ^3.7.8
-        version: 3.7.8
     devDependencies:
       '@vitejs/plugin-vue':
         specifier: ^6.0.0

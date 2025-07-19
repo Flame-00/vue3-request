@@ -13,19 +13,12 @@
     <h3>isAborted: 中止<em>{{ isAborted }}</em></h3>
     <h3>isLoading: 加载中<em>{{ isLoading }}</em></h3>
 
-
-    <div>
-      <button @click="throttleTest">throttleTest</button>
-      <button @click="throttleWait += 1000">throttleWait + 1000</button>
-      <button @click="throttleOptions.leading = !throttleOptions.leading">throttleOptions.leading</button>
-    </div>
   </section>
 </template>
 <script setup lang="ts">
 // import { useRequest } from "@async-handler/request/vue3-request";
 import axios from "axios";
 import { reactive, ref, watch, watchEffect } from "vue";
-import { throttle, debounce } from "xe-utils";
 import { useRequest } from "vue3-request";
 
 // import { useRequest } from "vue-request";
@@ -78,11 +71,5 @@ const request = async () => {
   const res = await runAsync({ age: 17 })
 }
 
-const throttleTest = throttle(() => {
-  console.log('throttle')
-}, 1500, {
-  leading: true,
-  trailing: false,
-})
 
 </script>
