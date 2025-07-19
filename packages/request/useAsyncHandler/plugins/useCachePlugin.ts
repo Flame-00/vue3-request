@@ -49,7 +49,6 @@ export const useCachePlugin: Plugin = (
     if (!cacheKey) return null;
 
     const cache = getCache(cacheKey); // 获取缓存
-
     if (!cache) return null;
 
     if (Date.now() - cache.time > staleTime) {
@@ -62,10 +61,9 @@ export const useCachePlugin: Plugin = (
   return {
     onBefore: () => {
       const isStaleTime = checkStaleTime();
+      if (!isStaleTime) return { isStaleTime: false };
 
-      if (!isStaleTime) return { isStale: false };
-
-      return { isStale: true }; // 返回true 表示停止请求
+      return { isStaleTime: true }; // 返回true 表示停止请求
     },
     onRequest: <D>(service: () => Promise<D>) => {
       if (!cacheKey) return service;
