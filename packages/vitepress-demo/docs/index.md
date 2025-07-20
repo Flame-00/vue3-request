@@ -2,7 +2,7 @@
 layout: home
 
 hero:
-  name: "Vue3AsyncHandler"
+  name: "Vue3Request"
   text: "一个Vue3的异步请求处理库，旨在简化你的异步操作和api调用"
   image:
     src: /logo.svg
@@ -39,33 +39,32 @@ features:
 
 ## 安装
 
-推荐使用 `pnpm` 安装极速体验 vue3-async-handler
+推荐使用 `pnpm` 安装极速体验 vue3-request
 
-**vue3-async-handler 是隶属于@flame00 组织下的一个包、不必关心@flame00 前缀**
 ::: code-group
 
 ```sh [pnpm]
-pnpm add @flame00/vue3-async-handler
+pnpm add vue3-request
 ```
 
 ```sh [npm]
-npm i @flame00/vue3-async-handler
+npm i vue3-request
 ```
 
 ```sh [cnpm]
-cnpm i @flame00/vue3-async-handler
+cnpm i vue3-request
 ```
 
 ```sh [yarn]
-yarn add @flame00/vue3-async-handler
+yarn add vue3-request
 ```
 
 :::
 
-## Vue3+TS+Axios+Vue3AsyncHandler 基础 demo
+## Vue3+TS+Axios+Vue3Request 基础 demo
 
 ```ts
-const { run, data, error, isLoading } = useAsyncHandler(() => testService);
+const { run, data, error, isLoading } = useRequest(() => testService);
 ```
 
 :::demo
@@ -81,7 +80,7 @@ const { run, data, error, isLoading } = useAsyncHandler(() => testService);
   <hr />
 </template>
 <script setup lang="ts">
-import { useAsyncHandler } from "@flame00/vue3-async-handler";
+import { useRequest } from "vue3-request";
 
 // 模拟请求示例
 const testService = (): Promise<{
@@ -102,7 +101,7 @@ const testService = (): Promise<{
     }, 2500);
   });
 };
-const { data, error, isLoading } = useAsyncHandler(() => testService);
+const { data, error, isLoading } = useRequest(() => testService);
 </script>
 ```
 
@@ -121,7 +120,7 @@ const { data, error, isLoading } = useAsyncHandler(() => testService);
   <hr />
 </template>
 <script setup lang="ts">
-import { useAsyncHandler } from "@flame00/vue3-async-handler";
+import { useRequest } from "@async-handler/request/vue3-request";
 
 // 模拟请求示例
 const testService = (): Promise<{
@@ -142,7 +141,7 @@ const testService = (): Promise<{
     }, 2500);
   });
 };
-const { run, data, error, isLoading } = useAsyncHandler(() => testService, {
+const { run, data, error, isLoading } = useRequest(() => testService, {
   manual: true,
 });
 </script>

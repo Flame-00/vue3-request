@@ -13,15 +13,15 @@
     <h3>isAborted: 中止<em>{{ isAborted }}</em></h3>
     <h3>isLoading: 加载中<em>{{ isLoading }}</em></h3>
 
+
+    <button @click="throttleWait++">throttleWait++</button>
   </section>
 </template>
 <script setup lang="ts">
-// import { useRequest } from "@async-handler/request/vue3-request";
+import { useRequest } from "@async-handler/request/vue3-request";
 import axios from "axios";
 import { reactive, ref, watch, watchEffect } from "vue";
-import { useRequest } from "vue3-request";
-
-// import { useRequest } from "vue-request";
+// import { useRequest } from "vue3-request";
 
 // axios
 const axiosInstance = axios.create({
@@ -46,8 +46,10 @@ const ready1 = ref(false)
 const throttleOptions = reactive({
   leading: true,
 })
+const throttleWait = ref(2000)
+
 const { data, params, error, isLoading, isFinished, isAborted, run, abort, cancel, runAsync } = useRequest((signal) => (params: { age: number }) => testService(params, signal), {
-  throttleWait: 2000,
+  throttleWait,
   manual: true,
   onSuccess: (data, params) => {
     console.log('onSuccess->child', data, params)

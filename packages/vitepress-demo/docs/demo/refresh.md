@@ -1,6 +1,6 @@
 # 刷新（重复上一次请求）
 
-`useAsyncHandler` 提供了 `refresh` 和 `refreshAsync` 方法，使我们可以使用上一次的参数，重新发起请求。
+`useRequest` 提供了 `refresh` 和 `refreshAsync` 方法，使我们可以使用上一次的参数，重新发起请求。
 
 假如在生成姓名的场景中
 
@@ -20,7 +20,7 @@
   </section>
 </template>
 <script setup lang="ts">
-import { useAsyncHandler } from "@flame00/vue3-async-handler";
+import { useRequest } from "@async-handler/request/vue3-request";
 import axios from "axios";
 import { onMounted } from "vue";
 import message from "@/utils/message";
@@ -51,7 +51,7 @@ const testService = (xing: string): Promise<IName> => {
   );
 };
 
-const { run, refresh, data, params, error, isLoading } = useAsyncHandler(
+const { run, refresh, data, params, error, isLoading } = useRequest(
   () => testService,
   {
     manual: true,

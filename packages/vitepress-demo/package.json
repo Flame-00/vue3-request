@@ -21,6 +21,7 @@
   "dependencies": {
     "@async-handler/request": "workspace:*",
     "axios": "^1.10.0",
-    "vfonts": "^0.0.3"
+    "vfonts": "^0.0.3",
+    "vue3-request": "^1.0.18"
   }
 }

@@ -1,18 +1,18 @@
 # 取消响应
 
-`useAsyncHandler` 提供了 `cancel` 函数，用于忽略当前 promise 返回的数据和错误
+`useRequest` 提供了 `cancel` 函数，用于忽略当前 promise 返回的数据和错误
 
 ## `cancel()`
 
 :::warning
 **注意：调用 `cancel` 函数并不会取消 promise 的执行**
 
-只是设置了返回结果为 undefined 以及**取消**对 data 和 error 的赋值和生命周期事件的调用
+只是**取消**对 data 和 error 的赋值和生命周期事件的调用
 
 中止正在请求的接口请查阅 [中止请求](./abort-request.md)
 :::
 
-同时 `useAsyncHandler` 会在以下时机自动忽略响应：
+同时 `useRequest` 会在以下时机自动忽略响应：
 
 - 组件卸载时，正在进行的 promise
 - 竞态取消，当上一次 promise 还没返回时，又发起了下一次 promise，则会忽略上一次 promise 的响应
@@ -34,11 +34,11 @@
   }}</Button>
 </template>
 <script setup lang="ts">
-import { useAsyncHandler } from "@flame00/vue3-async-handler";
-import message from "@/utils/message"; // 文档示例message,不用理会
+import { useRequest } from "@async-handler/request/vue3-request";
+import message from "@/utils/message"; // demo component
 import { h, ref } from "vue";
-import Loading from "../components/Loading.vue"; // 文档示例组件,不用理会
-import Button from "../components/Button.vue"; // 文档示例组件,不用理会
+import Loading from "../components/Loading.vue"; // demo component
+import Button from "../components/Button.vue"; // demo component
 
 const show = ref(true);
 
@@ -57,7 +57,7 @@ const testService = async (): Promise<string> => {
 function generateComponent() {
   return {
     setup() {
-      const { run, data, error, isLoading, cancel } = useAsyncHandler(
+      const { run, data, error, isLoading, cancel } = useRequest(
         () => testService,
         {
           manual: true,

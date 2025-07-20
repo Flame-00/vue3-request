@@ -1,17 +1,17 @@
 # 基础用法
 
-这一小节我们会介绍 vue3-async-handler 最核心，最基础的能力，也就是 vue3-async-handler 内核的能力。
+这一小节我们会介绍 vue3-request 最核心，最基础的能力，也就是 ue3-request 内核的能力。
 
 ## 默认请求
 
-`useAsyncHandler` 是一个强大的异步数据管理的 Hooks
+`useRequest` 是一个强大的异步数据管理的 Hooks
 
-默认情况下，`useAsyncHandler` 第一个参数是一个工厂函数返回一个[异步函数](../FAQ/#什么是异步函数?)，在组件初始化时，会自动执行该工厂函数 并在其参数内部生成一个`signal(可选)`提供给开发者用来[中止请求](./abort-request.md)。同时自动管理该工厂函数返回的异步函数的 `loading`, `data`, `error` 等状态。
+默认情况下，`useRequest` 第一个参数是一个工厂函数返回一个[异步函数](../FAQ/#什么是异步函数?)，在组件初始化时，会自动执行该工厂函数 并在其参数内部生成一个`signal(可选)`提供给开发者用来[中止请求](./abort-request.md)。同时自动管理该工厂函数返回的异步函数的 `loading`, `data`, `error` 等状态。
 
 [为什么要用工厂函数返回一个异步函数, 而不是直接返回异步函数?](../FAQ/#为什么要用工厂函数返回一个异步函数)
 
 ```ts
-import { useAsyncHandler } from "@flame00/vue3-async-handler";
+import { useRequest } from "@async-handler/request/vue3-request";
 
 // 模拟异步请求
 const testService = (): Promise<string> => {
@@ -27,10 +27,10 @@ const testService = (): Promise<string> => {
 };
 
 // ✅ 工厂函数返回一个异步函数
-const { data, error, loading } = useAsyncHandler(() => testService);
+const { data, error, loading } = useRequest(() => testService);
 
 // ❌ 直接返回一个异步函数
-const { data, error, loading } = useAsyncHandler(testService); // [!code error]
+const { data, error, loading } = useRequest(testService); // [!code error]
 ```
 
 ::: tip
@@ -63,7 +63,7 @@ const { data, error, loading } = useAsyncHandler(testService); // [!code error]
   </section>
 </template>
 <script setup lang="ts">
-import { useAsyncHandler } from "@flame00/vue3-async-handler";
+import { useRequest } from "@async-handler/request/vue3-request";
 import axios from "axios";
 
 // 模拟请求示例
@@ -85,7 +85,7 @@ const testService = (): Promise<{
     }, 2500);
   });
 };
-const { run, data, error, isLoading } = useAsyncHandler(() => testService);
+const { run, data, error, isLoading } = useRequest(() => testService);
 
 // axios
 const axiosInstance = axios.create({
@@ -106,7 +106,7 @@ const {
   data: dataAxios,
   error: errorAxios,
   isLoading: isLoadingAxios,
-} = useAsyncHandler(() => testServiceAxios);
+} = useRequest(() => testServiceAxios);
 
 // fetch
 const testServiceFetch = (): Promise<{
@@ -124,7 +124,7 @@ const {
   data: dataFetch,
   error: errorFetch,
   isLoading: isLoadingFetch,
-} = useAsyncHandler(() => testServiceFetch);
+} = useRequest(() => testServiceFetch);
 </script>
 ```
 
@@ -132,10 +132,10 @@ const {
 
 ## 手动触发
 
-如果设置了 `options.manual = true`，则 `useAsyncHandler` 不会默认执行，需要通过 `run` 或者 `runAsync` 来触发执行。
+如果设置了 `options.manual = true`，则 `useRequest` 不会默认执行，需要通过 `run` 或者 `runAsync` 来触发执行。
 
 ```ts
-const { loading, run, runAsync } = useAsyncHandler(() => testService, {
+const { loading, run, runAsync } = useRequest(() => testService, {
   manual: true, // [!code ++]
 });
 ```
@@ -155,7 +155,7 @@ runAsync()
   });
 ```
 
-接下来我们通过根据姓氏生成随机姓名，来演示 `useAsyncHandler` 手动触发模式，以及 `run` 与 `runAsync` 的区别。
+接下来我们通过根据姓氏生成随机姓名，来演示 `useRequest` 手动触发模式，以及 `run` 与 `runAsync` 的区别。
 
 ### run
 
@@ -173,7 +173,7 @@ runAsync()
   </section>
 </template>
 <script setup lang="ts">
-import { useAsyncHandler } from "@flame00/vue3-async-handler";
+import { useRequest } from "@async-handler/request/vue3-request";
 import axios from "axios";
 import { ref } from "vue";
 import message from "@/utils/message";
@@ -211,7 +211,7 @@ const testService = async (xing: string): Promise<IName> => {
   );
 };
 
-const { run, data, error, isLoading } = useAsyncHandler(() => testService, {
+const { run, data, error, isLoading } = useRequest(() => testService, {
   manual: true,
   onSuccess: (data, params) => {
     message.success(`The xing was changed to "${params}"`);
@@ -241,7 +241,7 @@ const { run, data, error, isLoading } = useAsyncHandler(() => testService, {
   </section>
 </template>
 <script setup lang="ts">
-import { useAsyncHandler } from "@flame00/vue3-async-handler";
+import { useRequest } from "@async-handler/request/vue3-request";
 import axios from "axios";
 import { ref } from "vue";
 import message from "@/utils/message";
@@ -279,7 +279,7 @@ const testService = async (xing: string): Promise<IName> => {
   );
 };
 
-const { runAsync, data, error, isLoading, params } = useAsyncHandler(
+const { runAsync, data, error, isLoading, params } = useRequest(
   () => testService,
   {
     manual: true,

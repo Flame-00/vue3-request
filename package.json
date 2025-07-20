@@ -41,7 +41,7 @@
     "handler",
     "vue3-request"
   ],
-  "author": "flame00",
+  "author": "flame",
   "license": "ISC",
   "packageManager": "pnpm@10.12.1",
   "dependencies": {

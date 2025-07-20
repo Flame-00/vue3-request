@@ -1,6 +1,6 @@
 # 生命周期
 
-`useAsyncHandler` 提供了以下几个生命周期配置项，供你在异步函数的不同阶段做一些处理。
+`useRequest` 提供了以下几个生命周期配置项，供你在异步函数的不同阶段做一些处理。
 
 - `onBefore`：请求之前触发
 - `onSuccess`：请求成功触发
@@ -20,7 +20,7 @@
   </section>
 </template>
 <script setup lang="ts">
-import { useAsyncHandler } from "@flame00/vue3-async-handler";
+import { useRequest } from "@async-handler/request/vue3-request";
 import axios from "axios";
 import { ref } from "vue";
 import message from "@/utils/message";
@@ -58,7 +58,7 @@ const testService = async (xing: string): Promise<IName> => {
   );
 };
 
-const { run, data, error, isLoading } = useAsyncHandler(() => testService, {
+const { run, data, error, isLoading } = useRequest(() => testService, {
   manual: true,
   onBefore: (params) => {
     message.info(`Start Request: ${params}`);

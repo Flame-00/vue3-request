@@ -1,6 +1,6 @@
 # 参数管理
 
-`useAsyncHandler` 返回的 `params` 会记录当次调用 `service` 的参数数组。比如你触发了 `run(1, 2, 3)`，则 `params `等于 `[1, 2, 3]` 。
+`useRequest` 返回的 `params` 会记录当次调用 `service` 的参数数组。比如你触发了 `run(1, 2, 3)`，则 `params `等于 `[1, 2, 3]` 。
 
 - `onBefore`：请求之前触发
 - `onSuccess`：请求成功触发
@@ -26,7 +26,7 @@
   </section>
 </template>
 <script setup lang="ts">
-import { useAsyncHandler } from "@flame00/vue3-async-handler";
+import { useRequest } from "@async-handler/request/vue3-request";
 import axios from "axios";
 import { ref } from "vue";
 
@@ -57,7 +57,7 @@ const testService = (xing: string): Promise<IName> => {
   );
 };
 
-const { run, data, params, isLoading } = useAsyncHandler(() => testService, {
+const { run, data, params, isLoading } = useRequest(() => testService, {
   defaultParams: ["林"],
 });
 </script>
@@ -67,7 +67,7 @@ const { run, data, params, isLoading } = useAsyncHandler(() => testService, {
 
 ## 手动触发
 
-`useAsyncHandler`使用 run 或者 runAsync 传参有两种形式，随你喜欢，想用哪种都可以， 两种传参形式都有 **TS 类型提示**
+`useRequest`使用 run 或者 runAsync 传参有两种形式，随你喜欢，想用哪种都可以， 两种传参形式都有 **TS 类型提示**
 
 ```ts
 const axiosInstance = axios.create({
@@ -92,7 +92,7 @@ const testService = (xing: string, signal?: AbortSignal): Promise<IName> => {
 };
 
 // 第一种, 通过run runAsync 传给testService (推荐)
-const { run, refresh, data, params, error, isLoading } = useAsyncHandler(
+const { run, refresh, data, params, error, isLoading } = useRequest(
   () => testService,
   {
     manual: true,
@@ -107,7 +107,7 @@ onMounted(() => {
 });
 
 // 第二种, 写成工厂模式, (需要传signal(可选)用来取消请求的场景就必须使用这种形式)
-const { run, refresh, data, params, error, isLoading } = useAsyncHandler(
+const { run, refresh, data, params, error, isLoading } = useRequest(
   (signal) => (xing: string) => testService(xing, signal),
   {
     manual: true,
@@ -122,7 +122,7 @@ onMounted(() => {
 });
 
 // 其他情况, 不用run 或 runAsync 但是也写成工厂模式, 那就是直传testService (不推荐)
-const { run, refresh, data, params, error, isLoading } = useAsyncHandler(
+const { run, refresh, data, params, error, isLoading } = useRequest(
   () => () => testService(xing.value),
   {
     manual: true,
