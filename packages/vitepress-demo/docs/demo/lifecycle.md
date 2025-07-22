@@ -11,66 +11,81 @@
 
 ```vue
 <template>
-  <input id="ipt" type="text" placeholder="输入姓氏" v-model="xing" />
-  <Button type="primary" @click="() => run(xing)">生成姓名</Button>
+  <Button type="primary" @click="getUserInfo">获取用户信息</Button>
   <section>
     <Loading v-if="isLoading" />
-    <pre v-if="data">{{ data.data ?? data.msg }}</pre>
-    <pre id="error" v-if="error">{{ error }}</pre>
+    <div v-else-if="isFinished && data">
+      <h3>
+        id: {{ data.data.id }}<br />
+        name: {{ data.data.name }}<br />
+        age: {{ data.data.age }}<br />
+        sex: {{ data.data.sex }}<br />
+        avatar: <img width="256" height="256" :src="data.data.avatar" /><br />
+        token: {{ data.data.token }}
+      </h3>
+    </div>
   </section>
 </template>
 <script setup lang="ts">
 import { useRequest } from "@async-handler/request/vue3-request";
-import axios from "axios";
 import { ref } from "vue";
 import message from "@/utils/message";
-import delay from "@/utils/delay";
-
-const xing = ref("范");
+import mock from "@/utils/faker";
 
 interface IName {
+  code: number;
+  msg: string;
   data: {
-    code: number;
-    msg: string;
-    data: string[];
+    id: string;
+    name: string;
+    avatar: string;
+    age: number;
+    sex: string;
+    token: string;
   };
 }
 
-const axiosInstance = axios.create({
-  // ...
-});
-
-axiosInstance.interceptors.response.use((response) => response.data); // 响应拦截器，自己业务项目想怎么配置都可以
-
-const testService = async (xing: string): Promise<IName> => {
-  if (Math.random() > 0.5) {
-    // 模拟50%的几率出错
-    await delay(1000); // 延时函数
-    return Promise.reject(new Error("接口错误"));
-  }
-  return axiosInstance.get(
-    "https://api.pearktrue.cn/api/name/generate?sex=all&count=5",
-    {
-      params: {
-        xing,
-      },
-    }
-  );
+const testService = (): Promise<IName> => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve({
+        code: 200,
+        msg: "success",
+        data: {
+          id: mock.string.uuid(),
+          name: mock.person.fullName({ sex: "female" }),
+          avatar: mock.image.personPortrait({ sex: "female", size: 256 }),
+          sex: "女",
+          age: mock.number.int({
+            min: 18,
+            max: 35,
+          }),
+          token: mock.string.nanoid({ min: 37, max: 37 }),
+        },
+      });
+    }, 1000);
+  });
 };
 
-const { run, data, error, isLoading } = useRequest(() => testService, {
+const {
+  run: getUserInfo,
+  data,
+  error,
+  isLoading,
+  isFinished,
+} = useRequest(testService, {
   manual: true,
   onBefore: (params) => {
-    message.info(`Start Request: ${params}`);
+    message.info(`onBefore ${params}`);
   },
   onSuccess: (data, params) => {
-    message.success(`The xing was changed to "${params}"`);
+    message.success(`onSuccess ${params}`);
   },
   onError: (error, params) => {
-    message.error(`${error}-----${params}`);
+    message.error(`onError ${params}`);
   },
   onFinally: (params, data, error) => {
-    message.info(`Request finish`, params, data, error);
+    message.info(`onFinally ${params}`);
   },
 });
 </script>

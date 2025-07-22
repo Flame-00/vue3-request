@@ -2,19 +2,16 @@ import { Plugin } from "../types";
 
 export const useAbortPlugin: Plugin = (requestInstance) => {
   let controller: AbortController | null = null;
-  let { setState } = requestInstance;
+  const { setState } = requestInstance;
 
   // 初始化信号
   const initSignal = () => {
     controller = new AbortController();
 
-    setState({ isAborted: controller.signal.aborted });
-
-    const signal = controller.signal;
-
-    return {
-      signal,
-    };
+    setState({
+      signal: controller.signal,
+      isAborted: controller.signal.aborted,
+    });
   };
 
   // 中止请求
@@ -26,7 +23,9 @@ export const useAbortPlugin: Plugin = (requestInstance) => {
     ) {
       controller.abort();
 
-      setState({ isAborted: controller.signal.aborted });
+      setState({
+        isAborted: controller.signal.aborted,
+      });
     }
   };
 
@@ -34,10 +33,7 @@ export const useAbortPlugin: Plugin = (requestInstance) => {
     onBefore: () => {
       requestInstance.abort();
 
-      const { signal } = initSignal();
-      return {
-        signal,
-      };
+      initSignal();
     },
     onRequest: (service) => {
       return service;

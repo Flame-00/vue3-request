@@ -1,14 +1,12 @@
 # 基础用法
 
-这一小节我们会介绍 vue3-request 最核心，最基础的能力，也就是 ue3-request 内核的能力。
+vue3-request 最核心，最基础的能力
 
 ## 默认请求
 
 `useRequest` 是一个强大的异步数据管理的 Hooks
 
-默认情况下，`useRequest` 第一个参数是一个工厂函数返回一个[异步函数](../FAQ/#什么是异步函数?)，在组件初始化时，会自动执行该工厂函数 并在其参数内部生成一个`signal(可选)`提供给开发者用来[中止请求](./abort-request.md)。同时自动管理该工厂函数返回的异步函数的 `loading`, `data`, `error` 等状态。
-
-[为什么要用工厂函数返回一个异步函数, 而不是直接返回异步函数?](../FAQ/#为什么要用工厂函数返回一个异步函数)
+默认情况下，`useRequest` 第一个参数是一个[异步函数](../FAQ/#什么是异步函数?)，在组件初始化时，会自动执行该异步函数。同时自动管理该异步函数返回的 `loading`, `data`, `error` 等状态。
 
 ```ts
 import { useRequest } from "@async-handler/request/vue3-request";
@@ -21,16 +19,13 @@ const testService = (): Promise<string> => {
       resolve({
         code: 200,
         data: "我是数据",
+        msg: "success",
       });
-    }, 1500);
+    }, 1000);
   });
 };
 
-// ✅ 工厂函数返回一个异步函数
-const { data, error, loading } = useRequest(() => testService);
-
-// ❌ 直接返回一个异步函数
-const { data, error, loading } = useRequest(testService); // [!code error]
+const { data, error, loading } = useRequest(testService); // [!code ++]
 ```
 
 ::: tip
@@ -71,6 +66,7 @@ const testService = (): Promise<{
   code: number;
   msg: string;
   data: string;
+  success: boolean;
   request_id: string;
 }> => {
   return new Promise((resolve) => {
@@ -78,21 +74,21 @@ const testService = (): Promise<{
     setTimeout(() => {
       resolve({
         code: 200,
-        msg: "数据请求成功",
+        msg: "success",
         data: "我是假数据",
         request_id: "278c3c4d23e30b38a11df8ed",
       });
     }, 2500);
   });
 };
-const { run, data, error, isLoading } = useRequest(() => testService);
+const { run, data, error, isLoading } = useRequest(testService);
 
 // axios
 const axiosInstance = axios.create({
   // ...
 });
-
-axiosInstance.interceptors.response.use((response) => response.data); // 响应拦截器，自己业务项目想怎么配置都可以
+// 响应拦截器，自己业务项目想怎么配置都可以
+axiosInstance.interceptors.response.use((response) => response.data);
 
 const testServiceAxios = (): Promise<{
   code: number;
@@ -106,7 +102,7 @@ const {
   data: dataAxios,
   error: errorAxios,
   isLoading: isLoadingAxios,
-} = useRequest(() => testServiceAxios);
+} = useRequest(testServiceAxios);
 
 // fetch
 const testServiceFetch = (): Promise<{
@@ -115,7 +111,6 @@ const testServiceFetch = (): Promise<{
   data: string;
   request_id: string;
 }> => {
-  // fetch需处理返回格式
   return fetch("https://v2.xxapi.cn/api/aiqinggongyu", {
     method: "GET",
   }).then((response) => response.json());
@@ -124,7 +119,7 @@ const {
   data: dataFetch,
   error: errorFetch,
   isLoading: isLoadingFetch,
-} = useRequest(() => testServiceFetch);
+} = useRequest(testServiceFetch);
 </script>
 ```
 
@@ -155,69 +150,72 @@ runAsync()
   });
 ```
 
-接下来我们通过根据姓氏生成随机姓名，来演示 `useRequest` 手动触发模式，以及 `run` 与 `runAsync` 的区别。
+接下来我们为 mock 出的假人物名字添加一个姓氏，来演示 `useRequest` 手动触发模式，以及 `run` 与 `runAsync` 的区别。
 
 ### run
 
-在这个例子中，我们通过 `run(xing)` 来生成随机姓名，通过 `onSuccess` 和 `onError `来处理成功和失败。
+在这个例子中，我们通过 `run(xing)` 来为 mock 出的假人物名字添加一个姓氏，通过 `onSuccess` 和 `onError `来处理成功和失败。
 :::demo
 
 ```vue
 <template>
-  <input id="ipt" type="text" placeholder="输入姓氏" v-model="xing" />
-  <Button type="primary" @click="() => run(xing)">生成姓名</Button>
+  <input
+    id="ipt"
+    maxlength="1"
+    type="text"
+    placeholder="输入姓氏"
+    v-model="xing"
+  />
+  <Button type="primary" @click="() => run(xing)">生成全名</Button>
   <section>
     <Loading v-if="isLoading" />
-    <pre v-if="data">{{ data.data ?? data.msg }}</pre>
-    <pre id="error" v-if="error">{{ error }}</pre>
+    <div v-else>
+      <pre v-if="data">{{ data }}</pre>
+      <pre v-if="error">{{ error.message }}</pre>
+    </div>
   </section>
 </template>
 <script setup lang="ts">
 import { useRequest } from "@async-handler/request/vue3-request";
-import axios from "axios";
 import { ref } from "vue";
 import message from "@/utils/message";
-import delay from "@/utils/delay";
+import mock from "@/utils/faker";
 
 const xing = ref("范");
-
 interface IName {
-  data: {
-    code: number;
-    msg: string;
-    data: string[];
-  };
+  code: number;
+  msg: string;
+  data: string;
 }
 
-const axiosInstance = axios.create({
-  // ...
-});
-
-axiosInstance.interceptors.response.use((response) => response.data); // 响应拦截器，自己业务项目想怎么配置都可以
-
-const testService = async (xing: string): Promise<IName> => {
-  if (Math.random() > 0.5) {
-    // 模拟50%的几率出错
-    await delay(1000); // 延时函数
-    return Promise.reject(new Error("接口错误"));
-  }
-  return axiosInstance.get(
-    "https://api.pearktrue.cn/api/name/generate?sex=all&count=5",
-    {
-      params: {
-        xing,
-      },
-    }
-  );
+const testService = (xing: string): Promise<IName> => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      // 模拟50%的几率出错
+      if (Math.random() > 0.5) {
+        resolve({
+          code: 200,
+          msg: "success",
+          data: `${xing}${mock.person.firstName()}`,
+        });
+      } else {
+        reject(new Error("接口错误"));
+      }
+    }, 1000);
+  });
 };
 
-const { run, data, error, isLoading } = useRequest(() => testService, {
+const { run, data, error, isLoading } = useRequest(testService, {
   manual: true,
+  onBefore: () => {
+    data.value = undefined;
+    error.value = undefined;
+  },
   onSuccess: (data, params) => {
-    message.success(`The xing was changed to "${params}"`);
+    message.success(`params -> "${params}"`);
   },
   onError: (error, params) => {
-    message.error(`${error}-----${params}`);
+    message.error(error.message);
   },
 });
 </script>
@@ -227,73 +225,71 @@ const { run, data, error, isLoading } = useRequest(() => testService, {
 
 ### runAsync
 
-在这个例子中，我们通过 `runAsync(xing)` 来生成随机姓名，此时必须通过 `catch` 来自行处理异常。
+在这个例子中，我们通过 `runAsync(xing)` 来为 mock 出的假人物名字添加一个姓氏，此时必须通过 `catch` 来自行处理异常。
 :::demo
 
 ```vue
 <template>
-  <input id="ipt" type="text" placeholder="输入姓氏" v-model="xing" />
-  <Button type="primary" @click="onClick">生成姓名</Button>
+  <input
+    id="ipt"
+    maxlength="1"
+    type="text"
+    placeholder="输入姓氏"
+    v-model="xing"
+  />
+  <Button type="primary" @click="onClick">生成全名</Button>
   <section>
     <Loading v-if="isLoading" />
-    <pre v-if="data">{{ data.data ?? data.msg }}</pre>
-    <pre id="error" v-if="error">{{ error }}</pre>
+    <div v-else>
+      <pre v-if="data">{{ data }}</pre>
+      <pre v-if="error">{{ error.message }}</pre>
+    </div>
   </section>
 </template>
 <script setup lang="ts">
 import { useRequest } from "@async-handler/request/vue3-request";
-import axios from "axios";
 import { ref } from "vue";
 import message from "@/utils/message";
-import delay from "@/utils/delay";
+import mock from "@/utils/faker";
 
 const xing = ref("范");
-
 interface IName {
-  data: {
-    code: number;
-    msg: string;
-    data: string[];
-  };
+  code: number;
+  msg: string;
+  data: string;
 }
 
-const axiosInstance = axios.create({
-  // ...
-});
-
-axiosInstance.interceptors.response.use((response) => response.data); // 响应拦截器，自己业务项目想怎么配置都可以
-
-const testService = async (xing: string): Promise<IName> => {
-  if (Math.random() > 0.5) {
-    // 模拟50%的几率出错
-    await delay(1000); // 延时函数
-    return Promise.reject(new Error("接口错误"));
-  }
-  return axiosInstance.get(
-    "https://api.pearktrue.cn/api/name/generate?sex=all&count=5",
-    {
-      params: {
-        xing,
-      },
-    }
-  );
+const testService = (xing: string): Promise<IName> => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      // 模拟50%的几率出错
+      if (Math.random() > 0.5) {
+        resolve({
+          code: 200,
+          msg: "success",
+          data: `${xing}${mock.person.firstName()}`,
+        });
+      } else {
+        reject(new Error("接口错误"));
+      }
+    }, 1000);
+  });
 };
 
-const { runAsync, data, error, isLoading, params } = useRequest(
-  () => testService,
-  {
-    manual: true,
-  }
-);
-
-async function onClick() {
+const onClick = async () => {
+  data.value = undefined;
+  error.value = undefined;
   try {
-    const res = await runAsync(xing.value);
-    message.success(`The xing was changed to "${params.value}"`);
+    await runAsync(xing.value);
+    message.success(`params -> "${params.value}"`);
   } catch (error) {
-    message.error(`${error}-----${params.value}`);
+    message.error(error.message);
   }
-}
+};
+
+const { runAsync, data, error, isLoading, params } = useRequest(testService, {
+  manual: true,
+});
 </script>
 ```
 

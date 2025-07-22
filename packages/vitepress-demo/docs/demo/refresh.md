@@ -2,68 +2,84 @@
 
 `useRequest` 提供了 `refresh` 和 `refreshAsync` 方法，使我们可以使用上一次的参数，重新发起请求。
 
-假如在生成姓名的场景中
+假如在读取用户信息的场景中
 
-我们生成了 姓氏 为 林 的姓名数组 `run('林')`
-我们通过某种手段更新了姓名数组
-我们想重新发起上一次的请求，那我们就可以使用 `refresh `来代替 `run('林')`，这在复杂参数的场景中是非常有用的
+1. 我们读取了 ID 为 1 的用户信息 `getUserInfo(1)`
+2. 我们通过某种手段更新了用户信息
+3. 我们想重新发起上一次的请求，那我们就可以使用 `refresh` 来代替 `getUserInfo(1)`，这在复杂参数的场景中是非常有用的
 
 :::demo
 
 ```vue
 <template>
-  <Button type="primary" @click="refresh">刷新</Button>
+  <Button type="primary" @click="refresh">refresh</Button>
   <section>
+    <h3>params: {{ params }}</h3>
+    <hr />
     <Loading v-if="isLoading" />
-    <p v-if="params">{{ params }}</p>
-    <pre v-if="data">{{ data.data }}</pre>
+    <div v-else-if="isFinished && data">
+      <h3>
+        id: {{ data.data.id }}<br />
+        name: {{ data.data.name }}<br />
+        age: {{ data.data.age }}<br />
+        sex: {{ data.data.sex }}<br />
+        avatar: <img width="256" height="256" :src="data.data.avatar" /><br />
+        token: {{ data.data.token }}
+      </h3>
+    </div>
   </section>
 </template>
 <script setup lang="ts">
 import { useRequest } from "@async-handler/request/vue3-request";
-import axios from "axios";
-import { onMounted } from "vue";
+import { ref } from "vue";
 import message from "@/utils/message";
+import mock from "@/utils/faker";
 
-interface IName {
+interface IUserInfo {
+  code: number;
+  msg: string;
   data: {
-    code: number;
-    msg: string;
-    data: string[];
+    id: number;
+    name: string;
+    avatar: string;
+    age: number;
+    token: string;
   };
 }
 
-const axiosInstance = axios.create({
-  // ...
-});
-
-axiosInstance.interceptors.response.use((response) => response.data); // 响应拦截器，自己业务项目想怎么配置都可以
-
-const testService = (xing: string): Promise<IName> => {
-  console.log("use-request-refresh-xing", xing);
-  return axiosInstance.get(
-    "https://api.pearktrue.cn/api/name/generate?sex=all&count=5",
-    {
-      params: {
-        xing,
-      },
-    }
-  );
+const testService = (id: number): Promise<IUserInfo> => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve({
+        code: 200,
+        msg: "success",
+        data: {
+          id,
+          name: mock.person.fullName({ sex: "female" }),
+          avatar: mock.image.personPortrait({ sex: "female" }),
+          sex: "女",
+          age: mock.number.int({
+            min: 18,
+            max: 35,
+          }),
+          token: mock.string.nanoid({ min: 37, max: 37 }),
+        },
+      });
+    }, 1000);
+  });
 };
 
-const { run, refresh, data, params, error, isLoading } = useRequest(
-  () => testService,
-  {
-    manual: true,
-    onFinally: (params, data, error) => {
-      message.info(`请求参数为-${JSON.stringify(params)}`);
-    },
-  }
-);
+const {
+  run: getUserInfo,
+  refresh,
+  data,
+  params,
+  error,
+  isLoading,
+  isFinished,
+} = useRequest(testService);
 
-onMounted(() => {
-  run("林");
-});
+getUserInfo(1);
 </script>
 ```
 

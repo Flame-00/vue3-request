@@ -28,7 +28,7 @@ yarn add vue3-request
 
 ### CDN
 
-根本不用看，现在都用Vue3+TS+Vite辣
+根本不用看，现在都用 Vue3+TS+Vite 辣
 
 ::: code-group
 
@@ -41,7 +41,7 @@ yarn add vue3-request
   // 使用导入的模块
   const app = createApp({
     setup() {
-      const { data, isLoading, run } = useRequest(() => async () => {
+      const { data, isLoading, run } = useRequest(async () => {
         const response = await fetch("/api/data");
         return response.json();
       });

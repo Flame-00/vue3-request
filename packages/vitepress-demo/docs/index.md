@@ -64,7 +64,7 @@ yarn add vue3-request
 ## Vue3+TS+Axios+Vue3Request 基础 demo
 
 ```ts
-const { run, data, error, isLoading } = useRequest(() => testService);
+const { run, data, error, isLoading } = useRequest(testService);
 ```
 
 :::demo
@@ -80,13 +80,14 @@ const { run, data, error, isLoading } = useRequest(() => testService);
   <hr />
 </template>
 <script setup lang="ts">
-import { useRequest } from "vue3-request";
+import { useRequest } from "@async-handler/request/vue3-request";
 
 // 模拟请求示例
 const testService = (): Promise<{
   code: number;
   msg: string;
   data: string;
+  success: boolean;
   request_id: string;
 }> => {
   return new Promise((resolve) => {
@@ -94,14 +95,14 @@ const testService = (): Promise<{
     setTimeout(() => {
       resolve({
         code: 200,
-        msg: "数据请求成功",
+        msg: "success",
         data: "我是假数据",
         request_id: "278c3c4d23e30b38a11df8ed",
       });
     }, 2500);
   });
 };
-const { data, error, isLoading } = useRequest(() => testService);
+const { data, error, isLoading } = useRequest(testService);
 </script>
 ```
 
@@ -127,6 +128,7 @@ const testService = (): Promise<{
   code: number;
   msg: string;
   data: string;
+  success: boolean;
   request_id: string;
 }> => {
   return new Promise((resolve) => {
@@ -134,14 +136,14 @@ const testService = (): Promise<{
     setTimeout(() => {
       resolve({
         code: 200,
-        msg: "数据请求成功",
+        msg: "success",
         data: "我是假数据",
         request_id: "278c3c4d23e30b38a11df8ed",
       });
     }, 2500);
   });
 };
-const { run, data, error, isLoading } = useRequest(() => testService, {
+const { run, data, error, isLoading } = useRequest(testService, {
   manual: true,
 });
 </script>

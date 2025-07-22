@@ -19,8 +19,8 @@
 
 :::tip
 
-1. 你可以多次点击发起请求, 最后只会提示成功或者失败一次
-2. 在发起请求后结果还没返回前卸载组件, 会忽略响应
+1. 你可以多次点击发起请求, 最后只会提示成功一次
+2. 试试在发起请求后结果还没返回前卸载组件, 会忽略响应
    :::
 
 :::demo
@@ -30,7 +30,7 @@
   <ChildComponent v-if="show" />
   <hr />
   <Button type="info" @click="show = !show">{{
-    show ? "隐藏组件" : "显示组件"
+    show ? "卸载组件" : "显示组件"
   }}</Button>
 </template>
 <script setup lang="ts">
@@ -39,14 +39,16 @@ import message from "@/utils/message"; // demo component
 import { h, ref } from "vue";
 import Loading from "../components/Loading.vue"; // demo component
 import Button from "../components/Button.vue"; // demo component
+import mock from "@/utils/faker";
 
 const show = ref(true);
 
 const testService = async (): Promise<string> => {
   return new Promise((resolve, reject) => {
+    // 模拟50%的几率出错
     setTimeout(() => {
       if (Math.random() > 0.5) {
-        resolve("我是数据");
+        resolve(`${mock.person.fullName()} 有一辆 ${mock.vehicle.vehicle()}`);
       } else {
         reject(new Error("接口错误"));
       }
@@ -57,16 +59,19 @@ const testService = async (): Promise<string> => {
 function generateComponent() {
   return {
     setup() {
-      const { run, data, error, isLoading, cancel } = useRequest(
-        () => testService,
+      const { run, data, error, isLoading, isFinished, cancel } = useRequest(
+        testService,
         {
           manual: true,
+          onBefore: () => {
+            data.value = undefined;
+            error.value = undefined;
+          },
           onSuccess: (data) => {
             message.success(data);
           },
           onError: (error) => {
-            console.log(error);
-            message.error(error);
+            message.error(error.message);
           },
         }
       );
@@ -86,9 +91,11 @@ function generateComponent() {
               default: () => "取消响应",
             }
           ),
-          h("div", { style: "margin: 10px" }, [
-            data.value && h("h3", data.value),
-            error.value && h("h3", { id: "error" }, error.value.message),
+          h("div", { style: "margin-top: 10px" }, [
+            isFinished.value && data.value && h("h3", data.value),
+            isFinished.value &&
+              error.value &&
+              h("h3", { id: "error" }, error.value.message),
             isLoading.value && h("div", h(Loading)),
           ]),
         ]);

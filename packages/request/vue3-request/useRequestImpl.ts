@@ -1,10 +1,15 @@
-import type { IOptions, CallbackType, Plugin, UseRequestReturnType } from "./types";
+import type {
+  IOptions,
+  Plugin,
+  UseRequestReturnType,
+  ServiceType,
+} from "./types";
 import { onUnmounted, toRefs } from "vue";
 import { Request } from "./request";
 import { clearCache } from "./utils/cache";
 
 export function useRequestImpl<D, P extends any[]>(
-  service: CallbackType<D, P>,
+  service: ServiceType<D, P>,
   options: IOptions<D, P>,
   plugins: Plugin<D, P>[]
 ): UseRequestReturnType<D, P> {

@@ -78,12 +78,11 @@ export default defineConfig({
         ],
       },
       {
-        text: "API",
-        items: [{ text: "API", link: "/API/" }],
-      },
-      {
-        text: "FAQ",
-        items: [{ text: "FAQ", link: "/FAQ/" }],
+        text: "其他",
+        items: [
+          { text: "API", link: "/API/" },
+          { text: "FAQ", link: "/FAQ/" },
+        ],
       },
     ],
 

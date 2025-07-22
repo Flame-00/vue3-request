@@ -1,5 +1,5 @@
 import type {
-  CallbackType,
+  ServiceType,
   IOptions,
   IState,
   PluginMethodsReturn,
@@ -17,7 +17,7 @@ export class Request<D, P extends any[]> {
   abort: () => void;
 
   constructor(
-    public service: CallbackType<D, P>,
+    public service: ServiceType<D, P>,
     public options?: IOptions<D, P>
   ) {
     this.state = reactive({
@@ -27,6 +27,7 @@ export class Request<D, P extends any[]> {
       isAborted: false,
       error: undefined,
       params: options?.defaultParams || [],
+      signal: undefined,
     }) as IState<D, P>;
   }
   setState = (s: Partial<IState<D, P>>) => {
@@ -73,7 +74,8 @@ export class Request<D, P extends any[]> {
   };
   runAsync = async (...params: P): Promise<D> => {
     const requestId = ++this.currentRequestId;
-    const { signal, isStaleTime, isReady } = this.executePlugin(
+
+    const { isStaleTime, isReady } = this.executePlugin(
       "onBefore",
       this.state.params
     ); // 执行插件的onBefore方法
@@ -91,7 +93,7 @@ export class Request<D, P extends any[]> {
     this.options.onBefore?.(this.state.params);
 
     try {
-      const serviceWrapper = () => this.service(signal)(...this.state.params);
+      const serviceWrapper = () => this.service(...this.state.params);
 
       let { servicePromise } = this.executePlugin("onRequest", serviceWrapper);
 
@@ -155,10 +157,8 @@ export class Request<D, P extends any[]> {
   };
 
   cancel = () => {
-    this.currentRequestId = 0; // 重置请求ID
-
-    this.loading(false);
-
     this.executePlugin("onCancel");
+    this.currentRequestId++;
+    this.loading(false);
   };
 }

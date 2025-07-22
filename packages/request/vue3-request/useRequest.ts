@@ -1,8 +1,6 @@
 import type {
   IOptions,
-  CallbackType,
-  // DataType,
-  // ParamsType,
+  ServiceType,
   Plugin,
   UseRequestReturnType,
 } from "./types";
@@ -10,7 +8,7 @@ import { useRequestImpl } from "./useRequestImpl";
 import defaultPlugins from "./plugins";
 
 export function useRequest<D, P extends any[]>(
-  service: CallbackType<D, P>,
+  service: ServiceType<D, P>,
   options?: IOptions<D, P>,
   plugins?: Plugin<D, P>[]
 ): UseRequestReturnType<D, P> {
