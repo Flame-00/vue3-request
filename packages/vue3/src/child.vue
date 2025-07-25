@@ -25,7 +25,6 @@ import axios from "axios";
 import { reactive, ref, toRefs, watch, watchEffect } from "vue";
 
 
-
 // import { useRequest } from "vue3-request";
 
 // axios
@@ -53,7 +52,13 @@ const throttleOptions = reactive({
 })
 const throttleWait = ref(2000)
 
-const { data, params, signal, error, isLoading, isFinished, isAborted, run, abort, cancel, runAsync } = useRequest(testService, {
+const { data, params, signal, error, isLoading, isFinished, isAborted, run, abort, cancel, runAsync } = useRequest((params: { age: number }) => {
+  // 🏭 在工厂函数中可以对参数进行预处理 // [!code highlight]
+  if (params.age > 18) {
+    throw new Error("The age cannot be greater than 18.")
+  }
+  return testService(params);
+}, {
   manual: true,
   onSuccess: (data, params) => {
     console.log('onSuccess->child', data, params)

@@ -1,4 +1,5 @@
 import { Plugin } from "../types";
+// @ts-ignore
 import { debounce } from '../utils/xe-utils/debounce';
 import { isNil } from "../utils";
 import { computed, toValue, watchEffect, onWatcherCleanup } from "vue";
@@ -23,7 +24,7 @@ export const useDebouncePlugin: Plugin = (
     if (isNil(debounceWaitRef.value)) return;
 
     debouncedRun = debounce(
-      (runAsync) => runAsync(),
+      (runAsync: typeof requestInstance.runAsync) => runAsync(),
       debounceWaitRef.value,
       debounceOptionsRef.value
     ) as ReturnType<typeof debounce> & { cancel: () => void };

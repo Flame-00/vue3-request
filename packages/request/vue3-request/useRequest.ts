@@ -12,7 +12,7 @@ export function useRequest<D, P extends any[]>(
   options?: IOptions<D, P>,
   plugins?: Plugin<D, P>[]
 ): UseRequestReturnType<D, P> {
-  return useRequestImpl<D, P>(service, options, [
+  return useRequestImpl<D, P>(service, options || {}, [
     ...(plugins || []),
     ...defaultPlugins,
   ]);

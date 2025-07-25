@@ -1,5 +1,6 @@
 import { Plugin } from "../types";
-import { throttle } from '../utils/xe-utils/throttle';
+// @ts-ignore
+import { throttle } from "../utils/xe-utils/throttle";
 import { computed, toValue, watchEffect, onWatcherCleanup } from "vue";
 import { isNil } from "../utils";
 
@@ -18,7 +19,7 @@ export const useThrottlePlugin: Plugin = (
   watchEffect(() => {
     if (isNil(throttleWaitRef.value)) return;
     throttledRun = throttle(
-      (runAsync) => runAsync(),
+      (runAsync: typeof requestInstance.runAsync) => runAsync(),
       throttleWaitRef.value,
       throttleOptionsRef.value
     ) as ReturnType<typeof throttle> & { cancel: () => void };

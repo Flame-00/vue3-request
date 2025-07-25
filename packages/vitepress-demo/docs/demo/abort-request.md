@@ -1,24 +1,29 @@
 # 中止请求
 
-`useRequest` 提供了 `abort` 函数，用于中止尚未完成的接口请求
+`useRequest` 返回了 `signal` 和 `abort()`，用于中止尚未完成的接口请求
 
-在执行 `useRequest` 的时候,无论是自动还是手动调用, 都会在其参数内部自动生成一个`signal`参数提供给开发者用来取消请求, 这样可以省去开发者自己定义 `new AbortController()`的繁琐
+每次执行 `useRequest` 的时候,无论是自动还是手动调用, 都会在其内部自动生成一个`signal`提供给开发者, 这样可以省去开发者自己定义 `new AbortController()`的繁琐
 
-## `abort()`
+```tsx
+const controller = new AbortController(); // [!code --]
+const signal = controller.signal; // [!code --]
 
-同时 `useRequest` 会在以下时机自动中止请求：
+const { signal, abort } = useRequest(testService); // [!code ++]
+```
 
-使用的是 `xhr` 或 `fetch` 请求，并添加了`signal(必须)`参数
+同时 `useRequest` 会在以下时机自动调用`abort`函数：
+
+使用的是 `xhr` 或 `fetch` 请求，并添加了`signal` 参数 **(必须)**
 
 - 组件卸载时，还未返回结果的请求
-- 竞态请求，当上一次 请求结果 还没返回时，又发起了下一次 请求，则会忽略上一次 请求 的响应**并中止请求**
+- 前置请求中止，发起新请求时自动中止前一个未完成的请求并忽略 promise 的响应
+
+如果设置了`options.abortPrevious = false` 则不会前置请求中止，但是依旧会[竞态取消](./cancel-response.md)
 
 :::tip
 
-1. 你可以在浏览器选项卡的**Network**设置网速为 3G **(网速快接口返回的很快)**
-2. 然后多次点击发起请求, 最后只会提示成功一次
-3. 然后试试在发起请求后结果还没返回前卸载组件, 会忽略响应并中止请求
-   :::
+手动点击**中止请求按钮**请把浏览器选项卡的**Network**设置网速为 3G **(网速快接口返回的很快，还没来得及中止就成功了，接口慢可以忽略这条)**
+:::
 
 :::demo
 
@@ -32,11 +37,11 @@
 </template>
 <script setup lang="ts">
 import Button from "../components/Button.vue"; // demo component
-import message from "@/utils/message"; // demo component
+import message from "@/utils/message"; // demo ts
 import Loading from "../components/Loading.vue"; // demo component
 import { useRequest } from "@async-handler/request/vue3-request";
 import { h, ref } from "vue";
-import mock from "@/utils/faker";
+import mock from "@/utils/faker"; // test Data
 import axios from "axios";
 
 const show = ref(true);
@@ -81,9 +86,23 @@ function generateComponent() {
         return h("div", [
           h(
             Button,
-            { type: "primary", onClick: run },
+            { type: "success", onClick: run },
             {
-              default: () => "发起请求",
+              default: () => "获取爱情公寓语录",
+            }
+          ),
+          h(
+            Button,
+            {
+              type: "success",
+              onClick: () => {
+                run();
+                run();
+                run();
+              },
+            },
+            {
+              default: () => "获取爱情公寓语录 X3",
             }
           ),
           h(

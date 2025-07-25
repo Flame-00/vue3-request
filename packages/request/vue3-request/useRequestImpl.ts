@@ -15,7 +15,8 @@ export function useRequestImpl<D, P extends any[]>(
 ): UseRequestReturnType<D, P> {
   const requestOptions = {
     manual: false,
-    defaultParams: [] as P,
+    abortPrevious: true, // 默认中止前一个未完成的请求
+    defaultParams: [] as unknown as P,
     ...options,
   };
 
@@ -24,14 +25,21 @@ export function useRequestImpl<D, P extends any[]>(
   requestInstance.pluginImpls = plugins.map((plugin) =>
     plugin(requestInstance, requestOptions)
   );
+  console.log(requestInstance.pluginImpls);
   if (!requestOptions.manual) {
     requestInstance.run(...requestOptions.defaultParams);
   }
 
   onUnmounted(requestInstance.cancel);
 
-  const { run, cancel, refresh, runAsync, refreshAsync, abort } =
-    requestInstance;
+  const {
+    run,
+    cancel,
+    refresh,
+    runAsync,
+    refreshAsync,
+    abort,
+  } = requestInstance;
 
   return {
     ...toRefs(requestInstance.state),

@@ -1,65 +1,57 @@
 # 基础用法
 
-vue3-request 最核心，最基础的能力
+掌握 Vue3Request 的核心功能，开启高效异步数据管理之旅
 
 ## 默认请求
 
-`useRequest` 是一个强大的异步数据管理的 Hooks
+`useRequest` 是一个强大的异步数据管理 Hook，为你的 Vue 3 应用提供完整的请求状态管理解决方案。
 
-默认情况下，`useRequest` 第一个参数是一个[异步函数](../FAQ/#什么是异步函数?)，在组件初始化时，会自动执行该异步函数。同时自动管理该异步函数返回的 `loading`, `data`, `error` 等状态。
+只需传入一个[异步函数](../FAQ/#什么是异步函数?)作为第一个参数，`useRequest` 就会在组件初始化时自动执行该函数，并智能管理整个请求生命周期中的 `loading`、`data`、`error` 等状态，让你专注于业务逻辑而非状态管理的繁琐细节。
 
 ```ts
-import { useRequest } from "@async-handler/request/vue3-request";
-
-// 模拟异步请求
-const testService = (): Promise<string> => {
-  return new Promise((resolve) => {
-    console.log("testService");
-    setTimeout(() => {
-      resolve({
-        code: 200,
-        data: "我是数据",
-        msg: "success",
-      });
-    }, 1000);
-  });
-};
-
-const { data, error, loading } = useRequest(testService); // [!code ++]
+const { data, error, loading } = useRequest(testService);
 ```
 
-::: tip
-打开控制台, 查看组件初始化后自动执行的 `testService` 函数
-:::
+以下示例展示了 `useRequest` 与不同请求库的完美兼容性：
 
 :::demo
 
 ```vue
 <template>
   <section>
-    <h3>模拟请求</h3>
-    <Loading v-if="isLoading" />
-    <pre v-if="data">{{ data }}</pre>
-    <pre v-if="error">{{ error }}</pre>
+    <n-card title="模拟请求">
+      <n-spin :show="isLoading">
+        <pre>{{ error ? error.message : data }}</pre>
+        <n-empty v-if="!error && !data" description="暂无数据"> </n-empty>
+      </n-spin>
+    </n-card>
   </section>
   <hr />
   <section>
-    <h3>axios</h3>
-    <Loading v-if="isLoadingAxios" />
-    <pre v-if="dataAxios">{{ dataAxios }}</pre>
-    <pre v-if="errorAxios">{{ errorAxios }}</pre>
+    <n-card title="Axios">
+      <n-spin :show="isLoadingAxios">
+        <pre>{{ errorAxios ? errorAxios.message : dataAxios }}</pre>
+        <n-empty v-if="!errorAxios && !dataAxios" description="暂无数据">
+        </n-empty>
+      </n-spin>
+    </n-card>
   </section>
   <hr />
   <section>
-    <h3>fetch</h3>
-    <Loading v-if="isLoadingFetch" />
-    <pre v-if="dataFetch">{{ dataFetch }}</pre>
-    <pre v-if="errorFetch">{{ errorFetch }}</pre>
+    <n-card title="Fetch">
+      <n-spin :show="isLoadingFetch">
+        <pre>{{ errorFetch ? errorFetch.message : dataFetch }}</pre>
+        <n-empty v-if="!errorFetch && !dataFetch" description="暂无数据">
+        </n-empty>
+      </n-spin>
+    </n-card>
   </section>
 </template>
 <script setup lang="ts">
 import { useRequest } from "@async-handler/request/vue3-request";
 import axios from "axios";
+import { NSpin, NEmpty, NCard } from "naive-ui";
+import faker from "@/utils/faker"; // 测试数据
 
 // 模拟请求示例
 const testService = (): Promise<{
@@ -67,23 +59,26 @@ const testService = (): Promise<{
   msg: string;
   data: string;
   success: boolean;
-  request_id: string;
 }> => {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     console.log("testService");
+    // 模拟50%的几率出错
     setTimeout(() => {
-      resolve({
-        code: 200,
-        msg: "success",
-        data: "我是假数据",
-        request_id: "278c3c4d23e30b38a11df8ed",
-      });
-    }, 2500);
+      if (Math.random() > 0.5) {
+        resolve({
+          code: 200,
+          msg: "success",
+          data: faker.food.description(),
+        });
+      } else {
+        reject(new Error("模拟接口错误"));
+      }
+    }, 1000);
   });
 };
 const { run, data, error, isLoading } = useRequest(testService);
 
-// axios
+// Axios
 const axiosInstance = axios.create({
   // ...
 });
@@ -104,7 +99,7 @@ const {
   isLoading: isLoadingAxios,
 } = useRequest(testServiceAxios);
 
-// fetch
+// Fetch
 const testServiceFetch = (): Promise<{
   code: number;
   msg: string;
@@ -127,7 +122,7 @@ const {
 
 ## 手动触发
 
-如果设置了 `options.manual = true`，则 `useRequest` 不会默认执行，需要通过 `run` 或者 `runAsync` 来触发执行。
+在某些业务场景中，你可能希望精确控制请求的执行时机。通过设置 `options.manual = true`，`useRequest` 将不会在组件初始化时自动执行，而是等待你主动调用 `run` 或 `runAsync` 方法。
 
 ```ts
 const { loading, run, runAsync } = useRequest(() => testService, {
@@ -135,60 +130,82 @@ const { loading, run, runAsync } = useRequest(() => testService, {
 });
 ```
 
-`run` 与 `runAsync` 的区别在于：
+### 两种执行方式的选择
 
-- `run` 是一个普通的同步函数，我们会自动捕获异常，你可以通过 `options.onError` 来处理异常时的行为。
-- `runAsync` 是一个返回 Promise 的异步函数，如果使用 `runAsync` 来调用，则意味着你需要自己捕获异常。
+`useRequest` 提供了两种手动执行方式，以适应不同的使用场景：
+
+**🔸 `run` 方法**
+
+- **特点**：同步调用，内置异常处理
+- **适用场景**：希望统一处理错误的业务场景
+- **优势**：异常会被自动捕获，你可以通过 `options.onError` 回调统一处理错误逻辑
+
+**🔸 `runAsync` 方法**
+
+- **特点**：异步调用，返回 Promise
+- **适用场景**：需要自定义异常处理的复杂业务逻辑
+- **优势**：提供更灵活的错误处理方式，支持 async/await 语法
 
 ```ts
+// 使用 runAsync 的典型模式
 runAsync()
   .then((data) => {
-    console.log(data);
+    console.log("请求成功:", data);
   })
   .catch((error) => {
-    console.log(error);
+    console.error("请求失败:", error);
   });
 ```
 
-接下来我们为 mock 出的假人物名字添加一个姓氏，来演示 `useRequest` 手动触发模式，以及 `run` 与 `runAsync` 的区别。
+为了更直观地展示两种方式的区别，下面我们通过一个实际的姓名生成器示例来演示它们的用法。
 
 ### run
 
-在这个例子中，我们通过 `run(xing)` 来为 mock 出的假人物名字添加一个姓氏，通过 `onSuccess` 和 `onError `来处理成功和失败。
+在这个示例中，我们使用 `run(lastName)` 方法为模拟人物添加姓氏，通过 `onSuccess` 和 `onError` 回调来统一处理成功和失败的情况：
+
 :::demo
 
 ```vue
 <template>
-  <input
-    id="ipt"
-    maxlength="1"
-    type="text"
-    placeholder="输入姓氏"
-    v-model="xing"
-  />
-  <Button type="primary" @click="() => run(xing)">生成全名</Button>
   <section>
-    <Loading v-if="isLoading" />
-    <div v-else>
-      <pre v-if="data">{{ data }}</pre>
-      <pre v-if="error">{{ error.message }}</pre>
-    </div>
+    <n-flex>
+      <n-input type="text" placeholder="输入姓氏" v-model:value="lastName" />
+      <n-button type="primary" @click="() => run(lastName)">
+        Add the surname
+      </n-button>
+    </n-flex>
+    <hr />
+    <n-spin :show="isLoading">
+      <n-empty size="huge" v-if="!error && !data" />
+      <n-text type="error" v-else-if="error">{{ error.message }}</n-text>
+      <pre v-else>{{ data }}</pre>
+    </n-spin>
   </section>
 </template>
 <script setup lang="ts">
 import { useRequest } from "@async-handler/request/vue3-request";
 import { ref } from "vue";
-import message from "@/utils/message";
-import mock from "@/utils/faker";
+import {
+  NSpin,
+  NButton,
+  NInput,
+  NEmpty,
+  NFlex,
+  NText,
+  useMessage,
+} from "naive-ui";
+import faker from "@/utils/faker";
 
-const xing = ref("范");
+const message = useMessage();
+
+const lastName = ref("范");
 interface IName {
   code: number;
   msg: string;
   data: string;
 }
 
-const testService = (xing: string): Promise<IName> => {
+const testService = (lastName: string): Promise<IName> => {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       // 模拟50%的几率出错
@@ -196,21 +213,17 @@ const testService = (xing: string): Promise<IName> => {
         resolve({
           code: 200,
           msg: "success",
-          data: `${xing}${mock.person.firstName()}`,
+          data: `${lastName}${faker.person.firstName()}`,
         });
       } else {
-        reject(new Error("接口错误"));
+        reject(new Error("Failed to generate full name!"));
       }
     }, 1000);
   });
 };
 
 const { run, data, error, isLoading } = useRequest(testService, {
-  manual: true,
-  onBefore: () => {
-    data.value = undefined;
-    error.value = undefined;
-  },
+  manual: true, // [!code highlight]
   onSuccess: (data, params) => {
     message.success(`params -> "${params}"`);
   },
@@ -225,41 +238,49 @@ const { run, data, error, isLoading } = useRequest(testService, {
 
 ### runAsync
 
-在这个例子中，我们通过 `runAsync(xing)` 来为 mock 出的假人物名字添加一个姓氏，此时必须通过 `catch` 来自行处理异常。
+在这个示例中，我们使用 `runAsync(lastName)` 方法实现相同的功能，但采用 Promise 的方式自行处理异常：
+
 :::demo
 
 ```vue
 <template>
-  <input
-    id="ipt"
-    maxlength="1"
-    type="text"
-    placeholder="输入姓氏"
-    v-model="xing"
-  />
-  <Button type="primary" @click="onClick">生成全名</Button>
   <section>
-    <Loading v-if="isLoading" />
-    <div v-else>
-      <pre v-if="data">{{ data }}</pre>
-      <pre v-if="error">{{ error.message }}</pre>
-    </div>
+    <n-flex>
+      <n-input type="text" placeholder="输入姓氏" v-model:value="lastName" />
+      <n-button type="primary" @click="onClick"> Add the surname </n-button>
+    </n-flex>
+    <hr />
+    <n-spin :show="isLoading">
+      <n-empty size="huge" v-if="!error && !data" />
+      <n-text type="error" v-else-if="error">{{ error.message }}</n-text>
+      <pre v-else>{{ data }}</pre>
+    </n-spin>
   </section>
 </template>
 <script setup lang="ts">
 import { useRequest } from "@async-handler/request/vue3-request";
 import { ref } from "vue";
-import message from "@/utils/message";
-import mock from "@/utils/faker";
+import {
+  NSpin,
+  NButton,
+  NInput,
+  NEmpty,
+  NFlex,
+  NText,
+  useMessage,
+} from "naive-ui";
+import faker from "@/utils/faker";
 
-const xing = ref("范");
+const message = useMessage();
+
+const lastName = ref("范");
 interface IName {
   code: number;
   msg: string;
   data: string;
 }
 
-const testService = (xing: string): Promise<IName> => {
+const testService = (lastName: string): Promise<IName> => {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       // 模拟50%的几率出错
@@ -267,29 +288,27 @@ const testService = (xing: string): Promise<IName> => {
         resolve({
           code: 200,
           msg: "success",
-          data: `${xing}${mock.person.firstName()}`,
+          data: `${lastName}${faker.person.firstName()}`,
         });
       } else {
-        reject(new Error("接口错误"));
+        reject(new Error("Failed to generate full name!"));
       }
     }, 1000);
   });
 };
 
+const { runAsync, data, error, isLoading, params } = useRequest(testService, {
+  manual: true, // [!code highlight]
+});
+
 const onClick = async () => {
-  data.value = undefined;
-  error.value = undefined;
   try {
-    await runAsync(xing.value);
+    await runAsync(lastName.value);
     message.success(`params -> "${params.value}"`);
   } catch (error) {
     message.error(error.message);
   }
 };
-
-const { runAsync, data, error, isLoading, params } = useRequest(testService, {
-  manual: true,
-});
 </script>
 ```
 

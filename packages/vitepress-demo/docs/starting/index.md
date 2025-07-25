@@ -8,19 +8,19 @@
 
 ::: code-group
 
-```sh [pnpm]
+```bash [pnpm]
 pnpm add vue3-request
 ```
 
-```sh [npm]
+```bash [npm]
 npm i vue3-request
 ```
 
-```sh [cnpm]
+```bash [cnpm]
 cnpm i vue3-request
 ```
 
-```sh [yarn]
+```bash [yarn]
 yarn add vue3-request
 ```
 

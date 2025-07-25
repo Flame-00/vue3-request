@@ -12,28 +12,28 @@
 
 ```vue
 <template>
-  <Button type="primary" @click="refresh">refresh</Button>
-  <section>
+  <Button type="success" @click="refresh">refresh</Button>
+  <section style="min-height: 500px;">
     <h3>params: {{ params }}</h3>
     <hr />
     <Loading v-if="isLoading" />
     <div v-else-if="isFinished && data">
-      <h3>
+      <div>
         id: {{ data.data.id }}<br />
         name: {{ data.data.name }}<br />
         age: {{ data.data.age }}<br />
         sex: {{ data.data.sex }}<br />
         avatar: <img width="256" height="256" :src="data.data.avatar" /><br />
         token: {{ data.data.token }}
-      </h3>
+      </div>
     </div>
   </section>
 </template>
 <script setup lang="ts">
 import { useRequest } from "@async-handler/request/vue3-request";
 import { ref } from "vue";
-import message from "@/utils/message";
-import mock from "@/utils/faker";
+import message from "@/utils/message"; // demo ts
+import mock from "@/utils/faker"; // test Data
 
 interface IUserInfo {
   code: number;

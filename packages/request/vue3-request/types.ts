@@ -32,7 +32,7 @@ export type ServiceType<D = any, P extends any[] = any> = (
 export type IOptions<D, P extends any[]> = Partial<{
   onBefore: (params: P) => void; // 请求前
   onSuccess: (data: D, params: P) => void; // 请求成功
-  onFinally: (params: P, data: D, error: Error) => void; // 请求完成
+  onFinally: (params: P, data: D | undefined, error: Error | undefined) => void; // 请求完成
   onError: (error: Error, params: P) => void; // 请求失败
   manual: boolean; // 是否手动调用
   defaultParams: P; // 默认参数
@@ -51,6 +51,7 @@ export type IOptions<D, P extends any[]> = Partial<{
   debounceOptions: Reactive<DebounceOptionsType> | DebounceOptionsType;
   throttleWait: Ref<number> | number; // 节流等待时间
   throttleOptions: Reactive<ThrottleOptionsType> | ThrottleOptionsType;
+  abortPrevious: boolean; // 是否中止前一个未完成的请求
 }>;
 
 type DebounceOptionsType = {
@@ -78,9 +79,9 @@ export interface UseRequestReturnType<D, P extends any[]>
   run: (...args: P) => void;
   cancel: () => void;
   refresh: () => void;
-  runAsync: (...args: P) => Promise<D>;
+  runAsync: (...args: P) => Promise<D | undefined>;
   abort: () => void;
-  refreshAsync: () => Promise<D>;
+  refreshAsync: () => Promise<D | undefined>;
   clearCache: () => void;
 }
 

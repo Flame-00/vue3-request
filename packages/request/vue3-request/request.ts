@@ -14,11 +14,11 @@ export class Request<D, P extends any[]> {
 
   state: IState<D, P>;
 
-  abort: () => void;
+  abort: () => void = () => {};
 
   constructor(
     public service: ServiceType<D, P>,
-    public options?: IOptions<D, P>
+    public options: IOptions<D, P>
   ) {
     this.state = reactive({
       data: undefined,
@@ -39,7 +39,9 @@ export class Request<D, P extends any[]> {
   ): PluginMethodsReturn<D, P> => {
     if (event === "onRequest") {
       const servicePromise = composeMiddleware<D>(
-        this.pluginImpls.map((plugin) => plugin.onRequest).filter(Boolean),
+        this.pluginImpls.map((plugin) => plugin.onRequest).filter(Boolean) as ((
+          service: ServiceType<D>
+        ) => ServiceType<D>)[],
         rest[0]
       );
       return {
@@ -47,8 +49,8 @@ export class Request<D, P extends any[]> {
       };
     } else {
       // 执行插件里的方法
-      const r = this.pluginImpls
-        .map((plugin) => plugin[event]?.apply(plugin, rest))
+      const r = this.pluginImpls // @ts-ignore
+        .map((plugin) => plugin[event]?.(...rest))
         .filter(Boolean);
       return Object.assign({}, ...r);
     }
@@ -72,7 +74,7 @@ export class Request<D, P extends any[]> {
       this.state.error
     );
   };
-  runAsync = async (...params: P): Promise<D> => {
+  runAsync = async (...params: P): Promise<D | undefined> => {
     const requestId = ++this.currentRequestId;
 
     const { isStaleTime, isReady } = this.executePlugin(
@@ -113,7 +115,7 @@ export class Request<D, P extends any[]> {
         return neverPromise();
       }
 
-      this.setState({ data: res });
+      this.setState({ data: res, error: undefined });
       this.executePlugin("onSuccess", res, this.state.params); // 执行插件的onSuccess方法
       this.options.onSuccess?.(res, this.state.params);
       this.onFinished();
@@ -161,4 +163,5 @@ export class Request<D, P extends any[]> {
     this.currentRequestId++;
     this.loading(false);
   };
+
 }

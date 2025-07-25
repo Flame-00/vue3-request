@@ -17,12 +17,6 @@
 - 组件卸载时，正在进行的 promise
 - 竞态取消，当上一次 promise 还没返回时，又发起了下一次 promise，则会忽略上一次 promise 的响应
 
-:::tip
-
-1. 你可以多次点击发起请求, 最后只会提示成功一次
-2. 试试在发起请求后结果还没返回前卸载组件, 会忽略响应
-   :::
-
 :::demo
 
 ```vue
@@ -35,11 +29,11 @@
 </template>
 <script setup lang="ts">
 import { useRequest } from "@async-handler/request/vue3-request";
-import message from "@/utils/message"; // demo component
+import message from "@/utils/message"; // demo ts
 import { h, ref } from "vue";
 import Loading from "../components/Loading.vue"; // demo component
 import Button from "../components/Button.vue"; // demo component
-import mock from "@/utils/faker";
+import mock from "@/utils/faker"; // test Data
 
 const show = ref(true);
 
@@ -48,9 +42,9 @@ const testService = async (): Promise<string> => {
     // 模拟50%的几率出错
     setTimeout(() => {
       if (Math.random() > 0.5) {
-        resolve(`${mock.person.fullName()} 有一辆 ${mock.vehicle.vehicle()}`);
+        resolve(mock.vehicle.vehicle());
       } else {
-        reject(new Error("接口错误"));
+        reject(new Error("模拟接口错误"));
       }
     }, 1500);
   });
@@ -79,9 +73,23 @@ function generateComponent() {
         return h("div", [
           h(
             Button,
-            { type: "primary", onClick: run },
+            { type: "success", onClick: run },
             {
-              default: () => "发起请求",
+              default: () => "获取车辆",
+            }
+          ),
+          h(
+            Button,
+            {
+              type: "success",
+              onClick: () => {
+                run();
+                run();
+                run();
+              },
+            },
+            {
+              default: () => "获取车辆 X3",
             }
           ),
           h(

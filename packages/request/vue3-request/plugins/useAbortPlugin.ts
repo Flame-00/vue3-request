@@ -31,7 +31,12 @@ export const useAbortPlugin: Plugin = (requestInstance) => {
 
   return {
     onBefore: () => {
-      requestInstance.abort();
+      if (
+        typeof requestInstance.options.abortPrevious === "boolean" &&
+        requestInstance.options.abortPrevious
+      ) {
+        requestInstance.abort();
+      }
 
       initSignal();
     },
