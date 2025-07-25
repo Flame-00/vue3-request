@@ -1,6 +1,6 @@
 # 参数管理
 
-Vue3Request 提供了完善的参数管理机制，让你能够灵活地处理请求参数，并在整个请求生命周期中追踪参数状态。
+`useRequest` 提供了完善的参数管理机制，让你能够灵活地处理请求参数，并在整个请求生命周期中追踪参数状态。
 
 ## 核心概念
 
@@ -20,9 +20,9 @@ Vue3Request 提供了完善的参数管理机制，让你能够灵活地处理�
 - **`onError`**：请求失败时触发，可获取失败请求的参数
 - **`onFinally`**：请求完成时触发，无论成功失败都可获取参数
 
-## 参数设置方式
+## 示例
 
-Vue3Request 提供了多种参数设置方式，适应不同的业务场景。
+`useRequest` 提供了多种参数设置方式，适应不同的业务场景。
 
 ### 🎯 方式一：默认参数 + 动态传参（推荐）
 
@@ -63,16 +63,16 @@ import {
 } from "naive-ui";
 import faker from "@/utils/faker";
 
-const message = useMessage();
-
-const lastName = ref("范");
-interface IName {
+interface IResult {
   code: number;
   msg: string;
   data: string;
 }
 
-const testService = (lastName: string): Promise<IName> => {
+const message = useMessage();
+const lastName = ref("范");
+
+const testService = (lastName: string): Promise<IResult> => {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       // 模拟50%的几率出错
@@ -138,16 +138,16 @@ import {
 } from "naive-ui";
 import faker from "@/utils/faker";
 
-const message = useMessage();
-
-const lastName = ref("范");
-interface IName {
+interface IResult {
   code: number;
   msg: string;
   data: string;
 }
 
-const testService = (lastName: string): Promise<IName> => {
+const message = useMessage();
+const lastName = ref("范");
+
+const testService = (lastName: string): Promise<IResult> => {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       // 模拟50%的几率出错
@@ -247,16 +247,16 @@ import {
 } from "naive-ui";
 import faker from "@/utils/faker";
 
-const message = useMessage();
-
-const lastName = ref("");
-interface IName {
+interface IResult {
   code: number;
   msg: string;
   data: string;
 }
 
-const testService = (lastName: string): Promise<IName> => {
+const message = useMessage();
+const lastName = ref("");
+
+const testService = (lastName: string): Promise<IResult> => {
   return new Promise((resolve, reject) => {
     console.log("实际接收到的参数:", lastName);
     setTimeout(() => {

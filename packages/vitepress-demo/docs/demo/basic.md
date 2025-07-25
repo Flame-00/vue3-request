@@ -4,9 +4,9 @@
 
 ## 默认请求
 
-`useRequest` 是一个强大的异步数据管理 Hook，为你的 Vue 3 应用提供完整的请求状态管理解决方案。
+`useRequest` 是一个强大的异步数据管理 Hook，为你的 Vue3 应用提供完整的请求状态管理解决方案。
 
-只需传入一个[异步函数](../FAQ/#什么是异步函数?)作为第一个参数，`useRequest` 就会在组件初始化时自动执行该函数，并智能管理整个请求生命周期中的 `loading`、`data`、`error` 等状态，让你专注于业务逻辑而非状态管理的繁琐细节。
+只需传入一个[异步函数](../FAQ/#什么是异步函数?)作为第一个参数，`useRequest` 就会在组件初始化时自动执行该函数，并智能管理整个请求生命周期中的 `data`、`error`、`isLoading` 等状态，让你专注于业务逻辑而非状态管理的繁琐细节。
 
 ```ts
 const { data, error, loading } = useRequest(testService);
@@ -51,15 +51,16 @@ const { data, error, loading } = useRequest(testService);
 import { useRequest } from "@async-handler/request/vue3-request";
 import axios from "axios";
 import { NSpin, NEmpty, NCard } from "naive-ui";
-import faker from "@/utils/faker"; // 测试数据
+import faker from "@/utils/faker";
 
-// 模拟请求示例
-const testService = (): Promise<{
+interface IResult {
   code: number;
   msg: string;
   data: string;
-  success: boolean;
-}> => {
+  request_id: string;
+}
+
+const testService = (): Promise<IResult> => {
   return new Promise((resolve, reject) => {
     console.log("testService");
     // 模拟50%的几率出错
@@ -69,6 +70,7 @@ const testService = (): Promise<{
           code: 200,
           msg: "success",
           data: faker.food.description(),
+          request_id: faker.string.uuid(),
         });
       } else {
         reject(new Error("模拟接口错误"));
@@ -85,12 +87,7 @@ const axiosInstance = axios.create({
 // 响应拦截器，自己业务项目想怎么配置都可以
 axiosInstance.interceptors.response.use((response) => response.data);
 
-const testServiceAxios = (): Promise<{
-  code: number;
-  msg: string;
-  data: string;
-  request_id: string;
-}> => {
+const testServiceAxios = (): Promise<IResult> => {
   return axiosInstance.get("https://v2.xxapi.cn/api/renjian");
 };
 const {
@@ -100,12 +97,7 @@ const {
 } = useRequest(testServiceAxios);
 
 // Fetch
-const testServiceFetch = (): Promise<{
-  code: number;
-  msg: string;
-  data: string;
-  request_id: string;
-}> => {
+const testServiceFetch = (): Promise<IResult> => {
   return fetch("https://v2.xxapi.cn/api/aiqinggongyu", {
     method: "GET",
   }).then((response) => response.json());

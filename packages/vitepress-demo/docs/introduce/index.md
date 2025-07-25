@@ -18,14 +18,13 @@ Vue3-Request 是一个专为 Vue 3 设计的异步请求处理库，它通过统
 ✨ 统一状态管理
 
 - 🚀 所有数据都具有响应式
-- <img src="/cancel.svg" alt="取消请求" width="20" height="20" style="display: inline; vertical-align: middle;" /> 自动管理生成 signal 中止 requset
-- 📊 自动管理 loading、data、error、isFinished 等状态
-- 🔄 提供 run、runAsync、refresh、cancel 等便捷方法
+- 📊 自动管理 isLoading、params、data、error、isFinished、signal 等状态
+- 🔄 提供 run、runAsync、refresh、cancel、abort 等便捷方法
 - 🎛️ 支持手动和自动执行模式，满足不同业务场景
 
 🧩 强大的插件生态 内置 9 大核心插件，开箱即用：
 
-- 🚫 请求中止 - 自动取消过期请求，避免状态污染
+- <img src="/cancel.svg" alt="取消请求" width="20" height="20" style="display: inline; vertical-align: middle;" /> 请求中止 - 自动生成 AbortSignal 中止过期请求，避免状态污染和竞态条件问题
 - 🔄 错误重试 - 智能重试机制，提升请求成功率
 - ⚡ 防抖节流 - 优化用户交互，减少无效请求
 - 💾 智能缓存 - 提升用户体验，减少服务器压力

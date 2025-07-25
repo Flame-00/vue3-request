@@ -3,7 +3,7 @@ layout: home
 
 hero:
   name: "Vue3Request"
-  text: "新一代 Vue 3 异步请求处理解决方案"
+  text: "小而美的Vue3 异步请求处理解决方案"
   tagline: "让复杂的异步逻辑变得简单优雅，让重复的样板代码成为历史"
   actions:
     - theme: brand

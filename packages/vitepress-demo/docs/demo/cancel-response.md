@@ -23,88 +23,126 @@
 <template>
   <ChildComponent v-if="show" />
   <hr />
-  <Button type="info" @click="show = !show">{{
-    show ? "卸载组件" : "显示组件"
-  }}</Button>
+  <n-button type="primary" ghost @click="show = !show">{{
+    show ? "hidden" : "show"
+  }}</n-button>
 </template>
 <script setup lang="ts">
 import { useRequest } from "@async-handler/request/vue3-request";
-import message from "@/utils/message"; // demo ts
 import { h, ref } from "vue";
-import Loading from "../components/Loading.vue"; // demo component
-import Button from "../components/Button.vue"; // demo component
-import mock from "@/utils/faker"; // test Data
+import {
+  NSpin,
+  NButton,
+  NInput,
+  NEmpty,
+  NFlex,
+  NText,
+  useMessage,
+} from "naive-ui";
+import faker from "@/utils/faker";
 
 const show = ref(true);
-
-const testService = async (): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    // 模拟50%的几率出错
-    setTimeout(() => {
-      if (Math.random() > 0.5) {
-        resolve(mock.vehicle.vehicle());
-      } else {
-        reject(new Error("模拟接口错误"));
-      }
-    }, 1500);
-  });
-};
 
 function generateComponent() {
   return {
     setup() {
-      const { run, data, error, isLoading, isFinished, cancel } = useRequest(
-        testService,
-        {
-          manual: true,
-          onBefore: () => {
-            data.value = undefined;
-            error.value = undefined;
-          },
-          onSuccess: (data) => {
-            message.success(data);
-          },
-          onError: (error) => {
-            message.error(error.message);
-          },
-        }
-      );
+      interface IResult {
+        code: number;
+        msg: string;
+        data: string;
+      }
+
+      const message = useMessage();
+
+      const lastName = ref("李");
+
+      const testService = (lastName: string): Promise<IResult> => {
+        return new Promise((resolve, reject) => {
+          setTimeout(() => {
+            // 模拟50%的几率出错
+            if (Math.random() > 0.5) {
+              resolve({
+                code: 200,
+                msg: "success",
+                data: `${lastName}${faker.person.firstName()}`,
+              });
+            } else {
+              reject(new Error("Failed to generate full name!"));
+            }
+          }, 1000);
+        });
+      };
+
+      const { run, data, error, isLoading, cancel } = useRequest(testService, {
+        manual: true,
+        onSuccess: (data, params) => {
+          message.success(`params -> "${params}"`);
+        },
+        onError: (error, params) => {
+          message.error(error.message);
+        },
+      });
+
       return () => {
         return h("div", [
-          h(
-            Button,
-            { type: "success", onClick: run },
-            {
-              default: () => "获取车辆",
-            }
-          ),
-          h(
-            Button,
-            {
-              type: "success",
-              onClick: () => {
-                run();
-                run();
-                run();
+          h("section", [
+            h(NFlex, () => [
+              h(NInput, {
+                type: "text",
+                placeholder: "输入姓氏",
+                value: lastName.value,
+                "onUpdate:value": (value) => {
+                  lastName.value = value;
+                },
+              }),
+              h(
+                NButton,
+                {
+                  type: "primary",
+                  onClick: () => run(lastName.value),
+                },
+                () => "Add the surname"
+              ),
+              h(
+                NButton,
+                {
+                  type: "primary",
+                  onClick: () => {
+                    run(lastName.value);
+                    run(lastName.value);
+                    run(lastName.value);
+                  },
+                },
+                () => "Add the surname x3"
+              ),
+              h(
+                NButton,
+                {
+                  type: "error",
+                  onClick: cancel,
+                },
+                () => "cancel"
+              ),
+            ]),
+            h("hr"),
+            h(
+              NSpin,
+              {
+                show: isLoading.value,
               },
-            },
-            {
-              default: () => "获取车辆 X3",
-            }
-          ),
-          h(
-            Button,
-            { type: "danger", onClick: cancel },
-            {
-              default: () => "取消响应",
-            }
-          ),
-          h("div", { style: "margin-top: 10px" }, [
-            isFinished.value && data.value && h("h3", data.value),
-            isFinished.value &&
-              error.value &&
-              h("h3", { id: "error" }, error.value.message),
-            isLoading.value && h("div", h(Loading)),
+              () => [
+                !error.value && !data.value && h(NEmpty, { size: "huge" }),
+                error.value &&
+                  h(
+                    NText,
+                    { type: "error" },
+                    { default: () => error.value.message }
+                  ),
+                !error.value &&
+                  data.value &&
+                  h("pre", null, JSON.stringify(data.value, null, 2)),
+              ]
+            ),
           ]),
         ]);
       };

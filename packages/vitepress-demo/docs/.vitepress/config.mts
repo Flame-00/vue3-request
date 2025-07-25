@@ -55,6 +55,7 @@ export default defineConfig({
       {
         text: "演示",
         items: [
+          { text: "前言", link: "/demo/introduction" },
           { text: "基本使用", link: "/demo/basic" },
           { text: "参数管理", link: "/demo/parameter-management" },
           { text: "生命周期", link: "/demo/lifecycle" },

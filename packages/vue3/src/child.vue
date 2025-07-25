@@ -51,7 +51,6 @@ const throttleOptions = reactive({
   leading: true,
 })
 const throttleWait = ref(2000)
-
 const { data, params, signal, error, isLoading, isFinished, isAborted, run, abort, cancel, runAsync } = useRequest((params: { age: number }) => {
   // 🏭 在工厂函数中可以对参数进行预处理 // [!code highlight]
   if (params.age > 18) {
