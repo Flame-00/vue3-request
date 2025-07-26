@@ -21,11 +21,11 @@ const { signal, abort } = useRequest(testService); // [!code ++]
 - 组件卸载时，还未返回结果的请求
 - 前置请求中止，发起新请求时自动中止前一个未完成的请求并忽略 promise 的响应，但是如果设置了`options.abortPrevious = false` 则不会前置请求中止，但是依旧会[竞态取消](./cancel-response.md)
 
-
-
 :::tip
 
-手动点击**中止请求按钮**请把浏览器选项卡的**Network**设置网速为 3G **(网速快接口返回的很快，还没来得及中止就成功了，接口慢可以忽略这条)**
+1. 手动点击**中止请求按钮**请把**Network**网速设置为 4G 或 3G **(网速快接口返回的很快，还没来得及中止就成功了，接口慢可以忽略这条)**
+2. 在**Network**中观察被中止掉的过期请求
+
 :::
 
 ## `signal` and `abort()`

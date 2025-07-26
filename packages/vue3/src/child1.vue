@@ -41,7 +41,17 @@ const testService1 = (form: { age: number }): Promise<any> => {
   });
 };
 
-const { data, error, params, run } = useRequest(() => testService1(form))
+const { data, error, params, run } = useRequest(() => testService1(form), {
+  manual: true,
+  refocusTimespan: 3000,
+  refreshOnWindowFocus: true,
+  onSuccess: (data, params) => {
+    console.log('onSuccess->child1', data, params)
+  },
+  onError: (error, params) => {
+    console.log('onError->child1', error, params)
+  },
+})
 
 
 const request = async () => {
