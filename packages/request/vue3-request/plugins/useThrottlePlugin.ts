@@ -42,7 +42,6 @@ export default definePlugin((
   return {
     onCancel: () => {
       throttledRun?.cancel();
-      throttledRun = null;
     },
   };
 });
