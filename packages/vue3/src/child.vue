@@ -1,109 +1,85 @@
 <template>
-  <div class="refresh-on-focus-demo__container">
-    <div v-if="data && !error">
-      <NSpace vertical align="center">
-        <NAvatar :src="data.avatar" :size="100" round />
-        <div class="refresh-on-focus-demo__slogen">Hey! {{ data.name }}!</div>
-        <NButton @click="handleLogout">Logout</NButton>
-      </NSpace>
-    </div>
-    <NResult v-else status="403" title="403" description="Not authorized!">
-      <template #footer>
-        <NButton @click="handleLogin">Login</NButton>
-      </template>
-    </NResult>
-  </div>
+  <section>
+    <h3>模拟请求</h3>
+    <button @click="request">请求</button>
+    <h2>{{ data }}</h2>
+    <h2>{{ error?.message }}</h2>
+    <h2>{{ params }}</h2>
+
+
+
+    <!-- <button @click="pollingInterval = 1000">1000</button>
+    <button @click="pollingInterval = 3000">3000</button>
+    <button @click="pollingInterval = 5000">5000</button>
+    <button @click="pollingWhenHidden = !pollingWhenHidden">切换</button> -->
+    <!-- <button @click="userId++"> 修改userId{{ userId }} </button>
+    <button @click="obj.age++"> 修改obj{{ obj.age }} </button> -->
+  </section>
 </template>
-
-<script lang="ts">
-import { NAvatar, NButton, NResult, NSpace } from 'naive-ui';
-import { defineComponent } from 'vue';
-import { useRequest } from '@async-handler/request/vue3-request';
-
-type UserInfo = {
-  name: string;
-  avatar: string;
-};
-
-const storeKey = 'vue-request-token';
-
-function getStore() {
-  return localStorage.getItem(storeKey);
-}
-function setStore() {
-  window.localStorage.setItem(storeKey, 'vue-request');
-}
-
-function clearStore() {
-  window.localStorage.removeItem(storeKey);
-}
-
-function getToken() {
-  return new Promise<string>(resolve => {
-    setTimeout(() => {
-      setStore();
-      resolve('token');
-    }, 300);
-  });
-}
-
-function getUserInfo() {
-  return new Promise<UserInfo>((resolve, reject) => {
-    setTimeout(() => {
-      if (getStore()) {
-        return resolve({
-          name: 'John60676',
-          avatar:
-            'https://portrait.gitee.com/uploads/avatars/user/1838/5516429_john60676_1608255970.png!avatar200',
-        });
-      } else {
-        reject('Not authorized!');
-      }
-    }, 300);
-  });
-}
-
-export default defineComponent({
-  components: {
-    NResult,
-    NButton,
-    NSpace,
-    NAvatar,
+<script setup lang="ts">
+import { useRequest, definePlugin } from "@async-handler/request/vue3-request";
+import axios from "axios";
+import { reactive, ref, watch } from "vue";
+import { useMessage } from "naive-ui";
+const props = defineProps({
+  ready: {
+    type: Boolean,
+    default: false,
   },
-  setup() {
-    const { data, error, run } = useRequest(getUserInfo, {
-      refreshOnWindowFocus: true,
-      refocusTimespan: 1000,
-    });
-
-    const { run: login } = useRequest(getToken, {
-      manual: true,
-    });
-
-    const handleLogin = () => {
-      login();
-      run();
-    };
-
-    const handleLogout = () => {
-      clearStore();
-      run();
-    };
-    return {
-      data,
-      error,
-      handleLogin,
-      handleLogout,
-    };
-  },
+})
+const message = useMessage()
+// axios
+const axiosInstance = axios.create({
+  // ...
 });
-</script>
-
-<style scoped lang="scss">
-.refresh-on-focus-demo {
-  &__slogen {
-    font-weight: 600;
-    font-size: 20px;
+const plugin = definePlugin<number, [number]>((requestInstance, options) => {
+  console.log('plugin')
+  return {
+    onBefore: (params) => {
+      console.log('onBefore', params)
+    }
   }
+})
+axiosInstance.interceptors.response.use((response) => response.data); // 响应拦截器，自己业务项目想怎么配置都可以
+const instanceId = Math.random().toString(36).substr(2, 9);
+// 模拟请求示例
+const testService = (age: number): Promise<number> => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve(age);
+    }, 700);
+  });
+};
+const pollingInterval = ref(2000)
+const pollingWhenHidden = ref(false)
+// const userId = ref(1)
+// const obj = reactive({ age: 13 })
+// watch([userId, () => obj], (newVal, oldVal) => {
+//   console.log(newVal, oldVal)
+// }, { deep: true })
+const { data, error, params, run } = useRequest(testService, {
+  // pollingInterval,
+  // pollingWhenHidden,
+  // ready: () => props.
+  // refreshDeps: [userId, () => obj],
+  // refreshDepsAction() {
+  //   console.log('refreshDepsAction')
+  // },
+  onSuccess: (data, params) => {
+    message.success('请求成功')
+  },
+  onError: (error, params) => {
+    message.error(instanceId)
+  },
+}, [
+  plugin
+])
+
+
+const request = async () => {
+  run(18)
 }
-</style>
+
+
+
+</script>

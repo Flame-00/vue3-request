@@ -1,10 +1,10 @@
-import { Plugin } from "../types";
 // @ts-ignore
 import { debounce } from '../utils/xe-utils/debounce';
 import { isNil } from "../utils";
 import { computed, toValue, watchEffect, onWatcherCleanup } from "vue";
+import { definePlugin } from "../utils/definePlugin";
 
-export const useDebouncePlugin: Plugin = (
+export default definePlugin((
   requestInstance,
   { debounceWait, debounceOptions, manual }
 ) => {
@@ -53,8 +53,6 @@ export const useDebouncePlugin: Plugin = (
   return {
     onCancel: () => {
       debouncedRun?.cancel();
-      debouncedRun = null;
-      initialAutoRunFlag = false;
     },
   };
-};
+});

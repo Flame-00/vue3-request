@@ -1,12 +1,13 @@
-import { useAbortPlugin } from "./useAbortPlugin";
-import { useCachePlugin } from "./useCachePlugin";
-import { useErrorRetryPlugin } from "./useErrorRetryPlugin";
-import { usePollingPlugin } from "./usePollingPlugin";
-import { useRefreshDepsPlugin } from "./useRefreshDepsPlugin";
-import { useRefreshOnWindowFocusPlugin } from "./useRefreshOnWindowFocusPlugin";
-import { useReadyPlugin } from "./useReadyPlugin";
-import { useDebouncePlugin } from "./useDebouncePlugin";
-import { useThrottlePlugin } from "./useThrottlePlugin";
+import useAbortPlugin from "./useAbortPlugin";
+import useCachePlugin from "./useCachePlugin";
+import useErrorRetryPlugin from "./useErrorRetryPlugin";
+import usePollingPlugin from "./usePollingPlugin";
+import useRefreshDepsPlugin from "./useRefreshDepsPlugin";
+import useRefreshOnWindowFocusPlugin from "./useRefreshOnWindowFocusPlugin";
+import useReadyPlugin from "./useReadyPlugin";
+import useDebouncePlugin from "./useDebouncePlugin";
+import useThrottlePlugin from "./useThrottlePlugin";
+import type { Plugin } from "../types";
 export default [
   useErrorRetryPlugin,
   usePollingPlugin,
@@ -17,4 +18,4 @@ export default [
   useDebouncePlugin,
   useThrottlePlugin,
   useCachePlugin,
-];
+] as Plugin[];

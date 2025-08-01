@@ -1,55 +1,72 @@
 import { computed, ref, toValue } from "vue";
-import { Plugin } from "../types";
-import { warn, delay } from "../utils";
+import { warn } from "../utils";
+import { definePlugin } from "../utils/definePlugin";
 
-export const useErrorRetryPlugin: Plugin = (
+export default definePlugin((
   requestInstance,
-  { errorRetryCount = 0, errorRetryInterval }
+  { errorRetryCount, errorRetryInterval }
 ) => {
-  const needErrorCount = ref(0);
-  const isErrorRetry = ref(true);
-  const { refresh } = requestInstance;
+  const retryTimer = ref();
+  const retryCount = ref(0);
+  const isErrorRetry = ref(false);
   const defaultErrorRetryInterval = computed(
-    () => 1000 * Math.pow(2, needErrorCount.value)
+    () => 1000 * Math.pow(2, retryCount.value)
   );
 
-  // 取消错误重试
-  const cancelErrorRetry = () => {
-    needErrorCount.value = 0;
-    isErrorRetry.value = false;
-  };
-
-  // 重试
-  const retry = async () => {
-    let { is, value } = warn(toValue(errorRetryInterval));
-
-    if (!is) {
-      value = toValue(defaultErrorRetryInterval);
-    }
-
-    await delay(value);
-
-    refresh();
-  };
-
   // 错误重试
-  const errorRetry = async () => {
-    const { is, value } = warn(toValue(errorRetryCount), true);
+  const retryHandle = () => {
+    let timer: number | null = null;
+    retryCount.value++;
 
-    if (!is) return;
+    const { value } = warn(toValue(errorRetryCount), true);
+    const infiniteRetry = value === 1;
+    const hasRetryCount = retryCount.value <= value;
 
-    needErrorCount.value++;
+    if (infiniteRetry || hasRetryCount) {
+      let { is, value: timeout } = warn(toValue(errorRetryInterval));
 
-    if (value === -1 || needErrorCount.value <= value) await retry();
-    else needErrorCount.value = 0;
+      if (!is) {
+        timeout = toValue(Math.min(defaultErrorRetryInterval.value, 30000));
+      }
+
+      timer = window.setTimeout(() => {
+        isErrorRetry.value = true;
+        requestInstance.refresh();
+      }, timeout);
+    }
+    return () => {
+      if (timer) {
+        window.clearTimeout(timer);
+      }
+    };
   };
+
+  const clearTimer = () => {
+    retryTimer.value?.();
+  };
+
+  const { is } = warn(toValue(errorRetryCount), true);
+
+  if (!is) return {};
 
   return {
+    onBefore: () => {
+      if (!isErrorRetry.value) {
+        retryCount.value = 0;
+      }
+      isErrorRetry.value = false;
+
+      clearTimer();
+    },
+    onSuccess: () => {
+      retryCount.value = 0;
+    },
     onError: () => {
-      isErrorRetry.value ? errorRetry() : (isErrorRetry.value = true);
+      retryTimer.value = retryHandle();
     },
     onCancel: () => {
-      cancelErrorRetry();
+      retryCount.value = 0;
+      clearTimer();
     },
   };
-};
+});

@@ -7,7 +7,7 @@ import type {
 import { useRequestImpl } from "./useRequestImpl";
 import defaultPlugins from "./plugins";
 
-export function useRequest<D, P extends any[]>(
+export function useRequest<D, P extends any[] = any[]>(
   service: ServiceType<D, P>,
   options?: IOptions<D, P>,
   plugins?: Plugin<D, P>[]

@@ -105,12 +105,12 @@ export class Request<D, P extends any[]> {
       }
       const res = await servicePromise;
 
-      console.log(
-        "success 竞态取消 ->",
-        requestId !== this.currentRequestId
-          ? `已取消 -> requestId: ${requestId} !== currentRequestId: ${this.currentRequestId}`
-          : `成功请求 -> requestId: ${requestId} === currentRequestId: ${this.currentRequestId}`
-      );
+      // console.log(
+      //   "success 竞态取消 ->",
+      //   requestId !== this.currentRequestId
+      //     ? `已取消 -> requestId: ${requestId} !== currentRequestId: ${this.currentRequestId}`
+      //     : `成功请求 -> requestId: ${requestId} === currentRequestId: ${this.currentRequestId}`
+      // );
       if (requestId !== this.currentRequestId) {
         return neverPromise();
       }
@@ -122,12 +122,12 @@ export class Request<D, P extends any[]> {
 
       return res;
     } catch (err) {
-      console.log(
-        "error 竞态取消 ->",
-        requestId !== this.currentRequestId
-          ? `已取消 -> requestId: ${requestId} !== currentRequestId: ${this.currentRequestId}`
-          : `成功请求 -> requestId: ${requestId} === currentRequestId: ${this.currentRequestId}`
-      );
+      // console.log(
+      //   "error 竞态取消 ->",
+      //   requestId !== this.currentRequestId
+      //     ? `已取消 -> requestId: ${requestId} !== currentRequestId: ${this.currentRequestId}`
+      //     : `成功请求 -> requestId: ${requestId} === currentRequestId: ${this.currentRequestId}`
+      // );
 
       if (requestId !== this.currentRequestId) {
         return neverPromise();
@@ -163,5 +163,4 @@ export class Request<D, P extends any[]> {
     this.currentRequestId++;
     this.loading(false);
   };
-
 }

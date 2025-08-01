@@ -1,33 +1,68 @@
-import { Plugin } from "../types";
-import { toValue } from "vue";
+import { onUnmounted, ref, toValue, watch } from "vue";
 import { warn } from "../utils";
+import { subscribe } from "../utils/subscribeReVisible";
+import { isDocumentVisible } from "../utils/isDocumentVisible";
+import { definePlugin } from "../utils/definePlugin";
 
-export const usePollingPlugin: Plugin = (requestInstance, { pollingInterval }) => {
-  const { refresh } = requestInstance;
-  let intervalId: number | null = null;
-  // 开始轮询
-  const startPolling = () => {
-    const { is, value } = warn(toValue(pollingInterval));
-    if (!is) return;
+export default definePlugin((
+  requestInstance,
+  { pollingInterval, pollingWhenHidden = ref(true), errorRetryCount }
+) => {
+  const unsubscribeRef = ref<(() => void) | null>(null);
+  const pollingTimer = ref();
 
-    cancelPolling();
-    intervalId = window.setInterval(refresh, value);
+  const polling = () => {
+    let timer: number | undefined;
+
+    const { value: errorRetryCountValue } = warn(
+      toValue(errorRetryCount),
+      true
+    );
+    if (requestInstance.state.error && errorRetryCountValue !== 0) return;
+
+    const { is: isPollingInterval, value: pollingIntervalValue } = warn(
+      toValue(pollingInterval)
+    );
+    if (!isPollingInterval) return;
+    const interval = pollingIntervalValue;
+
+    timer = window.setTimeout(() => {
+      const isHidden = !toValue(pollingWhenHidden) && !isDocumentVisible();
+
+      if (isHidden) {
+        unsubscribeRef.value = subscribe(() => {
+          requestInstance.refresh();
+        });
+      } else {
+        requestInstance.refresh();
+      }
+    }, interval);
+
+    return () => {
+      timer && window.clearTimeout(timer);
+      unsubscribeRef.value?.();
+    };
   };
-
-  // 取消轮询
-  const cancelPolling = () => {
-    if (intervalId) {
-      window.clearInterval(intervalId);
+  watch(
+    [() => toValue(pollingInterval), () => toValue(pollingWhenHidden)],
+    () => {
+      pollingTimer.value?.();
+      pollingTimer.value = polling();
     }
-    intervalId = null;
-  };
-  
+  );
+  onUnmounted(() => {
+    unsubscribeRef.value?.();
+  });
+
   return {
     onBefore: () => {
-      startPolling();
+      pollingTimer.value?.();
     },
     onCancel: () => {
-      cancelPolling();
+      pollingTimer.value?.();
+    },
+    onFinally: () => {
+      pollingTimer.value = polling();
     },
   };
-};
+});

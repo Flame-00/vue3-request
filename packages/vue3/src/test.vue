@@ -1,12 +1,14 @@
 <template>
-    <button @click="show = !show">切换</button>
-    <template v-if="show">
-        <Child />
-        <!-- <Child /> -->
-        <hr>
-        <!-- <Child1 />
-        <Child1 /> -->
-    </template>
+    <NMessageProvider>
+        <button @click="show = !show">切换</button>
+        <button @click="ready = !ready">ready{{ ready }}</button>
+        <template v-if="show">
+            <Child :ready="ready" />
+            <!-- <Child /> -->
+            <hr>
+            <!-- <Child1 /> -->
+        </template>
+    </NMessageProvider>
 
     <!-- <button @click="t1">测试1</button>
     <Loading v-if="loading1" />
@@ -16,10 +18,12 @@
     <h2>{{ data2 }}</h2> -->
 </template>
 <script setup lang="ts">
+import { NMessageProvider } from 'naive-ui'
 import Child from './child.vue'
 import Child1 from './child1.vue'
 import { ref } from 'vue'
 
+const ready = ref(false)
 const queryMap = new Map<string, Promise<{ code: number, msg: string, data: number }>>()
 
 const show = ref(true)

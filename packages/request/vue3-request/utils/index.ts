@@ -38,10 +38,7 @@ export function warn(
       ? 0
       : originalValue) as number,
   };
-} // 延迟
-export const delay = (ms: number) => {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-};
+}
 // 洋葱模型
 // 1. 从后往前执行，执行到第一个中间件时，执行service并返回结果
 export const composeMiddleware = <D>(

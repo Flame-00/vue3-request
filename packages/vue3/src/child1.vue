@@ -8,10 +8,12 @@
   </section>
 </template>
 <script setup lang="ts">
-// import { useRequest } from "@async-handler/request/vue3-request";
-import { useRequest } from "vue-request";
+import { useRequest } from "@async-handler/request/vue3-request";
+// import { useRequest } from "vue-request";
 import axios from "axios";
 import { reactive, ref } from "vue";
+import { useMessage } from "naive-ui";
+const message = useMessage()
 // axios
 const axiosInstance = axios.create({
   // ...
@@ -41,15 +43,30 @@ const testService1 = (form: { age: number }): Promise<any> => {
   });
 };
 
+
+
 const { data, error, params, run } = useRequest(() => testService1(form), {
-  manual: true,
-  refocusTimespan: 3000,
   refreshOnWindowFocus: true,
+  refocusTimespan: 1000,
   onSuccess: (data, params) => {
     console.log('onSuccess->child1', data, params)
+    message.success('请求成功')
   },
   onError: (error, params) => {
     console.log('onError->child1', error, params)
+    message.error('请求失败')
+  },
+})
+useRequest(() => testService1(form), {
+  refreshOnWindowFocus: true,
+  refocusTimespan: 1000,
+  onSuccess: (data, params) => {
+    console.log('onSuccess->child1', data, params)
+    message.success('请求成功')
+  },
+  onError: (error, params) => {
+    console.log('onError->child1', error, params)
+    message.error('请求失败')
   },
 })
 

@@ -1,10 +1,10 @@
-import { Plugin } from "../types";
 // @ts-ignore
 import { throttle } from "../utils/xe-utils/throttle";
 import { computed, toValue, watchEffect, onWatcherCleanup } from "vue";
 import { isNil } from "../utils";
+import { definePlugin } from "../utils/definePlugin";
 
-export const useThrottlePlugin: Plugin = (
+export default definePlugin((
   requestInstance,
   { throttleWait, throttleOptions }
 ) => {
@@ -45,4 +45,4 @@ export const useThrottlePlugin: Plugin = (
       throttledRun = null;
     },
   };
-};
+});

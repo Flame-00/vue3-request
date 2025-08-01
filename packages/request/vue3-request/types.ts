@@ -1,4 +1,4 @@
-import { Ref, Reactive, ToRefs } from "vue";
+import { Ref, Reactive, ToRefs, WatchSource } from "vue";
 import { Request } from "./request";
 
 // 从嵌套函数中正确提取返回数据类型
@@ -36,9 +36,10 @@ export type IOptions<D, P extends any[]> = Partial<{
   onError: (error: Error, params: P) => void; // 请求失败
   manual: boolean; // 是否手动调用
   defaultParams: P; // 默认参数
-  refreshDeps: (Ref<any> | Reactive<any>)[]; // 依赖
+  refreshDeps: WatchSource | WatchSource[] | object; // 依赖刷新参数
   refreshDepsAction: () => void; // 依赖变化时执行
   pollingInterval: number | Ref<number>; // 轮询间隔
+  pollingWhenHidden: boolean | Ref<boolean>; // 在页面隐藏时，是否继续轮询。如果设置为 false，在页面隐藏时会暂时停止轮询，页面重新显示时继续上次轮询。
   errorRetryCount: number | Ref<number>; // 错误重试次数
   errorRetryInterval: number | Ref<number>; // 错误重试间隔
   refreshOnWindowFocus: boolean; // 窗口聚焦时刷新

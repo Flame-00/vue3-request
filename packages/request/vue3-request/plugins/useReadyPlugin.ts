@@ -1,21 +1,25 @@
-import { computed, ref, toValue, watch } from "vue";
-import { Plugin } from "../types";
+import { ref, toValue, watch } from "vue";
+import { definePlugin } from "../utils/definePlugin";
 
-export const useReadyPlugin: Plugin = (
+export default definePlugin((
   requestInstance,
   { manual, ready = ref(true) }
 ) => {
-  const readyRef = computed(() => toValue(ready));
-
-  const unwatch = watch(readyRef, (value) => {
-    if (!manual && value) {
-      requestInstance.refresh();
+  const unwatch = watch(
+    () => toValue(ready),
+    (value) => {
+      if (!manual && value) {
+        requestInstance.refresh();
+      }
+    },
+    {
+      flush: "sync",
     }
-  });
+  );
 
   return {
     onBefore: () => {
-      if (readyRef.value) {
+      if (toValue(ready)) {
         return { isReady: true };
       }
     },
@@ -23,4 +27,4 @@ export const useReadyPlugin: Plugin = (
       unwatch();
     },
   };
-};
+});

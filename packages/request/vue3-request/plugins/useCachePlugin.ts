@@ -1,16 +1,16 @@
-import { Plugin } from "../types";
 import { clearCache, getCache, setCache } from "../utils/cache";
 import { emit, on } from "../utils/cache/eventEmitter";
-import { ref } from "vue";
+import { ref, onUnmounted } from "vue";
 import { getRequestCache, setRequestCache } from "../utils/cache/requestCache";
+import { definePlugin } from "../utils/definePlugin";
 
-export const useCachePlugin: Plugin = (
+export default definePlugin((
   requestInstance,
   { cacheKey, cacheTime = new Date(0).setMinutes(5), staleTime = 0 }
 ) => {
-  const { setState } = requestInstance;
   const unSubscribe = ref<(() => void) | null>(null);
   let clearCacheTimer: number | null = null;
+  let currentRequest: Promise<any> | null = null;
   // 设置缓存数据回收时间
   const setClearCacheTime = (time: number) => {
     if (!cacheKey) return;
@@ -30,13 +30,13 @@ export const useCachePlugin: Plugin = (
     if (!cacheKey) return;
     const cache = getCache(cacheKey); // 获取缓存
     if (cache) {
-      setState({
+      requestInstance.setState({
         data: cache.data,
-        params: cache.params,
+        params: cache.params,   
       });
     }
     unSubscribe.value = on(cacheKey, (cache) => {
-      setState({
+      requestInstance.setState({
         data: cache.data,
         params: cache.params,
       });
@@ -58,6 +58,10 @@ export const useCachePlugin: Plugin = (
     return true;
   };
 
+  onUnmounted(() => {
+    unSubscribe.value?.();
+  })
+
   return {
     onBefore: () => {
       const isStaleTime = checkStaleTime();
@@ -68,11 +72,12 @@ export const useCachePlugin: Plugin = (
     onRequest: <D>(service: () => Promise<D>) => {
       if (!cacheKey) return service;
       let servicePromise = getRequestCache(cacheKey);
-      if (servicePromise) {
+      if (servicePromise && servicePromise !== currentRequest) {
         console.log("缓存servicePromise ->", servicePromise);
         return () => servicePromise as Promise<D>;
       }
       servicePromise = service(); // 新的promise执行,后续会添加.then方法去等待他的返回值
+      currentRequest = servicePromise;
       console.log("新的servicePromise ->", servicePromise);
       setRequestCache(cacheKey, servicePromise);
       return () => servicePromise;
@@ -88,7 +93,7 @@ export const useCachePlugin: Plugin = (
       unSubscribe.value?.(); // 取消旧的订阅
       unSubscribe.value = on(cacheKey, (cache) => {
         // 订阅新的缓存
-        setState({
+        requestInstance.setState({
           data: cache.data,
           params: cache.params,
         });
@@ -97,8 +102,5 @@ export const useCachePlugin: Plugin = (
       emit(cacheKey, cache); // 触发缓存
       setClearCacheTime(cacheTime); // 设置缓存数据回收时间
     },
-    onCancel: () => {
-      unSubscribe.value?.();
-    },
   };
-};
+});
