@@ -6,7 +6,7 @@ import { definePlugin } from "../utils/definePlugin";
 
 export default definePlugin((
   requestInstance,
-  { pollingInterval, pollingWhenHidden = ref(true), errorRetryCount }
+  { pollingInterval, pollingWhenHidden = true, errorRetryCount }
 ) => {
   const unsubscribeRef = ref<(() => void) | null>(null);
   const pollingTimer = ref();
@@ -30,9 +30,7 @@ export default definePlugin((
       const isHidden = !toValue(pollingWhenHidden) && !isDocumentVisible();
 
       if (isHidden) {
-        unsubscribeRef.value = subscribe(() => {
-          requestInstance.refresh();
-        });
+        unsubscribeRef.value = subscribe(requestInstance.refresh);
       } else {
         requestInstance.refresh();
       }

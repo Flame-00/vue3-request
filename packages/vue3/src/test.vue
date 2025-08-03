@@ -4,7 +4,7 @@
         <button @click="ready = !ready">ready{{ ready }}</button>
         <template v-if="show">
             <Child :ready="ready" />
-            <!-- <Child /> -->
+            <Child />
             <hr>
             <!-- <Child1 /> -->
         </template>

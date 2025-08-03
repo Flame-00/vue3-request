@@ -5,7 +5,7 @@ type Listener = () => void;
 
 const listeners: Set<Listener> = new Set();
 
-const subscribe = (listener: Listener) => {
+const subscribeFocus = (listener: Listener) => {
   listeners.add(listener);
   return () => {
     listeners.delete(listener);
@@ -22,4 +22,4 @@ const revalidate = () => {
 window.addEventListener("visibilitychange", revalidate, false);
 window.addEventListener("focus", revalidate, false);
 
-export { subscribe };
+export { subscribeFocus };

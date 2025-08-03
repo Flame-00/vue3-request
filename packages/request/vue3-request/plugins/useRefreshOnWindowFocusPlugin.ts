@@ -1,39 +1,47 @@
-import { warn } from "../utils";
-import { onUnmounted, ref } from "vue";
+import { onUnmounted, ref, toValue, watchEffect } from "vue";
 import { definePlugin } from "../utils/definePlugin";
+import { subscribeFocus } from "../utils/subscribeFocus";
+import { isNil, warn } from "../utils";
 
 export default definePlugin(
-  (requestInstance, { refocusTimespan = 5000, refreshOnWindowFocus }) => {
-    const { refresh } = requestInstance;
-    const isRefocusing = ref(true);
+  (
+    requestInstance,
+    { refocusTimespan = 5000, refreshOnWindowFocus = false }
+  ) => {
+    const unsubscribes = ref();
 
-    // 监听窗口聚焦
-    function listener() {
-      if (refreshOnWindowFocus) {
-        window.addEventListener("focus", refocus);
-        window.addEventListener("visibilitychange", refocus);
+    const { is } = warn(toValue(refocusTimespan));
+    if (
+      !is ||
+      isNil(toValue(refreshOnWindowFocus)) ||
+      typeof toValue(refreshOnWindowFocus) !== "boolean"
+    )
+      return {};
+
+    const limitFun = (fn: () => void, timespan: number) => {
+      let flag: boolean = false;
+      return () => {
+        if (flag) return;
+        flag = true;
+        fn();
+        window.setTimeout(() => {
+          flag = false;
+        }, timespan);
+      };
+    };
+
+    watchEffect(() => {
+      unsubscribes.value?.();
+
+      if (toValue(refreshOnWindowFocus)) {
+        unsubscribes.value = subscribeFocus(
+          limitFun(requestInstance.refresh, toValue(refocusTimespan))
+        );
       }
-    }
-
-    listener();
-
-    // 重新聚焦
-    async function refocus() {
-      const { is } = warn(refocusTimespan);
-      if (!is) return;
-      if (
-        document.visibilityState === "visible" &&
-        navigator.onLine &&
-        isRefocusing.value
-      ) {
-        refresh();
-        isRefocusing.value = false;
-        // await delay(value);
-        isRefocusing.value = true;
-      }
-    }
-    onUnmounted(() => {});
-
+    });
+    onUnmounted(() => {
+      unsubscribes.value?.();
+    });
     return {};
   }
 );

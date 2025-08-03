@@ -42,8 +42,8 @@ export type IOptions<D, P extends any[]> = Partial<{
   pollingWhenHidden: boolean | Ref<boolean>; // 在页面隐藏时，是否继续轮询。如果设置为 false，在页面隐藏时会暂时停止轮询，页面重新显示时继续上次轮询。
   errorRetryCount: number | Ref<number>; // 错误重试次数
   errorRetryInterval: number | Ref<number>; // 错误重试间隔
-  refreshOnWindowFocus: boolean; // 窗口聚焦时刷新
-  refocusTimespan: number; // 重新聚焦时间
+  refreshOnWindowFocus: boolean | Ref<boolean>; // 窗口聚焦时刷新
+  refocusTimespan: number | Ref<number>; // 重新聚焦时间
   cacheKey: string; // 缓存key
   cacheTime: number; // 缓存时间
   staleTime: number; // 保鲜时间

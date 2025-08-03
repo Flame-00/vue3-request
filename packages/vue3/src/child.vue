@@ -8,12 +8,17 @@
 
 
 
-    <!-- <button @click="pollingInterval = 1000">1000</button>
+    <button @click="pollingInterval = 500">500</button>
     <button @click="pollingInterval = 3000">3000</button>
     <button @click="pollingInterval = 5000">5000</button>
-    <button @click="pollingWhenHidden = !pollingWhenHidden">切换</button> -->
+    <button @click="pollingWhenHidden = !pollingWhenHidden">切换</button>
     <!-- <button @click="userId++"> 修改userId{{ userId }} </button>
     <button @click="obj.age++"> 修改obj{{ obj.age }} </button> -->
+    <!-- <button @click="refreshOnWindowFocus = !refreshOnWindowFocus">切换{{ refreshOnWindowFocus }}</button>
+    <h2>{{ refocusTimespan }}</h2>
+    <button @click="refocusTimespan = 1500">1500</button>
+    <button @click="refocusTimespan = 2500">2500</button>
+    <button @click="refocusTimespan = 5000">5000</button> -->
   </section>
 </template>
 <script setup lang="ts">
@@ -33,10 +38,15 @@ const axiosInstance = axios.create({
   // ...
 });
 const plugin = definePlugin<number, [number]>((requestInstance, options) => {
-  console.log('plugin')
   return {
     onBefore: (params) => {
       console.log('onBefore', params)
+    },
+    onSuccess: (data, params) => {
+      console.log('onSuccess', data, params)
+    },
+    onError: (error, params) => {
+      console.log('onError', error, params)
     }
   }
 })
@@ -50,13 +60,15 @@ const testService = (age: number): Promise<number> => {
     }, 700);
   });
 };
-const pollingInterval = ref(2000)
+const pollingInterval = ref(1000)
 const pollingWhenHidden = ref(false)
 // const userId = ref(1)
 // const obj = reactive({ age: 13 })
 // watch([userId, () => obj], (newVal, oldVal) => {
 //   console.log(newVal, oldVal)
 // }, { deep: true })
+const refreshOnWindowFocus = ref(false)
+const refocusTimespan = ref(2500)
 const { data, error, params, run } = useRequest(testService, {
   // pollingInterval,
   // pollingWhenHidden,
@@ -65,19 +77,21 @@ const { data, error, params, run } = useRequest(testService, {
   // refreshDepsAction() {
   //   console.log('refreshDepsAction')
   // },
+  // refreshOnWindowFocus,
+  // refocusTimespan,
+  defaultParams: [18],
   onSuccess: (data, params) => {
+    console.log('onSuccess1', data, params)
     message.success('请求成功')
   },
   onError: (error, params) => {
     message.error(instanceId)
   },
-}, [
-  plugin
-])
+}, [plugin])
 
 
 const request = async () => {
-  run(18)
+  run(188)
 }
 
 
