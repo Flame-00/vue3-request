@@ -254,7 +254,7 @@ interface IResult {
 }
 
 const message = useMessage();
-const lastName = ref("");
+const lastName = ref("范");
 
 const testService = (lastName: string): Promise<IResult> => {
   return new Promise((resolve, reject) => {

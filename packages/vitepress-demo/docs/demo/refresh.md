@@ -20,7 +20,7 @@
 <template>
   <section>
     <n-button type="primary" @click="refresh">
-      Obtain user information
+      refresh
     </n-button>
     <hr />
     <n-spin :show="isLoading">
