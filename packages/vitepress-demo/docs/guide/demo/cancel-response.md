@@ -1,8 +1,6 @@
 # 取消响应
 
-`useRequest` 提供了 `cancel` 函数，用于忽略当前 promise 返回的数据和错误
-
-## `cancel()`
+`useRequest` 提供了 `cancel` 方法，用于忽略当前 promise 返回的数据和错误
 
 :::warning
 **注意：调用 `cancel` 函数并不会取消 promise 的执行**
@@ -59,7 +57,7 @@ function generateComponent() {
       const testService = (lastName: string): Promise<IResult> => {
         return new Promise((resolve, reject) => {
           setTimeout(() => {
-            // 模拟50%的几率出错
+            // 模拟50%的失败率来演示错误处理
             if (Math.random() > 0.5) {
               resolve({
                 code: 200,
@@ -138,8 +136,7 @@ function generateComponent() {
                     { type: "error" },
                     { default: () => error.value.message }
                   ),
-                !error.value &&
-                  data.value &&
+                data.value &&
                   h("pre", null, JSON.stringify(data.value, null, 2)),
               ]
             ),

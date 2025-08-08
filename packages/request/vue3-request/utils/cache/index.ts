@@ -1,17 +1,28 @@
 import { CacheParamsType } from "../../types";
-const cache: Map<string, CacheParamsType> = new Map();
+
+const cache = new Map<string, CacheParamsType>();
 
 export const setCache = <D, P>(
-  key: string,
+  cacheKey: string,
+  cacheTime: number,
   { data, params, time }: CacheParamsType<D, P>
 ) => {
-  cache.set(key, { data, params, time });
+  const cacheData = getCache(cacheKey);
+
+  if (cacheData?.timer) {
+    window.clearTimeout(cacheData?.timer);
+  }
+
+  const timer = window.setTimeout(() => {
+    clearCache(cacheKey);
+  }, cacheTime);
+  cache.set(cacheKey, { data, params, time, timer });
 };
 
-export const getCache = (key: string) => {
-  return cache.get(key);
+export const getCache = (cacheKey: string) => {
+  return cache.get(cacheKey);
 };
 
-export const clearCache = (key?: string) => {
-  key ? cache.delete(key) : cache.clear();
+export const clearCache = (cacheKey?: string) => {
+  cacheKey ? cache.delete(cacheKey) : cache.clear();
 };

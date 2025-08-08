@@ -31,7 +31,7 @@ export function useRequestImpl<D, P extends any[]>(
 
   onUnmounted(requestInstance.cancel);
 
-  const { run, cancel, refresh, runAsync, refreshAsync, abort } =
+  const { run, cancel, refresh, runAsync, refreshAsync, abort, mutate } =
     requestInstance;
 
   return {
@@ -40,6 +40,7 @@ export function useRequestImpl<D, P extends any[]>(
     cancel,
     refresh,
     runAsync,
+    mutate,
     abort,
     refreshAsync,
     clearCache,

@@ -1,10 +1,11 @@
 <template>
     <NMessageProvider>
-        <button @click="show = !show">切换</button>
+        <button @click="show = !show">{{ show ? '隐藏' : '显示' }}</button>
         <button @click="ready = !ready">ready{{ ready }}</button>
         <template v-if="show">
             <Child :ready="ready" />
-            <Child />
+            <Child1 :ready="ready" />
+            <!-- <Child /> -->
             <hr>
             <!-- <Child1 /> -->
         </template>
@@ -22,6 +23,7 @@ import { NMessageProvider } from 'naive-ui'
 import Child from './child.vue'
 import Child1 from './child1.vue'
 import { ref } from 'vue'
+
 
 const ready = ref(false)
 const queryMap = new Map<string, Promise<{ code: number, msg: string, data: number }>>()

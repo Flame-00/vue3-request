@@ -1,30 +1,25 @@
 import { ref, toValue, watch } from "vue";
 import { definePlugin } from "../utils/definePlugin";
 
-export default definePlugin((
-  requestInstance,
-  { manual, ready = ref(true) }
-) => {
-  const unwatch = watch(
-    () => toValue(ready),
-    (value) => {
-      if (!manual && value) {
-        requestInstance.refresh();
+export default definePlugin(
+  (requestInstance, { manual, ready = ref(true), defaultParams = [] }) => {
+    const unwatch = watch(
+      () => toValue(ready),
+      (value) => {
+        if (!manual && value) {
+          requestInstance.run(...defaultParams);
+        }
+      },
+      {
+        flush: "sync",
       }
-    },
-    {
-      flush: "sync",
-    }
-  );
+    );
 
-  return {
-    onBefore: () => {
-      if (toValue(ready)) {
-        return { isReady: true };
-      }
-    },
-    onCancel: () => {
-      unwatch();
-    },
-  };
-});
+    return {
+      onBefore: () => ({ isReady: toValue(ready) }),
+      onCancel: () => {
+        unwatch();
+      },
+    };
+  }
+);

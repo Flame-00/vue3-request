@@ -1,17 +1,17 @@
 # 中止请求
 
-`useRequest` 返回了 `signal`状态 和 `abort()`方法，用于中止尚未完成的接口请求自动生成
+`useRequest` 返回了 `signal`参数 和 `abort`方法，用于中止尚未完成的接口请求
 
-这样可以省去开发者自己定义 `new AbortController()`构造函数和手动定义`abort`方法的繁琐
+这样可以省去开发者自己定义 `new AbortController()`和手动定义`abort`方法的繁琐
 
-```tsx
-axios.post(url, { signal }); // [!code --]
+```ts
 const controller = new AbortController(); // [!code --]
 const signal = controller.signal; // [!code --]
 const abort = () => controller.abort(); // [!code --]
+axios.post(url, { signal }); // [!code --]
 
-axios.post(url, { signal }); // [!code ++]
 const { signal, abort } = useRequest(testService); // [!code ++]
+axios.post(url, { signal: signal.value }); // [!code ++]
 ```
 
 同时 `useRequest` 会在以下时机自动调用`abort`方法：
@@ -19,12 +19,12 @@ const { signal, abort } = useRequest(testService); // [!code ++]
 使用的是 `xhr` 或 `fetch` 请求，并添加了`signal` 参数 **(必须)**
 
 - 组件卸载时，还未返回结果的请求
-- 前置请求中止，发起新请求时自动中止前一个未完成的请求并忽略 promise 的响应，但是如果设置了`options.abortPrevious = false` 则不会前置请求中止，但是依旧会[竞态取消](./cancel-response.md)
+- 前置请求中止，发起新请求时自动中止前一个未完成的请求并忽略 promise 的响应，但是如果设置了`options.abortPrevious = false` 则默认不会中止，但是依旧会[竞态取消](./cancel-response.md)
 
 :::tip
 
 1. 手动点击**中止请求按钮**请把**Network**网速设置为 4G 或 3G **(网速快接口返回的很快，还没来得及中止就成功了，接口慢可以忽略这条)**
-2. 在**Network**中观察被中止掉的过期请求
+2. 在**Network**中观察被中止的过期请求
 
 :::
 
@@ -151,8 +151,7 @@ function generateComponent() {
                     { type: "error" },
                     { default: () => error.value.message }
                   ),
-                !error.value &&
-                  data.value &&
+                data.value &&
                   h("pre", null, JSON.stringify(data.value, null, 2)),
               ]
             ),

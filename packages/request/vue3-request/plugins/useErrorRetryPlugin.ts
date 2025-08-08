@@ -4,7 +4,7 @@ import { definePlugin } from "../utils/definePlugin";
 
 export default definePlugin((
   requestInstance,
-  { errorRetryCount, errorRetryInterval }
+  { errorRetryCount = 0, errorRetryInterval }
 ) => {
   const retryTimer = ref();
   const retryCount = ref(0);

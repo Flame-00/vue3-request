@@ -3,15 +3,15 @@ layout: home
 
 hero:
   name: "Vue3Request"
-  text: "小而美的Vue3 异步请求处理解决方案"
+  text: "小而美的Vue3异步处理解决方案"
   tagline: "让复杂的异步逻辑变得简单优雅，让重复的样板代码成为历史"
   actions:
     - theme: brand
       text: 快速开始
-      link: /introduce/
+      link: /guide/introduce/
     - theme: brand
       text: 演示
-      link: /demo/basic
+      link: /guide/demo/basic
 
 features:
   - icon: 🚀
@@ -86,19 +86,21 @@ yarn add vue3-request
     <div v-else-if="error">{{ error.message }}</div>
     <div v-else>{{ data }}</div>
     <button @click="refresh">刷新</button>
+    <button @click="abort">中止</button>
   </div>
 </template>
 
-<script setup>
-import { useRequest } from 'vue3-request'
+<script setup lang="ts">
+import { useRequest } from "vue3-request";
 
-// 定义你的 API 请求函数
-const fetchUserInfo = async () => {
-  const response = await fetch('/api/user')
-  return response.json()
-}
+const getUserInfo = async () => {
+  const response = await fetch("/api/userInfo", {
+    signal: signal.value,
+  });
+  return response.json();
+};
 
 // 一行代码搞定状态管理
-const { data, error, isLoading, refresh } = useRequest(fetchUserInfo)
+const { data, error, isLoading, signal, refresh, abort } = useRequest(getUserInfo); // [!code ++]
 </script>
 ```

@@ -12,8 +12,6 @@
 const { data, error, loading } = useRequest(testService);
 ```
 
-以下示例展示了 `useRequest` 与不同请求库的完美兼容性：
-
 :::demo
 
 ```vue
@@ -21,8 +19,9 @@ const { data, error, loading } = useRequest(testService);
   <section>
     <n-card title="模拟请求">
       <n-spin :show="isLoading">
-        <pre>{{ error ? error.message : data }}</pre>
-        <n-empty v-if="!error && !data" description="暂无数据"> </n-empty>
+        <pre v-if="data">{{ data }}</pre>
+        <pre v-else-if="error">{{ error.message }}</pre>
+        <n-empty size="huge" v-else description="暂无数据"> </n-empty>
       </n-spin>
     </n-card>
   </section>
@@ -30,9 +29,9 @@ const { data, error, loading } = useRequest(testService);
   <section>
     <n-card title="Axios">
       <n-spin :show="isLoadingAxios">
-        <pre>{{ errorAxios ? errorAxios.message : dataAxios }}</pre>
-        <n-empty v-if="!errorAxios && !dataAxios" description="暂无数据">
-        </n-empty>
+        <pre v-if="dataAxios">{{ dataAxios }}</pre>
+        <pre v-else-if="errorAxios">{{ errorAxios.message }}</pre>
+        <n-empty size="huge" v-else description="暂无数据"> </n-empty>
       </n-spin>
     </n-card>
   </section>
@@ -40,9 +39,9 @@ const { data, error, loading } = useRequest(testService);
   <section>
     <n-card title="Fetch">
       <n-spin :show="isLoadingFetch">
-        <pre>{{ errorFetch ? errorFetch.message : dataFetch }}</pre>
-        <n-empty v-if="!errorFetch && !dataFetch" description="暂无数据">
-        </n-empty>
+        <pre v-if="dataFetch">{{ dataFetch }}</pre>
+        <pre v-else-if="errorFetch">{{ errorFetch.message }}</pre>
+        <n-empty size="huge" v-else description="暂无数据"> </n-empty>
       </n-spin>
     </n-card>
   </section>
@@ -63,7 +62,7 @@ interface IResult {
 const testService = (): Promise<IResult> => {
   return new Promise((resolve, reject) => {
     console.log("testService");
-    // 模拟50%的几率出错
+    // 模拟50%的失败率来演示错误处理
     setTimeout(() => {
       if (Math.random() > 0.5) {
         resolve({
@@ -122,8 +121,6 @@ const { loading, run, runAsync } = useRequest(() => testService, {
 });
 ```
 
-### 两种执行方式的选择
-
 `useRequest` 提供了两种手动执行方式，以适应不同的使用场景：
 
 **🔸 `run` 方法**
@@ -168,9 +165,9 @@ runAsync()
     </n-flex>
     <hr />
     <n-spin :show="isLoading">
-      <n-empty size="huge" v-if="!error && !data" />
+      <pre v-if="data">{{ data }}</pre>
       <n-text type="error" v-else-if="error">{{ error.message }}</n-text>
-      <pre v-else>{{ data }}</pre>
+      <n-empty size="huge" v-else />
     </n-spin>
   </section>
 </template>
@@ -200,7 +197,7 @@ interface IName {
 const testService = (lastName: string): Promise<IName> => {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      // 模拟50%的几率出错
+      // 模拟50%的失败率来演示错误处理
       if (Math.random() > 0.5) {
         resolve({
           code: 200,
@@ -243,9 +240,9 @@ const { run, data, error, isLoading } = useRequest(testService, {
     </n-flex>
     <hr />
     <n-spin :show="isLoading">
-      <n-empty size="huge" v-if="!error && !data" />
+      <pre v-if="data">{{ data }}</pre>
       <n-text type="error" v-else-if="error">{{ error.message }}</n-text>
-      <pre v-else>{{ data }}</pre>
+      <n-empty size="huge" v-else />
     </n-spin>
   </section>
 </template>
@@ -275,7 +272,7 @@ interface IName {
 const testService = (lastName: string): Promise<IName> => {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      // 模拟50%的几率出错
+      // 模拟50%的失败率来演示错误处理
       if (Math.random() > 0.5) {
         resolve({
           code: 200,

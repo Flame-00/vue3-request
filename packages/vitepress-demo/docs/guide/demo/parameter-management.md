@@ -1,32 +1,32 @@
 # 参数管理
 
+## 概述
+
 `useRequest` 提供了完善的参数管理机制，让你能够灵活地处理请求参数，并在整个请求生命周期中追踪参数状态。
-
-## 核心概念
-
-### 📦 参数记录机制
 
 `useRequest` 返回的 `params` 会自动记录当次调用 `service` 的参数数组。例如：
 
 - 调用 `run(1, 2, 3)` → `params` 值为 `[1, 2, 3]`
 - 调用 `run('hello', { id: 1 })` → `params` 值为 `['hello', { id: 1 }]`
 
-### 🔄 生命周期参数传递
+在所有[生命周期](./lifecycle.md)回调中，都会提供 `params` 参数。例如：
 
-在所有[生命周期](./lifecycle.md)回调中，都会提供 `params` 参数：
+- `onBefore: (params) => {}`
+- `onSuccess: (data, params) => {}`
+- `onError: (error, params) => {}`
+- `onFinally: (params, data, error) => {}`
 
-- **`onBefore`**：请求发起前触发，可获取即将发送的参数
-- **`onSuccess`**：请求成功时触发，可获取成功请求的参数
-- **`onError`**：请求失败时触发，可获取失败请求的参数
-- **`onFinally`**：请求完成时触发，无论成功失败都可获取参数
-
-## 示例
+## 参数设置
 
 `useRequest` 提供了多种参数设置方式，适应不同的业务场景。
 
-### 🎯 方式一：默认参数 + 动态传参（推荐）
+### 🎯 默认参数 + 动态传参（推荐）
 
 这是最灵活的参数管理方式，结合了默认参数和动态传参的优势：
+
+- 通过 `run(newParams)` 可随时传入新参数
+- 所有参数变化都会被 `params` 准确记录
+- 享受完整的 TypeScript 类型提示
 
 :::demo
 
@@ -41,9 +41,9 @@
     </n-flex>
     <hr />
     <n-spin :show="isLoading">
-      <n-empty size="huge" v-if="!error && !data" />
+      <pre v-if="data">{{ data }}</pre>
       <n-text type="error" v-else-if="error">{{ error.message }}</n-text>
-      <pre v-else>{{ data }}</pre>
+      <n-empty size="huge" v-else />
     </n-spin>
     <hr />
     <h3>params: {{ params }}</h3>
@@ -75,7 +75,7 @@ const lastName = ref("范");
 const testService = (lastName: string): Promise<IResult> => {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      // 模拟50%的几率出错
+      // 模拟50%的失败率来演示错误处理
       if (Math.random() > 0.5) {
         resolve({
           code: 200,
@@ -97,13 +97,12 @@ const { run, data, params, error, isLoading } = useRequest(testService, {
 
 :::
 
-- ✅ **动态传参**：通过 `run(newParams)` 可随时传入新参数
-- ✅ **参数记录**：所有参数变化都会被 `params` 准确记录
-- ✅ **类型安全**：享受完整的 TypeScript 类型提示
-
-### 🏭 方式二：工厂函数模式
+### 🏭 工厂函数模式
 
 通过工厂函数包装 service，适用于需要对参数进行预处理的场景：
+
+- 需要对参数进行预处理或验证
+- 多个地方使用相同的参数处理逻辑
 
 :::demo
 
@@ -116,9 +115,9 @@ const { run, data, params, error, isLoading } = useRequest(testService, {
     </n-flex>
     <hr />
     <n-spin :show="isLoading">
-      <n-empty size="huge" v-if="!error && !data" />
+      <pre v-if="data">{{ data }}</pre>
       <n-text type="error" v-else-if="error">{{ error.message }}</n-text>
-      <pre v-else>{{ data }}</pre>
+      <n-empty size="huge" v-else />
     </n-spin>
     <hr />
     <h3>params: {{ params }}</h3>
@@ -150,7 +149,7 @@ const lastName = ref("范");
 const testService = (lastName: string): Promise<IResult> => {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      // 模拟50%的几率出错
+      // 模拟50%的失败率来演示错误处理
       if (Math.random() > 0.5) {
         resolve({
           code: 200,
@@ -190,10 +189,7 @@ const onClick = async () => {
 
 :::
 
-- ✅ **预处理**：需要对参数进行预处理或验证
-- ✅ **复用**：多个地方使用相同的参数处理逻辑
-
-### ❌ 方式三：闭包模式（不推荐）
+### ❌ 闭包模式（不推荐）
 
 将参数封装在闭包中，**存在多个严重缺陷，强烈不推荐使用**：
 
@@ -211,9 +207,9 @@ const onClick = async () => {
     </n-flex>
     <hr />
     <n-spin :show="isLoading">
-      <n-empty size="huge" v-if="!error && !data" />
+      <pre v-if="data">{{ data }}</pre>
       <n-text type="error" v-else-if="error">{{ error.message }}</n-text>
-      <pre v-else>{{ data }}</pre>
+      <n-empty size="huge" v-else />
     </n-spin>
     <h4 class="params-display">
       <span class="label">⚠️ 参数记录异常:</span>
@@ -260,7 +256,7 @@ const testService = (lastName: string): Promise<IResult> => {
   return new Promise((resolve, reject) => {
     console.log("实际接收到的参数:", lastName);
     setTimeout(() => {
-      // 模拟50%的几率出错
+      // 模拟50%的失败率来演示错误处理
       if (Math.random() > 0.5) {
         resolve({
           code: 200,

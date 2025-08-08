@@ -6,7 +6,7 @@ import type {
   PluginReturn,
 } from "./types";
 import { reactive } from "vue";
-import { composeMiddleware, neverPromise } from "./utils";
+import { composeMiddleware, isFunction, neverPromise } from "./utils";
 export class Request<D, P extends any[]> {
   currentRequestId: number = 0;
 
@@ -27,7 +27,6 @@ export class Request<D, P extends any[]> {
       isAborted: false,
       error: undefined,
       params: options?.defaultParams || [],
-      signal: undefined,
     }) as IState<D, P>;
   }
   setState = (s: Partial<IState<D, P>>) => {
@@ -77,10 +76,11 @@ export class Request<D, P extends any[]> {
   runAsync = async (...params: P): Promise<D | undefined> => {
     const requestId = ++this.currentRequestId;
 
-    const { isStaleTime, isReady } = this.executePlugin(
+    const { isReturn, isReady, ...rest } = this.executePlugin(
       "onBefore",
       this.state.params
     ); // 执行插件的onBefore方法
+
     if (!isReady) {
       return neverPromise();
     }
@@ -88,9 +88,9 @@ export class Request<D, P extends any[]> {
     params.length && this.setState({ params });
     this.loading(true);
 
-    if (isStaleTime) {
-      this.loading(false);
-      return this.state.data;
+    if (isReturn) {
+      this.loading(rest.isLoading || false);
+      return rest.data;
     }
     this.options.onBefore?.(this.state.params);
 
@@ -116,8 +116,8 @@ export class Request<D, P extends any[]> {
       }
 
       this.setState({ data: res, error: undefined });
-      this.executePlugin("onSuccess", res, this.state.params); // 执行插件的onSuccess方法
-      this.options.onSuccess?.(res, this.state.params);
+      this.executePlugin("onSuccess", res, params); // 执行插件的onSuccess方法
+      this.options.onSuccess?.(res, params);
       this.onFinished();
 
       return res;
@@ -133,7 +133,7 @@ export class Request<D, P extends any[]> {
         return neverPromise();
       }
       const error = err as Error;
-      this.setState({ error });
+      this.setState({ data: undefined, error });
       this.executePlugin("onError", error, this.state.params); // 执行插件的onError方法
       this.options.onError?.(error, this.state.params);
       this.onFinished();
@@ -156,6 +156,15 @@ export class Request<D, P extends any[]> {
 
   refreshAsync = async () => {
     return await this.runAsync(...this.state.params);
+  };
+
+  mutate = (data: D | ((data: D) => D)) => {
+    if (isFunction(data)) {
+      data(this.state.data as D);
+    } else {
+      this.setState({ data });
+    }
+    this.executePlugin("onMutate", this.state.data);
   };
 
   cancel = () => {

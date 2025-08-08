@@ -54,3 +54,5 @@ export const composeMiddleware = <D>(
 };
 
 export const neverPromise = () => new Promise<any>(() => {});
+
+export const isFunction = (fn: unknown) => fn instanceof Function;

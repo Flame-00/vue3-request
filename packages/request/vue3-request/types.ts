@@ -71,7 +71,7 @@ export interface IState<D, P extends any[]> {
   isAborted: boolean;
   error: Error | undefined;
   params: P;
-  signal: AbortSignal | undefined;
+  signal?: AbortSignal;
 }
 
 // 添加 useRequest 返回类型定义
@@ -83,7 +83,8 @@ export interface UseRequestReturnType<D, P extends any[]>
   runAsync: (...args: P) => Promise<D | undefined>;
   abort: () => void;
   refreshAsync: () => Promise<D | undefined>;
-  clearCache: () => void;
+  clearCache: (key?: string) => void;
+  mutate: (data: D | ((data: D) => D)) => void;
 }
 
 // export type DataType<T> = ExtractResultDataType<T>;
@@ -101,20 +102,25 @@ export type PluginReturn<D, P extends any[]> = Partial<{
   onFinally: (params: P, data: D, error: Error) => void; // 请求完成
   onError: (error: Error, params: P) => void; // 请求失败
   onCancel: () => void; // 取消请求
+  onMutate: (data: D | ((oldData?: D) => D)) => void; // 更新数据
   onRequest: (service: ServiceType<D, P>) => ServiceType<D, P>; // 请求
 }>;
 
 export type PluginMethodsReturn<D, P extends any[]> = Partial<{
-  servicePromise?: ReturnType<ServiceType<D, P>>;
-  signal?: AbortSignal;
-  isStaleTime?: boolean;
-  isReady?: boolean;
+  servicePromise: ReturnType<ServiceType<D, P>>;
+  signal: AbortSignal;
+  isReturn: boolean;
+  isReady: boolean;
+  data: D;
+  isLoading: boolean;
 }>;
 
 export type CacheParamsType<D = any, P = any> = {
   data: D;
   params: P;
   time: number;
+} & {
+  timer?: number;
 };
 
 export type CacheCallbackType<D = any, P = any> = ({
