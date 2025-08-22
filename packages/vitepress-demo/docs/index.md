@@ -82,7 +82,7 @@ yarn add vue3-request
 ```vue
 <template>
   <div>
-    <div v-if="isLoading">加载中...</div>
+    <div v-if="loading">加载中...</div>
     <div v-else-if="error">{{ error.message }}</div>
     <div v-else>{{ data }}</div>
     <button @click="refresh">刷新</button>
@@ -101,6 +101,6 @@ const getUserInfo = async () => {
 };
 
 // 一行代码搞定状态管理
-const { data, error, isLoading, signal, refresh, abort } = useRequest(getUserInfo); // [!code ++]
+const { data, error, loading, signal, refresh, abort } = useRequest(getUserInfo); // [!code ++]
 </script>
 ```

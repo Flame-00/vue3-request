@@ -1,47 +1,47 @@
 // @ts-ignore
 import { throttle } from "../utils/xe-utils/throttle";
-import { computed, toValue, watchEffect, onWatcherCleanup } from "vue";
-import { isNil } from "../utils";
+import { toValue, watchEffect, onWatcherCleanup } from "vue";
+import { warn } from "../utils";
 import { definePlugin } from "../utils/definePlugin";
 
-export default definePlugin((
-  requestInstance,
-  { throttleWait, throttleOptions }
-) => {
-  let throttledRun:
-    | (ReturnType<typeof throttle> & { cancel: () => void })
-    | null = null;
-  const throttleWaitRef = computed(() => toValue(throttleWait));
-  const throttleOptionsRef = computed(() => toValue(throttleOptions));
-  const originRunRef: typeof requestInstance.runAsync =
-    requestInstance.runAsync;
+export default definePlugin(
+  (requestInstance, { throttleWait, throttleOptions }) => {
+    let throttledRun:
+      | (ReturnType<typeof throttle> & { cancel: () => void })
+      | null = null;
+    const originRunRef: typeof requestInstance.runAsync =
+      requestInstance.runAsync;
 
-  watchEffect(() => {
-    if (isNil(throttleWaitRef.value)) return;
-    throttledRun = throttle(
-      (runAsync: typeof requestInstance.runAsync) => runAsync(),
-      throttleWaitRef.value,
-      throttleOptionsRef.value
-    ) as ReturnType<typeof throttle> & { cancel: () => void };
+    watchEffect(() => {
+      const { is, value: throttleWaitValue } = warn(toValue(throttleWait));
+      if (!is) return;
+      const throttleOptionsValue = toValue(throttleOptions);
+      
+      throttledRun = throttle(
+        (runAsync: typeof requestInstance.runAsync) => runAsync(),
+        throttleWaitValue,
+        throttleOptionsValue
+      ) as ReturnType<typeof throttle> & { cancel: () => void };
 
-    requestInstance.runAsync = (...params) => {
-      return new Promise((resolve, reject) => {
-        throttledRun(() => {
-          originRunRef(...params)
-            .then(resolve)
-            .catch(reject);
+      requestInstance.runAsync = (...params) => {
+        return new Promise((resolve, reject) => {
+          throttledRun(() => {
+            originRunRef(...params)
+              .then(resolve)
+              .catch(reject);
+          });
         });
+      };
+      onWatcherCleanup(() => {
+        throttledRun?.cancel();
+        requestInstance.runAsync = originRunRef;
       });
-    };
-    onWatcherCleanup(() => {
-      throttledRun?.cancel();
-      requestInstance.runAsync = originRunRef;
     });
-  });
 
-  return {
-    onCancel: () => {
-      throttledRun?.cancel();
-    },
-  };
-});
+    return {
+      onCancel: () => {
+        throttledRun?.cancel();
+      },
+    };
+  }
+);

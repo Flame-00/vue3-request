@@ -2,6 +2,8 @@
 
 `useRequest` 提供了 `refresh` 和 `refreshAsync` 方法，让您能够使用**上一次请求的参数**重新发起请求。这种方式在处理复杂参数时特别有用，避免了参数的重复管理。
 
+## 基本使用
+
 以用户信息管理为例：
 
 1. 首次调用 `getUserInfo(1)` 获取 ID 为 1 的用户信息
@@ -13,32 +15,28 @@
 ```vue
 <template>
   <section>
-    <n-button type="primary" @click="refresh"> refresh </n-button>
+    <n-button type="primary" @click="refresh"> Refresh </n-button>
     <hr />
-    <n-spin :show="isLoading">
-      <n-flex :warp="false" v-if="data">
-        <n-image
-          width="256"
-          height="256"
-          show-toolbar-tooltip
-          :src="data.data.avatar"
-        />
+    <n-spin :show="loading">
+      <n-flex :wrap="false" v-if="data">
+        <n-image show-toolbar-tooltip :src="data.data.avatar" style="flex:1;" />
         <div>
           <n-flex>
-            <n-text italic> id: </n-text>
-            <n-text depth="3"> {{ data.data.id }} </n-text>
-          </n-flex>
-          <n-flex>
-            <n-text italic> name: </n-text>
+            <n-text italic> 姓名: </n-text>
             <n-text depth="3"> {{ data.data.name }} </n-text>
           </n-flex>
           <n-flex>
-            <n-text italic> age: </n-text>
-            <n-text depth="3"> {{ data.data.age }} </n-text>
+            <n-text italic> 邮箱: </n-text>
+            <n-text depth="3"> {{ data.data.email }} </n-text>
           </n-flex>
           <n-flex>
-            <n-text italic> sex: </n-text>
-            <n-text depth="3"> {{ data.data.sex }} </n-text>
+            <n-text italic> 部门: </n-text>
+            <n-text depth="3"> {{ data.data.department }} </n-text>
+          </n-flex>
+
+          <n-flex>
+            <n-text italic> 身份: </n-text>
+            <n-text depth="3"> {{ data.data.roles }} </n-text>
           </n-flex>
         </div>
       </n-flex>
@@ -68,17 +66,18 @@ interface IResult {
   data: {
     id: string | number;
     name: string;
+    email: string;
     avatar: string;
-    age: number;
-    sex: string;
+    department: string;
+    roles: string;
   };
 }
 const message = useMessage();
 
-const testService = (id: number): Promise<IResult> => {
+const service = (id: number): Promise<IResult> => {
   message.info(`use-request-refresh-id -> "${id}"`);
   return new Promise((resolve, reject) => {
-    const random = Math.random() > 0.5 ? "female" : "male";
+    const gender = Math.random() > 0.5 ? "female" : "male";
     setTimeout(() => {
       // 模拟50%的失败率来演示错误处理
       if (Math.random() > 0.5) {
@@ -88,17 +87,22 @@ const testService = (id: number): Promise<IResult> => {
           data: {
             id,
             name: faker.person.fullName({
-              sex: random,
+              sex: gender,
             }),
+            email: faker.internet.email(),
             avatar: faker.image.personPortrait({
-              sex: random,
-              size: 256,
+              sex: gender,
+              size: 128,
             }),
-            sex: random,
-            age: faker.number.int({
-              min: 18,
-              max: 35,
-            }),
+            department: faker.helpers.arrayElement([
+              "技术部",
+              "产品部",
+              "运营部",
+              "设计部",
+              "市场部",
+            ]),
+
+            roles: faker.helpers.arrayElement(["admin", "user"]),
           },
         });
       } else {
@@ -114,8 +118,8 @@ const {
   data,
   params,
   error,
-  isLoading,
-} = useRequest(testService, {
+  loading,
+} = useRequest(service, {
   manual: true,
 });
 
@@ -126,3 +130,10 @@ getUserInfo(1);
 :::
 
 `refresh` 和 `refreshAsync` 的区别和 `run` 和 `runAsync` 是一致的。
+
+## Result
+
+| 参数         | 说明                                                             | 类型               |
+| ------------ | ---------------------------------------------------------------- | ------------------ |
+| refresh      | 使用上一次的 params，重新调用 `run`，同步执行                    | `() => void`       |
+| refreshAsync | 使用上一次的 params，重新调用 `runAsync`，异步执行，返回 Promise | `() => Promise<D>` |

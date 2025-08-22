@@ -6,10 +6,10 @@
 
 `useRequest` 是一个强大的异步数据管理 Hook，为你的 Vue3 应用提供完整的请求状态管理解决方案。
 
-只需传入一个[异步函数](../FAQ/#什么是异步函数?)作为第一个参数，`useRequest` 就会在组件初始化时自动执行该函数，并智能管理整个请求生命周期中的 `data`、`error`、`isLoading` 等状态，让你专注于业务逻辑而非状态管理的繁琐细节。
+只需传入一个[异步函数](../FAQ/#什么是异步函数?)作为第一个参数，`useRequest` 就会在组件初始化时自动执行该函数，并智能管理整个请求生命周期中的 `data`、`error`、`loading` 等状态，让你专注于业务逻辑而非状态管理的繁琐细节。
 
 ```ts
-const { data, error, loading } = useRequest(testService);
+const { data, error, loading } = useRequest(service);
 ```
 
 :::demo
@@ -18,30 +18,30 @@ const { data, error, loading } = useRequest(testService);
 <template>
   <section>
     <n-card title="模拟请求">
-      <n-spin :show="isLoading">
+      <n-spin :show="loading">
         <pre v-if="data">{{ data }}</pre>
         <pre v-else-if="error">{{ error.message }}</pre>
-        <n-empty size="huge" v-else description="暂无数据"> </n-empty>
+        <n-empty size="huge" v-else> </n-empty>
       </n-spin>
     </n-card>
   </section>
   <hr />
   <section>
     <n-card title="Axios">
-      <n-spin :show="isLoadingAxios">
+      <n-spin :show="loadingAxios">
         <pre v-if="dataAxios">{{ dataAxios }}</pre>
         <pre v-else-if="errorAxios">{{ errorAxios.message }}</pre>
-        <n-empty size="huge" v-else description="暂无数据"> </n-empty>
+        <n-empty size="huge" v-else> </n-empty>
       </n-spin>
     </n-card>
   </section>
   <hr />
   <section>
     <n-card title="Fetch">
-      <n-spin :show="isLoadingFetch">
+      <n-spin :show="loadingFetch">
         <pre v-if="dataFetch">{{ dataFetch }}</pre>
         <pre v-else-if="errorFetch">{{ errorFetch.message }}</pre>
-        <n-empty size="huge" v-else description="暂无数据"> </n-empty>
+        <n-empty size="huge" v-else> </n-empty>
       </n-spin>
     </n-card>
   </section>
@@ -59,9 +59,9 @@ interface IResult {
   request_id: string;
 }
 
-const testService = (): Promise<IResult> => {
+const service = (): Promise<IResult> => {
   return new Promise((resolve, reject) => {
-    console.log("testService");
+    console.log("service");
     // 模拟50%的失败率来演示错误处理
     setTimeout(() => {
       if (Math.random() > 0.5) {
@@ -77,7 +77,7 @@ const testService = (): Promise<IResult> => {
     }, 1000);
   });
 };
-const { run, data, error, isLoading } = useRequest(testService);
+const { run, data, error, loading } = useRequest(service);
 
 // Axios
 const axiosInstance = axios.create({
@@ -86,17 +86,17 @@ const axiosInstance = axios.create({
 // 响应拦截器，自己业务项目想怎么配置都可以
 axiosInstance.interceptors.response.use((response) => response.data);
 
-const testServiceAxios = (): Promise<IResult> => {
+const serviceAxios = (): Promise<IResult> => {
   return axiosInstance.get("https://v2.xxapi.cn/api/renjian");
 };
 const {
   data: dataAxios,
   error: errorAxios,
-  isLoading: isLoadingAxios,
-} = useRequest(testServiceAxios);
+  loading: loadingAxios,
+} = useRequest(serviceAxios);
 
 // Fetch
-const testServiceFetch = (): Promise<IResult> => {
+const serviceFetch = (): Promise<IResult> => {
   return fetch("https://v2.xxapi.cn/api/aiqinggongyu", {
     method: "GET",
   }).then((response) => response.json());
@@ -104,9 +104,20 @@ const testServiceFetch = (): Promise<IResult> => {
 const {
   data: dataFetch,
   error: errorFetch,
-  isLoading: isLoadingFetch,
-} = useRequest(testServiceFetch);
+  loading: loadingFetch,
+} = useRequest(serviceFetch);
 </script>
+```
+
+:::
+
+:::details 默认请求放在[`onMounted`](https://cn.vuejs.org/api/composition-api-lifecycle.html#onmounted)回调里执行，想在 [`setup`](https://cn.vuejs.org/api/sfc-script-setup.html#script-setup) 中直接执行，请使用[手动触发](#手动触发)
+
+```ts
+// 类似这样的做法
+onMounted(() => {
+  service();
+});
 ```
 
 :::
@@ -116,7 +127,7 @@ const {
 在某些业务场景中，你可能希望精确控制请求的执行时机。通过设置 `options.manual = true`，`useRequest` 将不会在组件初始化时自动执行，而是等待你主动调用 `run` 或 `runAsync` 方法。
 
 ```ts
-const { loading, run, runAsync } = useRequest(() => testService, {
+const { loading, run, runAsync } = useRequest(() => service, {
   manual: true, // [!code ++]
 });
 ```
@@ -164,7 +175,7 @@ runAsync()
       </n-button>
     </n-flex>
     <hr />
-    <n-spin :show="isLoading">
+    <n-spin :show="loading">
       <pre v-if="data">{{ data }}</pre>
       <n-text type="error" v-else-if="error">{{ error.message }}</n-text>
       <n-empty size="huge" v-else />
@@ -194,7 +205,7 @@ interface IName {
   data: string;
 }
 
-const testService = (lastName: string): Promise<IName> => {
+const service = (lastName: string): Promise<IName> => {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       // 模拟50%的失败率来演示错误处理
@@ -211,7 +222,7 @@ const testService = (lastName: string): Promise<IName> => {
   });
 };
 
-const { run, data, error, isLoading } = useRequest(testService, {
+const { run, data, error, loading } = useRequest(service, {
   manual: true, // [!code highlight]
   onSuccess: (data, params) => {
     message.success(`params -> "${params}"`);
@@ -239,7 +250,7 @@ const { run, data, error, isLoading } = useRequest(testService, {
       <n-button type="primary" @click="onClick"> Add the surname </n-button>
     </n-flex>
     <hr />
-    <n-spin :show="isLoading">
+    <n-spin :show="loading">
       <pre v-if="data">{{ data }}</pre>
       <n-text type="error" v-else-if="error">{{ error.message }}</n-text>
       <n-empty size="huge" v-else />
@@ -269,7 +280,7 @@ interface IName {
   data: string;
 }
 
-const testService = (lastName: string): Promise<IName> => {
+const service = (lastName: string): Promise<IName> => {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       // 模拟50%的失败率来演示错误处理
@@ -286,7 +297,7 @@ const testService = (lastName: string): Promise<IName> => {
   });
 };
 
-const { runAsync, data, error, isLoading, params } = useRequest(testService, {
+const { runAsync, data, error, loading, params } = useRequest(service, {
   manual: true, // [!code highlight]
 });
 
@@ -302,3 +313,22 @@ const onClick = async () => {
 ```
 
 :::
+
+## Result
+
+| 参数       | 说明                                                                                   | 类型                           |
+| ---------- | -------------------------------------------------------------------------------------- | ------------------------------ |
+| data       | Service 返回的数据                                                                     | `Ref<D \| undefined>`          |
+| error      | Service 抛出的异常                                                                     | `Ref<Error \| undefined>`      |
+| loading    | Service 是否正在执行                                                                   | `Ref<boolean>`                 |
+| run        | 手动执行 Service，同步执行                                                             | `(...params: P) => void`       |
+| runAsync   | 手动执行 Service，异步执行，返回 Promise                                               | `(...params: P) => Promise<D>` |
+| params     | 当次执行的 Service 的参数数组。比如你触发了 `run(1, 2, 3)`，则 params 等于 `[1, 2, 3]` | `Ref<P>`                       |
+| isFinished | Service 是否执行完成                                                                   | `Ref<boolean>`                 |
+| isAborted  | Service 是否中止                                                                       | `Ref<boolean>`                 |
+
+## Options
+
+| 参数   | 说明                                                                                | 类型      | 默认值  |
+| ------ | ----------------------------------------------------------------------------------- | --------- | ------- |
+| manual | 是否手动触发 Service，设置为 `true` 时，需要主动调用 `run` 或 `runAsync` 来执行请求 | `boolean` | `false` |

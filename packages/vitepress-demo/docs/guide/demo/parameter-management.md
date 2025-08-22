@@ -1,7 +1,5 @@
 # 参数管理
 
-## 概述
-
 `useRequest` 提供了完善的参数管理机制，让你能够灵活地处理请求参数，并在整个请求生命周期中追踪参数状态。
 
 `useRequest` 返回的 `params` 会自动记录当次调用 `service` 的参数数组。例如：
@@ -22,7 +20,7 @@
 
 ### 🎯 默认参数 + 动态传参（推荐）
 
-这是最灵活的参数管理方式，结合了默认参数和动态传参的优势：
+这是最灵活的参数管理方式，结合了默认参数`options.defaultParams`和动态传参的优势：
 
 - 通过 `run(newParams)` 可随时传入新参数
 - 所有参数变化都会被 `params` 准确记录
@@ -40,7 +38,7 @@
       </n-button>
     </n-flex>
     <hr />
-    <n-spin :show="isLoading">
+    <n-spin :show="loading">
       <pre v-if="data">{{ data }}</pre>
       <n-text type="error" v-else-if="error">{{ error.message }}</n-text>
       <n-empty size="huge" v-else />
@@ -72,7 +70,7 @@ interface IResult {
 const message = useMessage();
 const lastName = ref("范");
 
-const testService = (lastName: string): Promise<IResult> => {
+const service = (lastName: string): Promise<IResult> => {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       // 模拟50%的失败率来演示错误处理
@@ -89,8 +87,14 @@ const testService = (lastName: string): Promise<IResult> => {
   });
 };
 
-const { run, data, params, error, isLoading } = useRequest(testService, {
-  defaultParams: ["林"], // 自动执行时使用默认姓氏 // [!code ++]
+const { run, data, params, error, loading } = useRequest(service, {
+  defaultParams: ["林"], // [!code highlight]
+  onSuccess: (data, params) => {
+    message.success(`params -> "${params}"`);
+  },
+  onError: (error, params) => {
+    message.error(error.message);
+  },
 });
 </script>
 ```
@@ -114,7 +118,7 @@ const { run, data, params, error, isLoading } = useRequest(testService, {
       <n-button type="primary" @click="onClick"> Add the surname </n-button>
     </n-flex>
     <hr />
-    <n-spin :show="isLoading">
+    <n-spin :show="loading">
       <pre v-if="data">{{ data }}</pre>
       <n-text type="error" v-else-if="error">{{ error.message }}</n-text>
       <n-empty size="huge" v-else />
@@ -146,7 +150,7 @@ interface IResult {
 const message = useMessage();
 const lastName = ref("范");
 
-const testService = (lastName: string): Promise<IResult> => {
+const service = (lastName: string): Promise<IResult> => {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       // 模拟50%的失败率来演示错误处理
@@ -163,13 +167,13 @@ const testService = (lastName: string): Promise<IResult> => {
   });
 };
 
-const { run, data, params, error, isLoading } = useRequest(
+const { run, data, params, error, loading } = useRequest(
   (lastName: string) => {
     // 🏭 在工厂函数中可以对参数进行预处理 // [!code highlight]
     if (!lastName) {
       throw new Error("The surname cannot be left blank.");
     }
-    return testService(lastName);
+    return service(lastName);
   },
   {
     manual: true,
@@ -206,7 +210,7 @@ const onClick = async () => {
       <n-button type="primary" @click="onClick"> Add the surname </n-button>
     </n-flex>
     <hr />
-    <n-spin :show="isLoading">
+    <n-spin :show="loading">
       <pre v-if="data">{{ data }}</pre>
       <n-text type="error" v-else-if="error">{{ error.message }}</n-text>
       <n-empty size="huge" v-else />
@@ -252,7 +256,7 @@ interface IResult {
 const message = useMessage();
 const lastName = ref("范");
 
-const testService = (lastName: string): Promise<IResult> => {
+const service = (lastName: string): Promise<IResult> => {
   return new Promise((resolve, reject) => {
     console.log("实际接收到的参数:", lastName);
     setTimeout(() => {
@@ -271,8 +275,8 @@ const testService = (lastName: string): Promise<IResult> => {
 };
 
 // ❌ 闭包模式 - 参数通过闭包捕获，导致 params 记录失效
-const { run, data, params, error, isLoading } = useRequest(
-  () => testService(lastName.value), // 参数通过闭包传递，useRequest 无法感知 // [!code highlight]
+const { run, data, params, error, loading } = useRequest(
+  () => service(lastName.value), // 参数通过闭包传递，useRequest 无法感知 // [!code highlight]
   {
     manual: true,
     onFinally: (params, data, error) => {
@@ -386,3 +390,15 @@ const onClick = () => {
    ```ts
    run(/* 这里无法获得类型提示 */);
    ```
+
+## Options
+
+| 参数          | 说明                                                   | 类型 | 默认值 |
+| ------------- | ------------------------------------------------------ | ---- | ------ |
+| defaultParams | 默认参数数组，在自动模式下会作为初始参数传递给 Service | `P`  | `[]`   |
+
+## Result
+
+| 参数   | 说明                                                                                   | 类型     |
+| ------ | -------------------------------------------------------------------------------------- | -------- |
+| params | 当次执行的 Service 的参数数组。比如你触发了 `run(1, 2, 3)`，则 params 等于 `[1, 2, 3]` | `Ref<P>` |

@@ -4,7 +4,7 @@ import type {
   UseRequestReturnType,
   ServiceType,
 } from "./types";
-import { onUnmounted, toRefs } from "vue";
+import { onMounted, onUnmounted, toRefs } from "vue";
 import { Request } from "./request";
 import { clearCache } from "./utils/cache";
 
@@ -15,8 +15,6 @@ export function useRequestImpl<D, P extends any[]>(
 ): UseRequestReturnType<D, P> {
   const requestOptions = {
     manual: false,
-    abortPrevious: true, // 默认中止前一个未完成的请求
-    defaultParams: [] as unknown as P,
     ...options,
   };
 
@@ -25,9 +23,12 @@ export function useRequestImpl<D, P extends any[]>(
   requestInstance.pluginImpls = plugins.map((plugin) =>
     plugin(requestInstance, requestOptions)
   );
-  if (!requestOptions.manual) {
-    requestInstance.run(...requestOptions.defaultParams);
-  }
+  onMounted(() => {
+    if (!requestOptions.manual) {
+      const params = requestInstance.state.params;
+      requestInstance.run(...params);
+    }
+  });
 
   onUnmounted(requestInstance.cancel);
 

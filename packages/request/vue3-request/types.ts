@@ -1,7 +1,6 @@
 import { Ref, Reactive, ToRefs, WatchSource } from "vue";
 import { Request } from "./request";
 
-// 从嵌套函数中正确提取返回数据类型
 // export type ExtractResultDataType<T> = T extends (
 //   signal?: AbortSignal
 // ) => () => Promise<infer P>
@@ -10,7 +9,6 @@ import { Request } from "./request";
 //   ? P
 //   : never;
 
-// 提取内部函数的参数类型
 // export type ExtractInnerFunctionParams<T> = T extends (
 //   signal?: AbortSignal
 // ) => (...args: infer P) => any
@@ -18,8 +16,6 @@ import { Request } from "./request";
 //   : T extends (signal?: AbortSignal) => () => any
 //   ? any[]
 //   : never;
-
-// 回调函数类型定义
 
 export type ServiceType<D = any, P extends any[] = any> = (
   ...args: P
@@ -30,29 +26,31 @@ export type ServiceType<D = any, P extends any[] = any> = (
 // ) => ServiceType<D, P>;
 
 export type IOptions<D, P extends any[]> = Partial<{
-  onBefore: (params: P) => void; // 请求前
-  onSuccess: (data: D, params: P) => void; // 请求成功
-  onFinally: (params: P, data: D | undefined, error: Error | undefined) => void; // 请求完成
-  onError: (error: Error, params: P) => void; // 请求失败
-  manual: boolean; // 是否手动调用
-  defaultParams: P; // 默认参数
-  refreshDeps: WatchSource | WatchSource[] | object; // 依赖刷新参数
-  refreshDepsAction: () => void; // 依赖变化时执行
-  pollingInterval: number | Ref<number>; // 轮询间隔
-  pollingWhenHidden: boolean | Ref<boolean>; // 在页面隐藏时，是否继续轮询。如果设置为 false，在页面隐藏时会暂时停止轮询，页面重新显示时继续上次轮询。
-  errorRetryCount: number | Ref<number>; // 错误重试次数
-  errorRetryInterval: number | Ref<number>; // 错误重试间隔
-  refreshOnWindowFocus: boolean | Ref<boolean>; // 窗口聚焦时刷新
-  refocusTimespan: number | Ref<number>; // 重新聚焦时间
-  cacheKey: string; // 缓存key
-  cacheTime: number; // 缓存时间
-  staleTime: number; // 保鲜时间
-  ready: Ref<boolean> | (() => boolean); // 是否准备好
-  debounceWait: Ref<number> | number; // 防抖等待时间
+  onBefore: (params: P) => void;
+  onSuccess: (data: D, params: P) => void;
+  onFinally: (params: P, data?: D, error?: Error) => void;
+  onError: (error: Error, params: P) => void;
+  manual: boolean;
+  defaultParams: P;
+  refreshDeps: WatchSource | WatchSource[] | object;
+  refreshDepsAction: () => void;
+  pollingInterval: number | Ref<number>;
+  pollingWhenHidden: boolean | Ref<boolean>;
+  errorRetryCount: number | Ref<number>;
+  errorRetryInterval: number | Ref<number>;
+  refreshOnWindowFocus: boolean | Ref<boolean>;
+  refocusTimespan: number | Ref<number>;
+  cacheKey: string;
+  cacheTime: number;
+  staleTime: number;
+  setCache: (cacheKey: string, cacheData: CacheParamsType) => void;
+  getCache: (cacheKey: string) => CacheParamsType;
+  ready: Ref<boolean> | (() => boolean);
+  debounceWait: Ref<number> | number;
   debounceOptions: Reactive<DebounceOptionsType> | DebounceOptionsType;
-  throttleWait: Ref<number> | number; // 节流等待时间
+  throttleWait: Ref<number> | number;
   throttleOptions: Reactive<ThrottleOptionsType> | ThrottleOptionsType;
-  abortPrevious: boolean; // 是否中止前一个未完成的请求
+  abortPrevious: boolean;
 }>;
 
 type DebounceOptionsType = {
@@ -65,24 +63,23 @@ type ThrottleOptionsType = {
 };
 
 export interface IState<D, P extends any[]> {
-  data: D | undefined;
-  isLoading: boolean;
+  data?: D;
+  loading: boolean;
   isFinished: boolean;
   isAborted: boolean;
-  error: Error | undefined;
+  error?: Error;
   params: P;
-  signal?: AbortSignal;
+  signal: AbortSignal;
 }
 
-// 添加 useRequest 返回类型定义
 export interface UseRequestReturnType<D, P extends any[]>
   extends ToRefs<IState<D, P>> {
   run: (...args: P) => void;
   cancel: () => void;
   refresh: () => void;
-  runAsync: (...args: P) => Promise<D | undefined>;
+  runAsync: (...args: P) => Promise<D>;
   abort: () => void;
-  refreshAsync: () => Promise<D | undefined>;
+  refreshAsync: () => Promise<D>;
   clearCache: (key?: string) => void;
   mutate: (data: D | ((data: D) => D)) => void;
 }
@@ -97,13 +94,13 @@ export type Plugin<D = any, P extends any[] = any> = (
 ) => PluginReturn<D, P>;
 
 export type PluginReturn<D, P extends any[]> = Partial<{
-  onBefore: (params: P) => void; // 请求前
-  onSuccess: (data: D, params: P) => void; // 请求成功
-  onFinally: (params: P, data: D, error: Error) => void; // 请求完成
-  onError: (error: Error, params: P) => void; // 请求失败
-  onCancel: () => void; // 取消请求
-  onMutate: (data: D | ((oldData?: D) => D)) => void; // 更新数据
-  onRequest: (service: ServiceType<D, P>) => ServiceType<D, P>; // 请求
+  onBefore: (params: P) => void;
+  onSuccess: (data: D, params: P) => void;
+  onFinally: (params: P, data: D, error: Error) => void;
+  onError: (error: Error, params: P) => void;
+  onCancel: () => void;
+  onMutate: (data: D | ((data: D) => D)) => void;
+  onRequest: (service: ServiceType<D, P>) => ServiceType<D, P>;
 }>;
 
 export type PluginMethodsReturn<D, P extends any[]> = Partial<{
@@ -111,12 +108,12 @@ export type PluginMethodsReturn<D, P extends any[]> = Partial<{
   signal: AbortSignal;
   isReturn: boolean;
   isReady: boolean;
-  data: D;
-  isLoading: boolean;
+  data?: D;
+  loading: boolean;
 }>;
 
 export type CacheParamsType<D = any, P = any> = {
-  data: D;
+  data?: D;
   params: P;
   time: number;
 } & {

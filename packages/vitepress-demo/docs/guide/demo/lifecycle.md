@@ -7,7 +7,7 @@
 - ❌ **onError** - 请求失败或抛出异常时
 - 🏁 **onFinally** - 请求完成时（无论成功或失败）
 
-以下 Demo 演示了完整的用户信息获取流程，展示各个生命周期的使用场景：
+## 基本使用
 
 :::demo
 
@@ -18,30 +18,26 @@
       Obtain user information
     </n-button>
     <hr />
-    <n-spin :show="isLoading">
-      <n-flex :warp="false" v-if="data">
-        <n-image
-          width="256"
-          height="256"
-          show-toolbar-tooltip
-          :src="data.data.avatar"
-        />
+    <n-spin :show="loading">
+      <n-flex :wrap="false" v-if="data">
+        <n-image show-toolbar-tooltip :src="data.data.avatar" style="flex:1;" />
         <div>
           <n-flex>
-            <n-text italic> id: </n-text>
-            <n-text depth="3"> {{ data.data.id }} </n-text>
-          </n-flex>
-          <n-flex>
-            <n-text italic> name: </n-text>
+            <n-text italic> 姓名: </n-text>
             <n-text depth="3"> {{ data.data.name }} </n-text>
           </n-flex>
           <n-flex>
-            <n-text italic> age: </n-text>
-            <n-text depth="3"> {{ data.data.age }} </n-text>
+            <n-text italic> 邮箱: </n-text>
+            <n-text depth="3"> {{ data.data.email }} </n-text>
           </n-flex>
           <n-flex>
-            <n-text italic> sex: </n-text>
-            <n-text depth="3"> {{ data.data.sex }} </n-text>
+            <n-text italic> 部门: </n-text>
+            <n-text depth="3"> {{ data.data.department }} </n-text>
+          </n-flex>
+
+          <n-flex>
+            <n-text italic> 身份: </n-text>
+            <n-text depth="3"> {{ data.data.roles }} </n-text>
           </n-flex>
         </div>
       </n-flex>
@@ -70,17 +66,18 @@ interface IResult {
   data: {
     id: string;
     name: string;
+    email: string;
     avatar: string;
-    age: number;
-    sex: string;
+    department: string;
+    roles: string;
   };
 }
 
 const message = useMessage();
 
-const testService = (): Promise<IResult> => {
+const service = (): Promise<IResult> => {
   return new Promise((resolve, reject) => {
-    const random = Math.random() > 0.5 ? "female" : "male";
+    const gender = Math.random() > 0.5 ? "female" : "male";
     setTimeout(() => {
       // 模拟50%的失败率来演示错误处理
       if (Math.random() > 0.5) {
@@ -90,17 +87,22 @@ const testService = (): Promise<IResult> => {
           data: {
             id: faker.string.uuid(),
             name: faker.person.fullName({
-              sex: random,
+              sex: gender,
             }),
+            email: faker.internet.email(),
             avatar: faker.image.personPortrait({
-              sex: random,
-              size: 256,
+              sex: gender,
+              size: 128,
             }),
-            sex: random,
-            age: faker.number.int({
-              min: 18,
-              max: 35,
-            }),
+            department: faker.helpers.arrayElement([
+              "技术部",
+              "产品部",
+              "运营部",
+              "设计部",
+              "市场部",
+            ]),
+
+            roles: faker.helpers.arrayElement(["admin", "user"]),
           },
         });
       } else {
@@ -114,8 +116,8 @@ const {
   run: getUserInfo,
   data,
   error,
-  isLoading,
-} = useRequest(testService, {
+  loading,
+} = useRequest(service, {
   manual: true,
   onBefore: (params) => {
     message.info(`onBefore`);
@@ -134,3 +136,12 @@ const {
 ```
 
 :::
+
+## Options
+
+| 参数      | 说明                   | 类型                                           | 默认值 |
+| --------- | ---------------------- | ---------------------------------------------- | ------ |
+| onBefore  | Service 执行前触发     | `(params: P) => void`                          | -      |
+| onSuccess | Service resolve 时触发 | `(data: D, params: P) => void`                 | -      |
+| onError   | Service reject 时触发  | `(error: Error, params: P) => void`            | -      |
+| onFinally | Service 执行完成时触发 | `(params: P, data?: D, error?: Error) => void` | -      |

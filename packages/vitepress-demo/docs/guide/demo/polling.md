@@ -1,38 +1,32 @@
 # 轮询
 
-设置 `options.pollingInterval` 选项，`useRequest` 会定期重新执行请求，实现数据的自动刷新功能，让你的应用保持数据同步。
+通过设置 `options.pollingInterval` 选项，`useRequest` 会定期重新执行请求，实现数据的自动刷新功能，让你的应用保持数据同步
 
-- **自动轮询**：轮询会在第一次请求完成后开始计时
-- **智能清理**：组件卸载时会自动停止轮询
-- **响应式配置**：支持响应式的轮询间隔设置
-
-## 基本用法
+- 轮询会在第一次请求完成后开始计时
+- 组件卸载时或调用 [`cancel`](./cancel-response.md) 方法会自动停止轮询
 
 ```ts
-const { data, isLoading } = useRequest(getUserInfo, {
+const { data, loading } = useRequest(getUserInfo, {
   pollingInterval: 2000, // 每2秒轮询一次 [!code ++]
 });
 ```
 
 ## 页面隐藏时的轮询控制
 
-通过 `options.pollingWhenHidden` 选项，你可以控制当页面隐藏时是否继续轮询。这对于优化性能和节省资源非常有用。
+通过设置 `options.pollingWhenHidden` 选项，你可以控制当页面隐藏时是否继续轮询。这对于优化性能和节省资源非常有用，默认隐藏时不会停止轮询
 
 ```ts
-const { data, isLoading } = useRequest(getUserInfo, {
-  pollingInterval: 2000,
+const { data, loading } = useRequest(getUserInfo, {
   pollingWhenHidden: false, // 页面隐藏时暂停轮询 [!code ++]
 });
 ```
-
-以下示例模拟实时获取系统状态：
 
 :::demo
 
 ```vue
 <template>
   <section>
-    <n-spin :show="isLoading && !data && !error">
+    <n-spin :show="loading && !data && !error">
       <n-alert type="info" v-if="!pollingWhenHidden">
         尝试切换到其他标签页或最小化浏览器窗口，观察轮询行为的变化
       </n-alert>
@@ -50,7 +44,7 @@ const { data, isLoading } = useRequest(getUserInfo, {
     </n-spin>
     <n-flex vertical>
       <n-flex align="center">
-        <span>pollingInterval:</span>
+        <span>轮询间隔:</span>
         <n-input-number
           v-model:value="pollingInterval"
           :min="500"
@@ -58,9 +52,11 @@ const { data, isLoading } = useRequest(getUserInfo, {
         />
       </n-flex>
       <n-flex align="center">
-        <span>pollingWhenHidden:</span>
-        <n-switch :round="false" v-model:value="pollingWhenHidden" />
-        {{ pollingWhenHidden }}
+        <span>页面隐藏时是否继续轮询:</span>
+        <n-switch :round="false" v-model:value="pollingWhenHidden">
+          <template #checked>Yes</template>
+          <template #unchecked>No</template>
+        </n-switch>
       </n-flex>
     </n-flex>
   </section>
@@ -94,7 +90,6 @@ const getSystemStatus = (): Promise<SystemStatus> => {
     setTimeout(() => {
       pollCount++;
       const isOnline = Math.random() > 0.2;
-
       resolve({
         status: isOnline ? "online" : "offline",
         cpu: Math.floor(Math.random() * 100),
@@ -108,9 +103,9 @@ const getSystemStatus = (): Promise<SystemStatus> => {
 
 const pollingInterval = ref(2000);
 const pollingWhenHidden = ref(true);
-const { data, error, isLoading } = useRequest(getSystemStatus, {
-  pollingInterval,
-  pollingWhenHidden,
+const { data, error, loading } = useRequest(getSystemStatus, {
+  pollingInterval, // [!code highlight]
+  pollingWhenHidden, // [!code highlight]
 });
 </script>
 <style scoped>
@@ -124,3 +119,10 @@ const { data, error, isLoading } = useRequest(getSystemStatus, {
 ```
 
 :::
+
+## Options
+
+| 参数              | 说明                                 | 类型                      | 默认值 |
+| ----------------- | ------------------------------------ | ------------------------- | ------ |
+| pollingInterval   | 轮询间隔时间（毫秒），支持响应式变量 | `number \| Ref<number>`   | -      |
+| pollingWhenHidden | 页面隐藏时是否继续轮询               | `boolean \| Ref<boolean>` | `true` |

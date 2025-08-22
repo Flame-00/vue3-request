@@ -22,11 +22,12 @@ export class Request<D, P extends any[]> {
   ) {
     this.state = reactive({
       data: undefined,
-      isLoading: false,
-      isFinished: false,
-      isAborted: false,
       error: undefined,
       params: options?.defaultParams || [],
+      loading: false,
+      isFinished: false,
+      isAborted: false,
+      signal: new AbortController().signal,
     }) as IState<D, P>;
   }
   setState = (s: Partial<IState<D, P>>) => {
@@ -55,8 +56,8 @@ export class Request<D, P extends any[]> {
     }
   };
   // 设置加载状态
-  loading = (isLoading: boolean) => {
-    this.setState({ isLoading, isFinished: !isLoading });
+  loading = (loading: boolean) => {
+    this.setState({ loading, isFinished: !loading });
   };
   // 请求完成
   onFinished = () => {
@@ -73,29 +74,29 @@ export class Request<D, P extends any[]> {
       this.state.error
     );
   };
-  runAsync = async (...params: P): Promise<D | undefined> => {
+  runAsync = async (...params: P): Promise<D> => {
     const requestId = ++this.currentRequestId;
 
+    // 执行插件的onBefore方法
     const { isReturn, isReady, ...rest } = this.executePlugin(
       "onBefore",
-      this.state.params
-    ); // 执行插件的onBefore方法
+      params
+    );
 
     if (!isReady) {
       return neverPromise();
     }
-
-    params.length && this.setState({ params });
+    this.setState({ params });
     this.loading(true);
 
     if (isReturn) {
-      this.loading(rest.isLoading || false);
-      return rest.data;
+      this.loading(rest.loading || false);
+      return rest.data as D;
     }
-    this.options.onBefore?.(this.state.params);
+    this.options.onBefore?.(params);
 
     try {
-      const serviceWrapper = () => this.service(...this.state.params);
+      const serviceWrapper = () => this.service(...params);
 
       let { servicePromise } = this.executePlugin("onRequest", serviceWrapper);
 
@@ -104,7 +105,6 @@ export class Request<D, P extends any[]> {
         servicePromise = serviceWrapper();
       }
       const res = await servicePromise;
-
       // console.log(
       //   "success 竞态取消 ->",
       //   requestId !== this.currentRequestId
@@ -134,15 +134,15 @@ export class Request<D, P extends any[]> {
       }
       const error = err as Error;
       this.setState({ data: undefined, error });
-      this.executePlugin("onError", error, this.state.params); // 执行插件的onError方法
-      this.options.onError?.(error, this.state.params);
+      this.executePlugin("onError", error, params); // 执行插件的onError方法
+      this.options.onError?.(error, params);
       this.onFinished();
 
       throw error;
     }
   };
 
-  run = (...params: P) => {
+  run = (...params: P) => { 
     this.runAsync(...params).catch((error) => {
       if (!this.options.onError) {
         console.error(error);

@@ -17,9 +17,13 @@ export const setRequestCache = <D, P extends any[]>(
     })
     .catch(() => {})
     .finally(() => {
-      console.log("完成了，删了requestCache 中的key=>", cacheKey, requestCache, requestCache.size);
+      console.log(
+        "完成了，删了requestCache 中的key=>",
+        cacheKey,
+        requestCache,
+        requestCache.size
+      );
       clearRequestCache(cacheKey);
-      console.log(requestCache, "requestCache", requestCache.size);
     });
 };
 
@@ -28,5 +32,7 @@ export const getRequestCache = (cacheKey: string) => {
 };
 
 export const clearRequestCache = (cacheKey?: string) => {
-  cacheKey ? requestCache.delete(cacheKey) : requestCache.clear();
+  cacheKey && typeof cacheKey === "string"
+    ? requestCache.delete(cacheKey)
+    : requestCache.clear();
 };

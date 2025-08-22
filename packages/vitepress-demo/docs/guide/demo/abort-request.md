@@ -2,7 +2,7 @@
 
 `useRequest` 返回了 `signal`参数 和 `abort`方法，用于中止尚未完成的接口请求
 
-这样可以省去开发者自己定义 `new AbortController()`和手动定义`abort`方法的繁琐
+这样可以省去开发者自己定义 [`new AbortController()`](https://developer.mozilla.org/zh-CN/docs/Web/API/AbortController)和手动定义`abort`方法的繁琐
 
 ```ts
 const controller = new AbortController(); // [!code --]
@@ -10,7 +10,7 @@ const signal = controller.signal; // [!code --]
 const abort = () => controller.abort(); // [!code --]
 axios.post(url, { signal }); // [!code --]
 
-const { signal, abort } = useRequest(testService); // [!code ++]
+const { signal, abort } = useRequest(service); // [!code ++]
 axios.post(url, { signal: signal.value }); // [!code ++]
 ```
 
@@ -28,30 +28,22 @@ axios.post(url, { signal: signal.value }); // [!code ++]
 
 :::
 
-## `signal` and `abort()`
+## 基本使用
 
 :::demo
 
 ```vue
 <template>
-  <ChildComponent v-if="show" />
-  <hr />
   <n-button type="primary" ghost @click="show = !show">{{
-    show ? "hidden" : "show"
+    show ? "Destroy child component" : "Create child component"
   }}</n-button>
+  <hr />
+  <ChildComponent v-if="show" />
 </template>
 <script setup lang="ts">
 import { useRequest } from "@async-handler/request/vue3-request";
 import { h, ref } from "vue";
-import {
-  NSpin,
-  NButton,
-  NInput,
-  NEmpty,
-  NFlex,
-  NText,
-  useMessage,
-} from "naive-ui";
+import { NSpin, NButton, NEmpty, NFlex, NText, useMessage } from "naive-ui";
 import faker from "@/utils/faker";
 import axios from "axios";
 
@@ -68,7 +60,6 @@ function generateComponent() {
       }
 
       const message = useMessage();
-      const lastName = ref("李");
 
       // Axios
       const axiosInstance = axios.create({
@@ -77,56 +68,45 @@ function generateComponent() {
       // 响应拦截器，自己业务项目想怎么配置都可以
       axiosInstance.interceptors.response.use((response) => response.data);
 
-      const testService = (): Promise<IResult> => {
+      const service = (): Promise<IResult> => {
         return axiosInstance.get("https://v2.xxapi.cn/api/aiqinggongyu", {
           signal: signal.value,
         });
       };
 
-      const { run, data, error, signal, isLoading, abort } = useRequest(
-        testService,
-        {
-          manual: true,
-          onSuccess: (data, params) => {
-            message.success(`params -> "${params}"`);
-          },
-          onError: (error, params) => {
-            message.error(error.message);
-          },
-        }
-      );
+      const { run, data, error, signal, loading, abort } = useRequest(service, {
+        manual: true,
+        onSuccess: (data) => {
+          message.success(data.msg);
+        },
+        onError: (error) => {
+          message.error(error.message);
+        },
+      });
 
       return () => {
         return h("div", [
           h("section", [
             h(NFlex, () => [
-              h(NInput, {
-                type: "text",
-                placeholder: "输入姓氏",
-                value: lastName.value,
-                "onUpdate:value": (value) => {
-                  lastName.value = value;
-                },
-              }),
               h(
                 NButton,
                 {
                   type: "primary",
-                  onClick: () => run(lastName.value),
+                  onClick: run,
                 },
-                () => "Add the surname"
+                () => "Run"
               ),
               h(
                 NButton,
                 {
                   type: "primary",
                   onClick: () => {
-                    run(lastName.value);
-                    run(lastName.value);
-                    run(lastName.value);
+                    run();
+                    run();
+                    run();
                   },
                 },
-                () => "Add the surname x3"
+                () => "Run x3"
               ),
               h(
                 NButton,
@@ -134,14 +114,14 @@ function generateComponent() {
                   type: "error",
                   onClick: abort,
                 },
-                () => "abort"
+                () => "Abort"
               ),
             ]),
             h("hr"),
             h(
               NSpin,
               {
-                show: isLoading.value,
+                show: loading.value,
               },
               () => [
                 !error.value && !data.value && h(NEmpty, { size: "huge" }),
@@ -166,3 +146,10 @@ const ChildComponent = generateComponent();
 ```
 
 :::
+
+## Result
+
+| 参数   | 说明                                                                                                                          | 类型               |
+| ------ | ----------------------------------------------------------------------------------------------------------------------------- | ------------------ |
+| signal | [`AbortController`](https://developer.mozilla.org/zh-CN/docs/Web/API/AbortController) 的信号对象，用于传递给 `xhr` 或 `fetch` | `Ref<AbortSignal>` |
+| abort  | 中止当前请求                                                                                                                  | `() => void`       |

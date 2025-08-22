@@ -28,7 +28,6 @@ export default defineConfig({
       pattern: "https://github.com/fslflame/vue3-request",
       text: "在 GitHub 上编辑此页面",
     },
-    externalLinkIcon: true,
     search: {
       provider: "local",
     },
@@ -41,7 +40,7 @@ export default defineConfig({
     },
     outline: {
       level: "deep",
-      label: "目录",
+      label: "本页目录",
     },
     sidebar: {
       "/guide/": [
@@ -70,10 +69,10 @@ export default defineConfig({
             { text: "轮询", link: "/guide/demo/polling" },
             { text: "Ready", link: "/guide/demo/ready" },
             { text: "缓存 & SWR", link: "/guide/demo/cache" },
-            { text: "请求重试", link: "/guide/demo/retry" },
+            { text: "错误重试", link: "/guide/demo/retry" },
             { text: "节流", link: "/guide/demo/throttle" },
             { text: "防抖", link: "/guide/demo/debounce" },
-            { text: "屏幕聚焦重新请求", link: "/guide/demo/focus-rerequest" },
+            { text: "屏幕聚焦重新请求", link: "/guide/demo/focus-refresh" },
           ],
         },
         {

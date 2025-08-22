@@ -15,7 +15,7 @@ const { ...ReturnValues } = useRequest(Service, Options, Plugins);
 
 接口返回的数据。
 
-### isLoading <Badge text="响应式" />
+### loading <Badge text="响应式" />
 
 - **类型：** `Ref<boolean>`
 - **默认值：** `false`
@@ -77,7 +77,7 @@ const { ...ReturnValues } = useRequest(Service, Options, Plugins);
 - 停止[轮询](#pollinginterval)功能
 
 ::: warning 注意
-这里说的取消**并不是真正的停止请求**，只是取消了对 [data](#data) 的赋值以及 [isLoading](#isloading) 重置为 `false` 当前**已发出**的接口请求依旧会继续进行
+这里说的取消**并不是真正的停止请求**，只是取消了对 [data](#data) 的赋值以及 [loading](#loading) 重置为 `false` 当前**已发出**的接口请求依旧会继续进行
 :::
 
 ### refresh
@@ -343,7 +343,7 @@ type ThrottleOptions = {
 import { useRequest } from "@async-handler/request/vue3-request";
 
 // 自动请求
-const { data, isLoading, error } = useRequest(fetchUser);
+const { data, loading, error } = useRequest(fetchUser);
 
 // 手动请求
 const { data, run } = useRequest(fetchUser, { manual: true });

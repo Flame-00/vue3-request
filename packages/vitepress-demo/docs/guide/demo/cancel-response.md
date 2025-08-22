@@ -15,15 +15,17 @@
 - 组件卸载时，正在进行的 promise
 - 竞态取消，当上一次 promise 还没返回时，又发起了下一次 promise，则会忽略上一次 promise 的响应
 
+## 基本使用
+
 :::demo
 
 ```vue
 <template>
-  <ChildComponent v-if="show" />
-  <hr />
   <n-button type="primary" ghost @click="show = !show">{{
-    show ? "hidden" : "show"
+    show ? "Destroy child component" : "Create child component"
   }}</n-button>
+  <hr />
+  <ChildComponent v-if="show" />
 </template>
 <script setup lang="ts">
 import { useRequest } from "@async-handler/request/vue3-request";
@@ -51,10 +53,9 @@ function generateComponent() {
       }
 
       const message = useMessage();
-
       const lastName = ref("李");
 
-      const testService = (lastName: string): Promise<IResult> => {
+      const service = (lastName: string): Promise<IResult> => {
         return new Promise((resolve, reject) => {
           setTimeout(() => {
             // 模拟50%的失败率来演示错误处理
@@ -71,7 +72,7 @@ function generateComponent() {
         });
       };
 
-      const { run, data, error, isLoading, cancel } = useRequest(testService, {
+      const { run, data, error, loading, cancel } = useRequest(service, {
         manual: true,
         onSuccess: (data, params) => {
           message.success(`params -> "${params}"`);
@@ -119,14 +120,14 @@ function generateComponent() {
                   type: "error",
                   onClick: cancel,
                 },
-                () => "cancel"
+                () => "Cancel"
               ),
             ]),
             h("hr"),
             h(
               NSpin,
               {
-                show: isLoading.value,
+                show: loading.value,
               },
               () => [
                 !error.value && !data.value && h(NEmpty, { size: "huge" }),
@@ -151,3 +152,9 @@ const ChildComponent = generateComponent();
 ```
 
 :::
+
+## Result
+
+| 参数   | 说明                                                            | 类型         |
+| ------ | --------------------------------------------------------------- | ------------ |
+| cancel | 忽略当前 Promise 的响应，不会中止请求执行，只是忽略响应结果 | `() => void` |

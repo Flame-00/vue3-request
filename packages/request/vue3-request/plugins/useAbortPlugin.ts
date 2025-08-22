@@ -1,9 +1,9 @@
 import { definePlugin } from "../utils/definePlugin";
 
-export default definePlugin((requestInstance) => {
+export default definePlugin((requestInstance, { abortPrevious = true }) => {
   let controller: AbortController | null = null;
-  // 初始化信号
-  const initSignal = () => {
+  // 生成新的信号，并设置到state中
+  const initNewSignal = () => {
     controller = new AbortController();
 
     requestInstance.setState({
@@ -29,14 +29,10 @@ export default definePlugin((requestInstance) => {
 
   return {
     onBefore: () => {
-      if (
-        typeof requestInstance.options.abortPrevious === "boolean" &&
-        requestInstance.options.abortPrevious
-      ) {
+      if (typeof abortPrevious === "boolean" && abortPrevious) {
         requestInstance.abort();
       }
-
-      initSignal();
+      initNewSignal();
     },
     onRequest: (service) => {
       return service;

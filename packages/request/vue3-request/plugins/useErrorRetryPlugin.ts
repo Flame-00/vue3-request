@@ -19,7 +19,7 @@ export default definePlugin((
     retryCount.value++;
 
     const { value } = warn(toValue(errorRetryCount), true);
-    const infiniteRetry = value === 1;
+    const infiniteRetry = value === -1;
     const hasRetryCount = retryCount.value <= value;
 
     if (infiniteRetry || hasRetryCount) {

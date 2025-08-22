@@ -41,14 +41,14 @@ yarn add vue3-request
   // 使用导入的模块
   const app = createApp({
     setup() {
-      const { data, isLoading, run } = useRequest(async () => {
+      const { data, loading, run } = useRequest(async () => {
         const response = await fetch("/api/data");
         return response.json();
       });
 
       return {
         data,
-        isLoading,
+        loading,
         fetchData: run,
       };
     },

@@ -1,7 +1,5 @@
 # 数据更改
 
-## 概述
-
 `useRequest` 提供了 `mutate` 方法，允许你直接修改当前的数据状态而无需重新发起请求。这在实现乐观更新、表单数据处理、用户交互反馈等场景中非常有用。
 
 ```ts
@@ -36,31 +34,33 @@ const newData = computed(() => `${data.value} 是个肌肉男。`);
       Obtain user information
     </n-button>
     <hr />
-    <n-spin :show="isLoading">
-      <n-flex :warp="false" v-if="data">
+    <n-spin :show="loading">
+      <n-flex :wrap="false" v-if="data">
         <n-image
-          width="256"
-          height="256"
+          width="128"
+          height="128"
+          style="flex:1;"
           show-toolbar-tooltip
           :src="data.data.avatar"
         />
         <n-flex vertical justify="space-between">
           <div>
             <n-flex>
-              <n-text italic> id: </n-text>
-              <n-text depth="3"> {{ data.data.id }} </n-text>
-            </n-flex>
-            <n-flex>
-              <n-text italic> name: </n-text>
+              <n-text italic> 姓名: </n-text>
               <n-text depth="3"> {{ data.data.name }} </n-text>
             </n-flex>
             <n-flex>
-              <n-text italic> age: </n-text>
-              <n-text depth="3"> {{ data.data.age }} </n-text>
+              <n-text italic> 邮箱: </n-text>
+              <n-text depth="3"> {{ data.data.email }} </n-text>
             </n-flex>
             <n-flex>
-              <n-text italic> sex: </n-text>
-              <n-text depth="3"> {{ data.data.sex }} </n-text>
+              <n-text italic> 部门: </n-text>
+              <n-text depth="3"> {{ data.data.department }} </n-text>
+            </n-flex>
+
+            <n-flex>
+              <n-text italic> 身份: </n-text>
+              <n-text depth="3"> {{ data.data.roles }} </n-text>
             </n-flex>
           </div>
           <n-flex align="end">
@@ -95,15 +95,16 @@ interface IResult {
   data: {
     id: string;
     name: string;
+    email: string;
     avatar: string;
-    age: number;
-    sex: string;
+    department: string;
+    roles: string;
   };
 }
 
 const message = useMessage();
 
-const testService = (): Promise<IResult> => {
+const service = (): Promise<IResult> => {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       resolve({
@@ -112,9 +113,10 @@ const testService = (): Promise<IResult> => {
         data: {
           id: "fsl082618",
           name: "Flame",
+          email: "flame@example.com",
           avatar: "https://i.meee.com.tw/Ji2PRvi.jpg",
-          sex: "male",
-          age: 24,
+          department: "技术部",
+          roles: "admin",
         },
       });
     }, 1000);
@@ -126,30 +128,35 @@ const {
   data,
   mutate,
   error,
-  isLoading,
-} = useRequest(testService, {
+  loading,
+} = useRequest(service, {
   manual: true,
 });
 
 getUserInfo();
 
 const mutateInfo = () => {
-  const random = Math.random() > 0.5 ? "female" : "male";
+  const gender = Math.random() > 0.5 ? "female" : "male";
   mutate((data) => {
     data.data = {
       id: faker.string.uuid(),
       name: faker.person.fullName({
-        sex: random,
+        sex: gender,
       }),
+      email: faker.internet.email(),
       avatar: faker.image.personPortrait({
-        sex: random,
-        size: 256,
+        sex: gender,
+        size: 128,
       }),
-      sex: random,
-      age: faker.number.int({
-        min: 18,
-        max: 35,
-      }),
+      department: faker.helpers.arrayElement([
+        "技术部",
+        "产品部",
+        "运营部",
+        "设计部",
+        "市场部",
+      ]),
+
+      roles: faker.helpers.arrayElement(["admin", "user"]),
     };
   });
 };
@@ -167,7 +174,7 @@ const mutateInfo = () => {
 ```vue
 <template>
   <section>
-    <n-spin :show="isLoading">
+    <n-spin :show="loading">
       <div v-if="data">
         <n-thing>
           <template #header>
@@ -197,7 +204,7 @@ const mutateInfo = () => {
           </template>
         </n-thing>
       </div>
-      <n-empty v-else description="暂无数据" />
+      <n-empty v-else />
     </n-spin>
   </section>
 </template>
@@ -261,7 +268,7 @@ const likeRequest = (liked: boolean): Promise<void> => {
   });
 };
 
-const { data, isLoading, mutate } = useRequest(getArticle);
+const { data, loading, mutate } = useRequest(getArticle);
 
 const handleLike = async () => {
   // 保存原始数据用于回滚
@@ -294,11 +301,8 @@ const { runAsync } = useRequest(likeRequest, {
 
 :::
 
-## 备注
+## Result
 
-`mutate` 方法在以下场景中特别有用：
-
-- **🎯 乐观更新**：提升用户体验，先更新 UI 再发送请求
-- **📝 表单处理**：实时更新表单数据状态
-- **🔧 本地操作**：无需请求的纯前端数据变更
-- **⚡ 快速反馈**：用户操作的即时响应
+| 参数   | 说明                       | 类型                                                                  |
+| ------ | -------------------------- | --------------------------------------------------------------------- |
+| mutate | 直接修改`data` | `(data: D \| ((data: D) => D)) => void` |

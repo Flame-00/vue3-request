@@ -1,8 +1,8 @@
-import { ref, toValue, watch } from "vue";
+import { toValue, watch } from "vue";
 import { definePlugin } from "../utils/definePlugin";
 
 export default definePlugin(
-  (requestInstance, { manual, ready = ref(true), defaultParams = [] }) => {
+  (requestInstance, { manual, ready = true, defaultParams = [] }) => {
     const unwatch = watch(
       () => toValue(ready),
       (value) => {
