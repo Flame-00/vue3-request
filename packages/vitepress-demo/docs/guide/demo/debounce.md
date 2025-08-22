@@ -12,7 +12,7 @@ const { data, run } = useRequest(searchService, {
 });
 ```
 
-VueRequest 的防抖是使用 [lodash](https://lodash.com/) 提供的 [debounce](https://lodash.com/docs/4.17.15#debounce) 实现的
+Vue3Request 的防抖是使用 [lodash](https://lodash.com/) 提供的 [debounce](https://lodash.com/docs/4.17.15#debounce) 实现的
 
 你可以通过`options.debounceOptions` 来自定义 `debounce` 的行为。
 

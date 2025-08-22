@@ -12,7 +12,7 @@ const { data, run } = useRequest(searchService, {
 });
 ```
 
-VueRequest 的节流是使用 [lodash](https://lodash.com/) 提供的 [throttle](https://lodash.com/docs/4.17.15#throttle) 实现的，`options.throttleOptions.leading` 和 `options.throttleOptions.trailing` 选项默认为 true，**因此，多次触发 throttle 会在结束后再调用一次**。
+Vue3Request 的节流是使用 [lodash](https://lodash.com/) 提供的 [throttle](https://lodash.com/docs/4.17.15#throttle) 实现的，`options.throttleOptions.leading` 和 `options.throttleOptions.trailing` 选项默认为 true，**因此，多次触发 throttle 会在结束后再调用一次**。
 
 你可以通过`options.throttleOptions` 来自定义 `throttle` 的行为。
 
