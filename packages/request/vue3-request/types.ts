@@ -25,7 +25,8 @@ export type ServiceType<D = any, P extends any[] = any> = (
 //   signal?: AbortSignal
 // ) => ServiceType<D, P>;
 
-export type IOptions<D, P extends any[]> = Partial<{
+// 基础选项类型
+export type BaseOptions<D, P extends any[]> = Partial<{
   onBefore: (params: P) => void;
   onSuccess: (data: D, params: P) => void;
   onFinally: (params: P, data?: D, error?: Error) => void;
@@ -88,9 +89,9 @@ export interface UseRequestReturnType<D, P extends any[]>
 
 // export type ParamsType<T> = ExtractInnerFunctionParams<T>;
 
-export type Plugin<D = any, P extends any[] = any> = (
+export type Plugin<D = any, P extends any[] = any, O = {}> = (
   requestInstance: Request<D, P>,
-  options: IOptions<D, P>
+  options: BaseOptions<D, P> & O
 ) => PluginReturn<D, P>;
 
 export type PluginReturn<D, P extends any[]> = Partial<{

@@ -35,7 +35,9 @@ export default definePlugin((requestInstance, { abortPrevious = true }) => {
       initNewSignal();
     },
     onRequest: (service) => {
-      return service;
+      return () => {
+        return service();
+      };
     },
     onCancel: () => {
       requestInstance.abort();

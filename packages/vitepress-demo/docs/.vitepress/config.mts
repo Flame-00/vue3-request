@@ -26,7 +26,7 @@ export default defineConfig({
     },
     editLink: {
       pattern: "https://github.com/fslflame/vue3-request",
-      text: "在 GitHub 上编辑此页面",
+      text: "在 GitHub 上为此开源项目点个Star吧！",
     },
     search: {
       provider: "local",

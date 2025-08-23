@@ -1,5 +1,5 @@
 import type {
-  IOptions,
+  BaseOptions,
   Plugin,
   UseRequestReturnType,
   ServiceType,
@@ -8,16 +8,15 @@ import { onMounted, onUnmounted, toRefs } from "vue";
 import { Request } from "./request";
 import { clearCache } from "./utils/cache";
 
-export function useRequestImpl<D, P extends any[]>(
+export function useRequestImpl<D, P extends any[] = any[], O = {}>(
   service: ServiceType<D, P>,
-  options: IOptions<D, P>,
-  plugins: Plugin<D, P>[]
+  options: BaseOptions<D, P> & O,
+  plugins: Plugin<D, P, O>[]
 ): UseRequestReturnType<D, P> {
   const requestOptions = {
     manual: false,
     ...options,
   };
-
   const requestInstance = new Request<D, P>(service, requestOptions);
 
   requestInstance.pluginImpls = plugins.map((plugin) =>
