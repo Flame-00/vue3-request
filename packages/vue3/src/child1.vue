@@ -16,80 +16,76 @@ import { useRequest, definePlugin } from "@async-handler/request/vue3-request";
 // import { useRequest, definePlugin, type Options } from "vue-request";
 import { NSpin } from "naive-ui";
 
+interface IResult {
+  code: number;
+  msg: string;
+  data: {
+    name: string;
+    age: number;
+  };
+}
 
-// 模拟请求示例
-const service = (): Promise<number> => {
-  return new Promise((resolve, reject) => {
+const service = ({ id }: { id: number }): Promise<IResult> => {
+  return new Promise((resolve) => {
     setTimeout(() => {
-      if (Math.random() > 0.5) {
-        reject(new Error('模拟请求失败'));
-      } else {
-        resolve(Date.now());
-      }
-    }, 500);
+      resolve({
+        code: 200,
+        msg: "success",
+        data: {
+          name: "zs",
+          age: 24,
+        },
+      });
+    }, 1000);
   });
 };
 
-// 定义插件选项类型
-interface LogOptions {
-  logLevel?: "info" | "warn" | "error";
-  logPrefix?: string;
+interface IPlugin {
+  level: string
 }
 
-const plugin = definePlugin<number, [], LogOptions>(
+const customPlugin = definePlugin<IResult, [{ id: number }], IPlugin>(
   (requestInstance, options) => {
-    const { logLevel = "info", logPrefix = "[Request]" } = options;
-    const log = (level: keyof Console, message: string, timestamp?: number) => {
-      console[level as keyof Console](`${logPrefix} ${message} ${timestamp}`);
-    };
+    // 插件初始化逻辑
+    console.log(requestInstance.state.data.msg);
+    console.log(requestInstance.state.params[0].id);
+    console.log(options.defaultParams[0].id);
 
+    console.log(options.level);
     return {
       onBefore: (params) => {
-        log(logLevel, "请求开始", Date.now());
+        // 请求前执行
       },
-
       onRequest: (service) => {
-        const startTime = Date.now();
-
-        return async () => {
-          try {
-            const result = await service();
-            const duration = Date.now() - startTime;
-            log(logLevel, "请求成功", duration);
-            return result;
-          } catch (error) {
-            const duration = Date.now() - startTime;
-            log("error", "请求失败", duration);
-            throw error;
-          }
-        };
+        // 请求时执行，可以修改 service
+        return service;
       },
-
+      onSuccess: (data, params) => {
+        // 请求成功时执行
+      },
+      onError: (error, params) => {
+        // 请求失败时执行
+      },
+      onFinally: (params, data, error) => {
+        // 请求完成时执行（无论成功或失败）
+      },
       onCancel: () => {
-        log("warn", "请求被取消");
+        // 请求取消时执行
+      },
+      onMutate: (data) => {
+        // 数据变更时执行
       },
     };
   }
 );
-
-const { data, error, params, run, loading, cancel } = useRequest(service, {
-  manual: true,
-  cacheKey: 'test',
-  staleTime: 3000,
-  setCache: (cacheKey, cacheData) => {
-    localStorage.setItem(cacheKey, JSON.stringify(cacheData));
+const { data, loading } = useRequest(
+  service,
+  {
+    level: '1'
+    // options
   },
-  getCache: (cacheKey) => {
-    return JSON.parse(localStorage.getItem(cacheKey) || '{}')
-  },
-  logLevel: 'info',
-  logPrefix: '[Request]'
-}, [plugin])
-
-const request = async () => {
-  run()
-}
-
+  [customPlugin]// [!code ++]
+);
 
 
 </script>

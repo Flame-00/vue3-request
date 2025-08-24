@@ -2,57 +2,116 @@
 
 Vue3Request 提供了强大而灵活的插件系统，允许你根据业务需求开发自定义插件，扩展 `useRequest` 的功能。通过插件机制，你可以在请求的各个生命周期阶段注入自定义逻辑。
 
-## 插件基础
-
-### 插件结构
+## 插件结构
 
 一个 Vue3Request 插件本质上是一个函数，接收 `requestInstance` 和 `options` 参数，返回一个包含生命周期钩子的对象：
 
-```ts
-import { definePlugin } from "@async-handler/request/vue3-request";
+插件作为`useRequest`的第三个参数，需要传递一个数组，数组里的插件执行顺序采用洋葱模型（倒序执行）
 
-const customPlugin = definePlugin((requestInstance, options) => {
-  // 插件初始化逻辑
-  console.log(requestInstance, options);
-  return {
-    onBefore: (params) => {
-      // 请求前执行
-    },
-    onRequest: (service) => {
-      // 请求时执行，可以修改 service
-      return service;
-    },
-    onSuccess: (data, params) => {
-      // 请求成功时执行
-    },
-    onError: (error, params) => {
-      // 请求失败时执行
-    },
-    onFinally: (params, data, error) => {
-      // 请求完成时执行（无论成功或失败）
-    },
-    onCancel: () => {
-      // 请求取消时执行
-    },
-    onMutate: (data) => {
-      // 数据变更时执行
-    },
+你可以使用 Vue3Request 导出的`definePlugin`方法来定义插件，此方法具有丰富的 TS 类型提示
+
+```ts
+const definePlugin: <D = any, P extends any[] = any, O = {}>(
+  plugin: Plugin<D, P, O>
+) => Plugin<D, P, O>;
+```
+
+泛型`D`是 `requestInstance.state.data` 的类型，泛型 P 是 `requestInstance.state.params` 和 `options.defaultParams` 的类型，泛型 `O` 用来扩展 `options.` 对象的属性
+
+```ts
+import { useRequest, definePlugin } from "@async-handler/request/vue3-request";
+
+interface IResult {
+  code: number;
+  msg: string;
+  data: {
+    name: string;
+    age: number;
   };
-});
+}
+
+const service = ({ id }: { id: number }): Promise<IResult> => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({
+        code: 200,
+        msg: "success",
+        data: {
+          name: "zs",
+          age: 24,
+        },
+      });
+    }, 1000);
+  });
+};
+
+interface IPlugin {
+  level: string;
+}
+
+const customPlugin = definePlugin<IResult, [{ id: number }], IPlugin>(
+  (requestInstance, options) => {
+    // 插件初始化逻辑
+
+    // 享受完整的TS类型提示
+    console.log(requestInstance.state.data.msg);
+    console.log(requestInstance.state.params[0].id);
+    console.log(options.defaultParams[0].id);
+    console.log(options.level);
+    return {
+      onBefore: (params) => {
+        // 请求前执行
+      },
+      onRequest: (service) => {
+        // 请求时执行，可以修改 service
+        return service;
+      },
+      onSuccess: (data, params) => {
+        // 请求成功时执行
+      },
+      onError: (error, params) => {
+        // 请求失败时执行
+      },
+      onFinally: (params, data, error) => {
+        // 请求完成时执行（无论成功或失败）
+      },
+      onCancel: () => {
+        // 请求取消时执行
+      },
+      onMutate: (data) => {
+        // 数据变更时执行
+      },
+    };
+  }
+);
+const { data, loading } = useRequest(
+  service,
+  {
+    level: "1", // [!code ++]
+  },
+  [customPlugin] // [!code ++]
+);
 ```
 
 ## 实战示例
 
 ### 请求日志插件
 
+:::tip
+打开控制台查看日志打印
+:::
+
 :::demo
 
 ```vue
 <template>
   <section>
-    <n-button type="primary" @click="getUserInfo">
-      Obtain user information
-    </n-button>
+    <n-flex>
+      <n-button type="primary" @click="getUserInfo">
+        Obtain user information
+      </n-button>
+      <n-button type="warning" @click="cancel"> Cancel </n-button>
+    </n-flex>
     <hr />
     <n-spin :show="loading">
       <n-flex :wrap="false" v-if="data">
@@ -83,56 +142,66 @@ const customPlugin = definePlugin((requestInstance, options) => {
   </section>
 </template>
 <script setup lang="ts">
-import { useRequest } from "@async-handler/request/vue3-request";
+import { useRequest, definePlugin } from "@async-handler/request/vue3-request";
 import { ref } from "vue";
-import {
-  NSpin,
-  NButton,
-  NEmpty,
-  NFlex,
-  NText,
-  NImage,
-  useMessage,
-} from "naive-ui";
+import { NSpin, NButton, NEmpty, NFlex, NText, NImage } from "naive-ui";
 import faker from "@/utils/faker";
 
+// 定义插件选项类型
 interface LogOptions {
-  logLevel?: "info" | "warn" | "error";
-  logPrefix?: string;
+  logLevel: keyof Console;
+  logPrefix: string;
 }
 
-const plugin = definePlugin<number, [], LogOptions>(
+const customPlugin = definePlugin<number, [], LogOptions>(
   (requestInstance, options) => {
-    const { logLevel = "info", logPrefix = "[Request]" } = options;
-    console.log(options, "options");
-    const log = (level: keyof Console, message: string) => {
-      console[level as keyof Console](`${logPrefix} ${message}`);
+    const { logLevel, logPrefix } = options;
+
+    const log = (
+      level: keyof Console,
+      prefix: string,
+      message: string,
+      timestamp?: number
+    ) => {
+      const l = console[level] as (...args: any[]) => void;
+      l(`${prefix} ${message} ${timestamp}`);
     };
-
     return {
-      onBefore: (params) => {
-        log(logLevel, "请求开始", { params, timestamp: Date.now() });
-      },
-
       onRequest: (service) => {
-        const startTime = Date.now();
-
+        log(
+          "log",
+          logPrefix,
+          "请求开始",
+          `${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`
+        );
         return async () => {
-          try {
-            const result = await service();
-            const duration = Date.now() - startTime;
-            log(logLevel, "请求成功", { duration });
-            return result;
-          } catch (error) {
-            const duration = Date.now() - startTime;
-            log("error", "请求失败", { duration, error });
-            throw error;
-          }
+          const result = await service();
+          return result;
         };
       },
-
+      onSuccess: () => {
+        log(
+          logLevel,
+          "[Success]",
+          "请求成功",
+          `${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`
+        );
+      },
+      onError: () => {
+        log(
+          "error",
+          "[Error]",
+          "请求失败",
+          `${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`
+        );
+      },
       onCancel: () => {
-        log("warn", "请求被取消");
+        log(
+          "warn",
+          "[Cancel]",
+          "请求被取消",
+          `${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`
+        );
       },
     };
   }
@@ -150,8 +219,6 @@ interface IResult {
     roles: string;
   };
 }
-
-const message = useMessage();
 
 const service = (): Promise<IResult> => {
   return new Promise((resolve, reject) => {
@@ -192,15 +259,22 @@ const service = (): Promise<IResult> => {
 
 const {
   run: getUserInfo,
+  cancel,
   data,
   error,
   loading,
-} = useRequest(service, {
-  manual: true,
-});
+} = useRequest(
+  service,
+  {
+    manual: true,
+    logLevel: "info", // [!code highlight]
+    logPrefix: "[Request]", // [!code highlight]
+  },
+  [customPlugin] // [!code highlight]
+);
 </script>
 ```
 
 :::
 
-通过自定义插件，你可以将 Vue3Request 扩展到任何业务场景，实现高度定制化的异步数据管理解决方案。
+通过自定义插件，你可以将 `useRequest` 扩展到任何业务场景，实现高度定制化的异步数据管理解决方案。

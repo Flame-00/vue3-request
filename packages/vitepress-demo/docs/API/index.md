@@ -1,6 +1,6 @@
 # API Reference
 
-Vue3Request 由 [Return Values](#return-values)、[Service](#service) 和 [Options](#options) 和 Plugins 四个部分组成
+Vue3Request 由 [Return Values](#return-values)、[Service](#service) 和 [Options](#options) 和 [Plugins](#plugins) 四个部分组成
 
 ```ts
 const { ...ReturnValues } = useRequest(Service, Options, Plugins);
@@ -36,7 +36,7 @@ const { ...ReturnValues } = useRequest(Service, Options, Plugins);
 
 如果在内部抛出了一个错误，则会被 `error` 接收并返回
 
-### isFinished <Badge text="响应式" /> 
+### isFinished <Badge text="响应式" />
 
 - **类型：** `Ref<boolean>`
 - **默认值：** `false`
@@ -215,7 +215,7 @@ watch(refreshDeps, refresh);
 - **类型：** `number | Ref<number>`
 - **默认值：** `undefined`
 
-默认情况下，Vue3Request 使用**二进制指数退避算法** 来帮你计算出合适的间隔时间(不会大于30s)，你也可以通过设置 `errorRetryInterval` 来覆盖默认行为
+默认情况下，Vue3Request 使用**二进制指数退避算法** 来帮你计算出合适的间隔时间(不会大于 30s)，你也可以通过设置 `errorRetryInterval` 来覆盖默认行为
 
 ### refreshOnWindowFocus <Badge text="响应式" />
 
@@ -236,7 +236,7 @@ watch(refreshDeps, refresh);
 - **类型：** `string`
 - **默认值：** `undefined`
 
-- 我们会缓存每次请求的 data , error , params , loading
+- 我们会缓存每次请求的 data , params
 - 如果设置了 `cacheKey` ， Vue3Request 会将当前请求数据缓存起来。当下次组件初始化时，如果有缓存数据，我们会优先返回缓存数据，然后在背后发送新请求，待新数据返回后，重新触发数据更新并更新缓存数据，也就是 **SWR** 的能力。
 - 数据同步，任何时候，当我们改变其中某个 `cacheKey` 的内容时，其它相同 `cacheKey` 的数据也会同步改变。
 - 请求 `Promise` 共享，相同的 `cacheKey` 同时只会有一个在发起请求，后发起的会共用同一个请求 `Promise`。
@@ -244,9 +244,9 @@ watch(refreshDeps, refresh);
 ### cacheTime
 
 - **类型：** `number`
-- **默认值：** `10 * 60 * 1000`
+- **默认值：** `10 * 30 * 1000`
 
-当开启缓存后，你可以通过设置 `cacheTime` 来告诉我们缓存的过期时间。当缓存过期后，我们会将其删除。默认为 **600000 毫秒**，即 10 分钟
+当开启缓存后，你可以通过设置 `cacheTime` 来告诉我们缓存的过期时间。当缓存过期后，我们会将其删除。默认为 **300000 毫秒**，即 5 分钟
 
 ### staleTime
 
@@ -277,10 +277,10 @@ watch(refreshDeps, refresh);
 
 ### debounceOptions <Badge text="响应式" />
 
-- **类型：** `DebounceOptions | Reactive<DebounceOptions>`
+- **类型：** `DebounceOptionsType | Reactive<DebounceOptionsType>`
 
 ```ts
-type DebounceOptions = {
+type DebounceOptionsType = {
   leading?: boolean;
   trailing?: boolean;
 };
@@ -307,10 +307,10 @@ type DebounceOptions = {
 
 ### throttleOptions <Badge text="响应式" />
 
-- **类型：** `ThrottleOptions | Reactive<ThrottleOptions>`
+- **类型：** `ThrottleOptionsType | Reactive<ThrottleOptionsType>`
 
 ```ts
-type ThrottleOptions = {
+type ThrottleOptionsType = {
   leading?: boolean;
   trailing?: boolean;
 };
@@ -335,68 +335,53 @@ type ThrottleOptions = {
 
 是否中止前一个未完成的请求
 
-## 使用示例
+## Plugins
 
-### 基础用法
+- **类型：** `Plugin<D, P, O>[]`
 
-```ts
-import { useRequest } from "@async-handler/request/vue3-request";
-
-// 自动请求
-const { data, loading, error } = useRequest(fetchUser);
-
-// 手动请求
-const { data, run } = useRequest(fetchUser, { manual: true });
-run(userId);
-```
-
-### 高级配置
+用于扩展`useRequest`的插件数组，可参考 [自定义插件](../guide/plugin/custom-plugin.md)。
 
 ```ts
-const { data, run, mutate } = useRequest(fetchUser, {
-  // 缓存配置
-  cacheKey: "user-info",
-  cacheTime: 5 * 60 * 1000, // 5分钟
-  staleTime: 60 * 1000, // 1分钟
+import { useRequest, definePlugin } from "vue3-request";
 
-  // 错误重试
-  errorRetryCount: 3,
-  errorRetryInterval: 1000,
-
-  // 轮询
-  pollingInterval: 5000,
-  pollingWhenHidden: false,
-
-  // 生命周期
-  onSuccess: (data) => {
-    console.log("请求成功:", data);
-  },
-  onError: (error) => {
-    console.error("请求失败:", error);
-  },
-});
-```
-
-### 防抖和节流
-
-```ts
-// 防抖请求
-const { run } = useRequest(searchAPI, {
-  manual: true,
-  debounceWait: 500,
-  debounceOptions: {
-    leading: false,
-    trailing: true,
-  },
+const customPlugin = definePlugin((requestInstance, options) => {
+  // 插件初始化逻辑
+  console.log(requestInstance, options);
+  return {
+    onBefore: (params) => {
+      // 请求前执行
+    },
+    onRequest: (service) => {
+      // 请求时执行，可以修改 service
+      return service;
+    },
+    onSuccess: (data, params) => {
+      // 请求成功时执行
+    },
+    onError: (error, params) => {
+      // 请求失败时执行
+    },
+    onFinally: (params, data, error) => {
+      // 请求完成时执行（无论成功或失败）
+    },
+    onCancel: () => {
+      // 请求取消时执行
+    },
+    onMutate: (data) => {
+      // 数据变更时执行
+    },
+  };
 });
 
-// 节流请求
-const { run } = useRequest(updateAPI, {
-  manual: true,
-  throttleWait: 1000,
-  throttleOptions: {
-    leading: true,
-    trailing: false,
+const plugins = [];
+
+plugins.push(customPlugin);
+
+const { data, loading } = useRequest(
+  service,
+  {
+    // options
   },
-});
+  plugins // [!code ++]
+);
 ```
