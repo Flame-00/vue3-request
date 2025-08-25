@@ -1,6 +1,6 @@
 {
   "name": "vue3-request",
-  "version": "1.0.20",
+  "version": "1.0.21",
   "type": "module",
   "description": "A Vue3 asynchronous request processing library, designed to simplify your asynchronous operations and API calls.",
   "main": "dist/vue3-request.es.js",
@@ -45,8 +45,7 @@
   "license": "ISC",
   "packageManager": "pnpm@10.12.1",
   "dependencies": {
-    "vue": "^3.5.17",
-    "vue3-request": "^1.0.20"
+    "vue": "^3.5.17"
   },
   "devDependencies": {
     "@faker-js/faker": "^9.9.0",
