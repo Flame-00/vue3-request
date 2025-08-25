@@ -15,7 +15,8 @@
     "@async-handler/request": "workspace:*",
     "axios": "^1.10.0",
     "vue": "^3.5.17",
-    "vue-request": "^2.0.4"
+    "vue-request": "^2.0.4",
+    "vue3-request": "^1.0.21"
   },
   "devDependencies": {
     "@tsconfig/node22": "^22.0.2",
