@@ -1,26 +1,8 @@
 ## ⚡ 快速安装
 
-选择你喜欢的包管理器，立即开始 Vue3Request 之旅：
-
-::: code-group
-
 ```bash [pnpm]
 pnpm add vue3-request
 ```
-
-```bash [npm]
-npm install vue3-request
-```
-
-```bash [cnpm]
-cnpm install vue3-request
-```
-
-```bash [yarn]
-yarn add vue3-request
-```
-
-:::
 
 ## 🚀 5 分钟上手
 
@@ -46,6 +28,7 @@ const getUserInfo = async () => {
 };
 
 // 一行代码搞定状态管理
-const { data, error, loading, signal, refresh, abort } = useRequest(getUserInfo); // [!code ++]
+const { data, error, loading, signal, refresh, abort } =
+  useRequest(getUserInfo); 
 </script>
 ```
