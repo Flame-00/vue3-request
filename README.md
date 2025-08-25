@@ -2,6 +2,9 @@
 
 ```bash [pnpm]
 pnpm add vue3-request
+npm i vue3-request
+yarn add vue3-request
+cnpm i vue3-request
 ```
 
 ## 🚀 5 分钟上手
@@ -32,3 +35,5 @@ const { data, error, loading, signal, refresh, abort } =
   useRequest(getUserInfo); 
 </script>
 ```
+
+[查看文档](fslflame.github.io/vue3-request/)
