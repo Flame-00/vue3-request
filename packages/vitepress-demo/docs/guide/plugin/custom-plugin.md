@@ -53,11 +53,6 @@ const customPlugin = definePlugin<IResult, [{ id: number }], IPlugin>(
   (requestInstance, options) => {
     // 插件初始化逻辑
 
-    // 享受完整的TS类型提示
-    console.log(requestInstance.state.data.msg);
-    console.log(requestInstance.state.params[0].id);
-    console.log(options.defaultParams[0].id);
-    console.log(options.level);
     return {
       onBefore: (params) => {
         // 请求前执行
