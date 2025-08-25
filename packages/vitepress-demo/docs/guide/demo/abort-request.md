@@ -14,9 +14,7 @@ const { signal, abort } = useRequest(service); // [!code ++]
 axios.post(url, { signal: signal.value }); // [!code ++]
 ```
 
-同时 `useRequest` 会在以下时机自动调用`abort`方法：
-
-使用的是 `xhr` 或 `fetch` 请求，并添加了`signal` 参数 **(必须)**
+使用的是 `xhr` 或 `fetch` 请求，并添加了`signal` 参数 **(必须)**，那么 `useRequest` 会在以下时机自动调用`abort`方法：
 
 - 组件卸载时，还未返回结果的请求
 - 前置请求中止，发起新请求时自动中止前一个未完成的请求并忽略 promise 的响应，但是如果设置了`options.abortPrevious = false` 则默认不会中止，但是依旧会[竞态取消](./cancel-response.md)
