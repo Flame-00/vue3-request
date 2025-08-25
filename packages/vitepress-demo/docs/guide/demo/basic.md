@@ -127,7 +127,7 @@ onMounted(() => {
 在某些业务场景中，你可能希望精确控制请求的执行时机。通过设置 `options.manual = true`，`useRequest` 将不会在组件初始化时自动执行，而是等待你主动调用 `run` 或 `runAsync` 方法。
 
 ```ts
-const { loading, run, runAsync } = useRequest(() => service, {
+const { loading, run, runAsync } = useRequest(service, {
   manual: true, // [!code ++]
 });
 ```

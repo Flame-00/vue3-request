@@ -1,4 +1,4 @@
-详情请查看文档 -> [**文档**](https://fslflame.github.io/vue3-request/)
+更多内容请查看文档 -> [**文档**](https://fslflame.github.io/vue3-request/)
 
 ## 核心解决方案
 
@@ -13,7 +13,7 @@ Vue3-Request 是一个专为 Vue 3 设计的异步请求处理库，它通过统
 
 🧩 强大的插件生态 内置 9 大核心插件，开箱即用：
 
-- <img src="/cancel.svg" alt="取消请求" width="20" height="20" style="display: inline; vertical-align: middle;" /> 请求中止 - 自动生成 AbortSignal 中止过期请求，避免状态污染和竞态条件问题
+- <img src="https://fslflame.github.io/vue3-request/cancel.svg" alt="取消请求" width="20" height="20" style="display: inline; vertical-align: middle;" /> 请求中止 - 自动生成 AbortSignal 中止过期请求，避免状态污染和竞态条件问题
 - 🔄 错误重试 - 智能重试机制，提升请求成功率
 - ⚡ 防抖节流 - 优化用户交互，减少无效请求
 - 💾 智能缓存 - 提升用户体验，减少服务器压力
