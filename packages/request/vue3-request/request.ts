@@ -1,6 +1,6 @@
 import type {
   ServiceType,
-  IOptions,
+  BaseOptions,
   IState,
   PluginMethodsReturn,
   PluginReturn,
@@ -18,7 +18,7 @@ export class Request<D, P extends any[]> {
 
   constructor(
     public service: ServiceType<D, P>,
-    public options: IOptions<D, P>
+    public options: BaseOptions<D, P>
   ) {
     this.state = reactive({
       data: undefined,
