@@ -107,5 +107,11 @@ export default defineConfig({
         "@": fileURLToPath(new URL("../../docs", import.meta.url)),
       },
     },
+    ssr: {
+      noExternal: ['naive-ui']
+    },
+    optimizeDeps: {
+      include: ['naive-ui']
+    }
   },
 });
