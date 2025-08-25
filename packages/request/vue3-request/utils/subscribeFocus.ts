@@ -1,5 +1,6 @@
 import { isDocumentVisible } from "./isDocumentVisible";
 import { isOnline } from "./isOnline";
+import { isServer } from "./";
 
 type Listener = () => void;
 
@@ -19,7 +20,9 @@ const revalidate = () => {
   });
 };
 
-window.addEventListener("visibilitychange", revalidate, false);
-window.addEventListener("focus", revalidate, false);
+if (!isServer && window?.addEventListener) {
+  window.addEventListener("visibilitychange", revalidate, false);
+  window.addEventListener("focus", revalidate, false);
+}
 
 export { subscribeFocus };

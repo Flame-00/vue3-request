@@ -1,4 +1,4 @@
-import { CacheParamsType } from "../../types";
+import { CacheParamsType, Timeout } from "../../types";
 import { warn } from "../";
 
 const cache = new Map<string, CacheParamsType>();
@@ -8,15 +8,15 @@ export const setCache = <D, P>(
   cacheTime: number,
   { data, params, time }: CacheParamsType<D, P>
 ) => {
-  let timer: number | undefined;
+  let timer: Timeout | undefined;
   const cacheData = getCache(cacheKey);
   const { is, value: cacheTimeValue } = warn(cacheTime, true);
   if (!is) return;
   if (cacheData?.timer) {
-    window.clearTimeout(cacheData?.timer);
+    clearTimeout(cacheData.timer);
   }
   if (cacheTimeValue !== -1) {
-    timer = window.setTimeout(() => {
+    timer = setTimeout(() => {
       clearCache(cacheKey);
     }, cacheTimeValue);
   }

@@ -24,7 +24,7 @@ export default definePlugin(
         if (flag) return;
         flag = true;
         fn();
-        window.setTimeout(() => {
+        setTimeout(() => {
           flag = false;
         }, timespan);
       };

@@ -1,4 +1,5 @@
 import { isDocumentVisible } from "./isDocumentVisible";
+import { isServer } from "./";
 
 type Listener = () => void;
 
@@ -18,6 +19,8 @@ const revalidate = () => {
   });
 };
 
-window.addEventListener("visibilitychange", revalidate, false);
+if (!isServer && window?.addEventListener) {
+  window.addEventListener("visibilitychange", revalidate, false);
+}
 
 export { subscribe };

@@ -118,7 +118,7 @@ export type CacheParamsType<D = any, P = any> = {
   params: P;
   time: number;
 } & {
-  timer?: number;
+  timer?: Timeout;
 };
 
 export type CacheCallbackType<D = any, P = any> = ({
@@ -126,3 +126,5 @@ export type CacheCallbackType<D = any, P = any> = ({
   params,
   time,
 }: CacheParamsType<D, P>) => void;
+
+export type Timeout = ReturnType<typeof setTimeout>;

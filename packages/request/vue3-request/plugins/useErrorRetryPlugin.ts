@@ -1,6 +1,7 @@
 import { computed, ref, toValue } from "vue";
 import { warn } from "../utils";
 import { definePlugin } from "../utils/definePlugin";
+import { Timeout } from "../types";
 
 export default definePlugin((
   requestInstance,
@@ -15,7 +16,7 @@ export default definePlugin((
 
   // 错误重试
   const retryHandle = () => {
-    let timer: number | null = null;
+    let timer: Timeout | null = null;
     retryCount.value++;
 
     const { value } = warn(toValue(errorRetryCount), true);
@@ -29,14 +30,14 @@ export default definePlugin((
         timeout = toValue(Math.min(defaultErrorRetryInterval.value, 30000));
       }
 
-      timer = window.setTimeout(() => {
+      timer = setTimeout(() => {
         isErrorRetry.value = true;
         requestInstance.refresh();
       }, timeout);
     }
     return () => {
       if (timer) {
-        window.clearTimeout(timer);
+        clearTimeout(timer);
       }
     };
   };
