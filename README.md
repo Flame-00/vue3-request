@@ -1,9 +1,14 @@
+详情请查看文档 -> [**文档**](https://fslflame.github.io/vue3-request/)
+
 ## ⚡ 快速安装
 
 ```bash [pnpm]
 pnpm add vue3-request
+# or
 npm i vue3-request
+# or
 yarn add vue3-request
+# or
 cnpm i vue3-request
 ```
 
@@ -32,8 +37,6 @@ const getUserInfo = async () => {
 
 // 一行代码搞定状态管理
 const { data, error, loading, signal, refresh, abort } =
-  useRequest(getUserInfo); 
+  useRequest(getUserInfo);
 </script>
 ```
-
-[查看文档](fslflame.github.io/vue3-request/)
