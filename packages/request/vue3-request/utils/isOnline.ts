@@ -1,3 +1,3 @@
-export const isOnline = () => {
-  return window.navigator.onLine;
-};
+import { isServer } from "./";
+
+export const isOnline = () => (!isServer && window.navigator?.onLine) ?? true;

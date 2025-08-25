@@ -24,7 +24,8 @@ const getTheme = computed(() => {
 })
 
 const enableTransitions = () =>
-    "startViewTransition" in document
+    "startViewTransition" in document &&
+    window.matchMedia("(prefers-reduced-motion: no-preference)").matches;
 
 provide("toggle-appearance", async ({ clientX: x, clientY: y }: MouseEvent) => {
     if (!enableTransitions()) {

@@ -2,6 +2,8 @@ import { ServiceType } from "../types";
 
 export const isNil = (value: unknown) => value === undefined || value === null;
 
+export const isServer = typeof window === 'undefined';
+
 // 验证值
 function validate(value: unknown) {
   if (isNil(value)) return value;
