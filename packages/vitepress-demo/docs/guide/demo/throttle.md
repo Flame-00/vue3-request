@@ -70,7 +70,7 @@ Vue3Request 的节流是使用 [lodash](https://lodash.com/) 提供的 [throttle
 </template>
 
 <script setup lang="ts">
-import { useRequest } from "@async-handler/request/vue3-request";
+import { useRequest } from "vue3-request";
 import { ref, reactive, watch } from "vue";
 import {
   NSpin,

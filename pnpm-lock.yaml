@@ -11,6 +11,9 @@ importers:
       vue:
         specifier: ^3.5.17
         version: 3.5.17(typescript@5.8.3)
+      vue3-request:
+        specifier: ^1.0.20
+        version: 1.0.20(typescript@5.8.3)
     devDependencies:
       '@faker-js/faker':
         specifier: ^9.9.0
@@ -66,9 +69,6 @@ importers:
       vue-request:
         specifier: ^2.0.4
         version: 2.0.4(vue@3.5.17(typescript@5.8.3))
-      vue3-request:
-        specifier: ^1.0.18
-        version: 1.0.18(typescript@5.8.3)
     devDependencies:
       '@tsconfig/node22':
         specifier: ^22.0.2
@@ -2491,6 +2491,9 @@ packages:
 
   vue3-request@1.0.18:
     resolution: {integrity: sha512-GKOOw/2XOXvA7Ya+ptKrULKhINhzUibA6eBEqV8jCYIzNAb1wjE0ywvqv/WczuGojjppNKmwmvZDFXcgDngRxg==}
+
+  vue3-request@1.0.20:
+    resolution: {integrity: sha512-Y4V7kuVkdPzWfPDfEHHV9hXRVbgB9vpasoH0ULZA2TkLvVjR5efKYTw5mtwu9C4I/Z8cWF4jNeB3Gx66UnoNnQ==}
 
   vue@3.5.17:
     resolution: {integrity: sha512-LbHV3xPN9BeljML+Xctq4lbz2lVHCR6DtbpTf5XIO6gugpXUN49j2QQPcMj086r9+AkJ0FfUT8xjulKKBkkr9g==}
@@ -5139,6 +5142,12 @@ snapshots:
       typescript: 5.8.3
 
   vue3-request@1.0.18(typescript@5.8.3):
+    dependencies:
+      vue: 3.5.17(typescript@5.8.3)
+    transitivePeerDependencies:
+      - typescript
+
+  vue3-request@1.0.20(typescript@5.8.3):
     dependencies:
       vue: 3.5.17(typescript@5.8.3)
     transitivePeerDependencies:

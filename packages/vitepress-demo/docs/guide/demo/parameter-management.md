@@ -48,7 +48,7 @@
   </section>
 </template>
 <script setup lang="ts">
-import { useRequest } from "@async-handler/request/vue3-request";
+import { useRequest } from "vue3-request";
 import { ref } from "vue";
 import {
   NSpin,
@@ -128,7 +128,7 @@ const { run, data, params, error, loading } = useRequest(service, {
   </section>
 </template>
 <script setup lang="ts">
-import { useRequest } from "@async-handler/request/vue3-request";
+import { useRequest } from "vue3-request";
 import { ref } from "vue";
 import {
   NSpin,
@@ -234,7 +234,7 @@ const onClick = async () => {
   </section>
 </template>
 <script setup lang="ts">
-import { useRequest } from "@async-handler/request/vue3-request";
+import { useRequest } from "vue3-request";
 import { ref } from "vue";
 import {
   NSpin,

@@ -63,7 +63,7 @@ const { data, loading } = useRequest(getUserInfo, {
 </template>
 <script setup lang="ts">
 import { ref } from "vue";
-import { useRequest } from "@async-handler/request/vue3-request";
+import { useRequest } from "vue3-request";
 import {
   NSpin,
   NEmpty,

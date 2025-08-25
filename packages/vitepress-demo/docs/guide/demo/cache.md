@@ -30,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-import { useRequest } from "@async-handler/request/vue3-request";
+import { useRequest } from "vue3-request";
 import { h, ref } from "vue";
 import { NSpin, NButton, NEmpty, NFlex, NText, NImage } from "naive-ui";
 import faker from "@/utils/faker";
@@ -163,7 +163,7 @@ const B = createUserComponent(false); // 无缓存
 </template>
 
 <script setup lang="ts">
-import { useRequest } from "@async-handler/request/vue3-request";
+import { useRequest } from "vue3-request";
 import { h, ref } from "vue";
 import { NSpin, NButton, NEmpty, NFlex, NText, NImage } from "naive-ui";
 import faker from "@/utils/faker";
@@ -304,7 +304,7 @@ const B = createUserComponent("Component-B");
 </template>
 
 <script setup lang="ts">
-import { useRequest } from "@async-handler/request/vue3-request";
+import { useRequest } from "vue3-request";
 import { h, ref } from "vue";
 import { NSpin, NButton, NEmpty, NFlex, NText, NImage } from "naive-ui";
 import faker from "@/utils/faker";
@@ -435,7 +435,7 @@ const Component = createUserComponent();
 </template>
 
 <script setup lang="ts">
-import { useRequest } from "@async-handler/request/vue3-request";
+import { useRequest } from "vue3-request";
 import { h, ref } from "vue";
 import { NSpin, NButton, NEmpty, NFlex, NText, NImage } from "naive-ui";
 import faker from "@/utils/faker";
@@ -576,7 +576,7 @@ Vue3Request 提供了一个 `clearCache` 方法，可以清除指定 `cacheKey` 
 </template>
 
 <script setup lang="ts">
-import { useRequest, clearCache } from "@async-handler/request/vue3-request"; // [!code highlight]
+import { useRequest, clearCache } from "vue3-request"; // [!code highlight]
 import { h, ref } from "vue";
 import { NSpin, NButton, NEmpty, NFlex, NText, NImage } from "naive-ui";
 import faker from "@/utils/faker";
@@ -710,7 +710,7 @@ const B = createUserComponent("Cache-B");
 </template>
 
 <script setup lang="ts">
-import { useRequest } from "@async-handler/request/vue3-request";
+import { useRequest } from "vue3-request";
 import { h, ref } from "vue";
 import { NSpin, NButton, NEmpty, NFlex, NText, NImage } from "naive-ui";
 import faker from "@/utils/faker";

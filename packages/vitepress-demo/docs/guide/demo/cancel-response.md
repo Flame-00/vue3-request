@@ -28,7 +28,7 @@
   <ChildComponent v-if="show" />
 </template>
 <script setup lang="ts">
-import { useRequest } from "@async-handler/request/vue3-request";
+import { useRequest } from "vue3-request";
 import { h, ref } from "vue";
 import {
   NSpin,

@@ -47,7 +47,7 @@ const { data, error, loading } = useRequest(service);
   </section>
 </template>
 <script setup lang="ts">
-import { useRequest } from "@async-handler/request/vue3-request";
+import { useRequest } from "vue3-request";
 import axios from "axios";
 import { NSpin, NEmpty, NCard } from "naive-ui";
 import faker from "@/utils/faker";
@@ -183,7 +183,7 @@ runAsync()
   </section>
 </template>
 <script setup lang="ts">
-import { useRequest } from "@async-handler/request/vue3-request";
+import { useRequest } from "vue3-request";
 import { ref } from "vue";
 import {
   NSpin,
@@ -258,7 +258,7 @@ const { run, data, error, loading } = useRequest(service, {
   </section>
 </template>
 <script setup lang="ts">
-import { useRequest } from "@async-handler/request/vue3-request";
+import { useRequest } from "vue3-request";
 import { ref } from "vue";
 import {
   NSpin,

@@ -45,7 +45,8 @@
   "license": "ISC",
   "packageManager": "pnpm@10.12.1",
   "dependencies": {
-    "vue": "^3.5.17"
+    "vue": "^3.5.17",
+    "vue3-request": "^1.0.20"
   },
   "devDependencies": {
     "@faker-js/faker": "^9.9.0",

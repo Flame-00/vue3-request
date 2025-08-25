@@ -64,7 +64,7 @@ const { data } = useRequest(fetchUser, {
 </template>
 
 <script setup lang="ts">
-import { useRequest } from "@async-handler/request/vue3-request";
+import { useRequest } from "vue3-request";
 import { ref, watch } from "vue";
 import { NSpin, NSwitch, NEmpty, NFlex, NText, NImage } from "naive-ui";
 import faker from "@/utils/faker";
@@ -197,7 +197,7 @@ watch(isLoggedIn, (newValue) => {
 </template>
 
 <script setup lang="ts">
-import { useRequest } from "@async-handler/request/vue3-request";
+import { useRequest } from "vue3-request";
 import { ref, watch } from "vue";
 import {
   NSpin,

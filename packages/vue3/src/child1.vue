@@ -12,7 +12,7 @@
   </section>
 </template>
 <script setup lang="ts">
-import { useRequest, definePlugin } from "@async-handler/request/vue3-request";
+import { useRequest, definePlugin } from "vue3-request";
 // import { useRequest, definePlugin, type Options } from "vue-request";
 import { NSpin } from "naive-ui";
 

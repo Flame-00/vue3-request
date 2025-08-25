@@ -19,7 +19,7 @@ const definePlugin: <D = any, P extends any[] = any, O = {}>(
 泛型`D`是 `requestInstance.state.data` 的类型，泛型 P 是 `requestInstance.state.params` 和 `options.defaultParams` 的类型，泛型 `O` 用来扩展 `options.` 对象的属性
 
 ```ts
-import { useRequest, definePlugin } from "@async-handler/request/vue3-request";
+import { useRequest, definePlugin } from "vue3-request";
 
 interface IResult {
   code: number;
@@ -142,7 +142,7 @@ const { data, loading } = useRequest(
   </section>
 </template>
 <script setup lang="ts">
-import { useRequest, definePlugin } from "@async-handler/request/vue3-request";
+import { useRequest, definePlugin } from "vue3-request";
 import { ref } from "vue";
 import { NSpin, NButton, NEmpty, NFlex, NText, NImage } from "naive-ui";
 import faker from "@/utils/faker";
