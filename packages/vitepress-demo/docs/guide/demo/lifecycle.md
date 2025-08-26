@@ -19,8 +19,8 @@
     </n-button>
     <hr />
     <n-spin :show="loading">
-      <n-flex :wrap="false" v-if="data">
-        <n-image show-toolbar-tooltip :src="data.data.avatar" style="flex:1;" />
+      <n-flex v-if="data">
+        <n-image show-toolbar-tooltip :src="data.data.avatar" />
         <div>
           <n-flex>
             <n-text italic> 姓名: </n-text>

@@ -41,7 +41,7 @@ export type BaseOptions<D, P extends any[]> = Partial<{
   errorRetryInterval: number | Ref<number>;
   refreshOnWindowFocus: boolean | Ref<boolean>;
   refocusTimespan: number | Ref<number>;
-  cacheKey: string;
+  cacheKey: string | ((params?: P) => string);
   cacheTime: number;
   staleTime: number;
   setCache: (cacheKey: string, cacheData: CacheParamsType) => void;
@@ -100,7 +100,7 @@ export type PluginReturn<D, P extends any[]> = Partial<{
   onFinally: (params: P, data: D, error: Error) => void;
   onError: (error: Error, params: P) => void;
   onCancel: () => void;
-  onMutate: (data: D | ((data: D) => D)) => void;
+  onMutate: (data: D) => void;
   onRequest: (service: ServiceType<D, P>) => ServiceType<D, P>;
 }>;
 
@@ -110,7 +110,6 @@ export type PluginMethodsReturn<D, P extends any[]> = Partial<{
   isReturn: boolean;
   isReady: boolean;
   data?: D;
-  loading: boolean;
 }>;
 
 export type CacheParamsType<D = any, P = any> = {

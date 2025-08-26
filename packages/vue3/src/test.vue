@@ -1,7 +1,6 @@
 <template>
     <NMessageProvider>
         <button @click="show = !show">{{ show ? '隐藏' : '显示' }}</button>
-        <button @click="ready = !ready">ready{{ ready }}</button>
         <template v-if="show">
             <!-- <Child :ready="ready" /> -->
             <!-- <Child1 :ready="ready" /> -->

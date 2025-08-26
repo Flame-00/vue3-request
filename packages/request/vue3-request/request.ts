@@ -86,12 +86,12 @@ export class Request<D, P extends any[]> {
     if (!isReady) {
       return neverPromise();
     }
-    this.setState({ params });
+    this.setState({ params, ...rest });
     this.loading(true);
 
     if (isReturn) {
-      this.loading(rest.loading || false);
-      return rest.data as D;
+      this.loading(false);
+      return rest.data!;
     }
     this.options.onBefore?.(params);
 
@@ -105,12 +105,7 @@ export class Request<D, P extends any[]> {
         servicePromise = serviceWrapper();
       }
       const res = await servicePromise;
-      // console.log(
-      //   "success 竞态取消 ->",
-      //   requestId !== this.currentRequestId
-      //     ? `已取消 -> requestId: ${requestId} !== currentRequestId: ${this.currentRequestId}`
-      //     : `成功请求 -> requestId: ${requestId} === currentRequestId: ${this.currentRequestId}`
-      // );
+     
       if (requestId !== this.currentRequestId) {
         return neverPromise();
       }
@@ -122,13 +117,6 @@ export class Request<D, P extends any[]> {
 
       return res;
     } catch (err) {
-      // console.log(
-      //   "error 竞态取消 ->",
-      //   requestId !== this.currentRequestId
-      //     ? `已取消 -> requestId: ${requestId} !== currentRequestId: ${this.currentRequestId}`
-      //     : `成功请求 -> requestId: ${requestId} === currentRequestId: ${this.currentRequestId}`
-      // );
-
       if (requestId !== this.currentRequestId) {
         return neverPromise();
       }
@@ -142,7 +130,7 @@ export class Request<D, P extends any[]> {
     }
   };
 
-  run = (...params: P) => { 
+  run = (...params: P) => {
     this.runAsync(...params).catch((error) => {
       if (!this.options.onError) {
         console.error(error);

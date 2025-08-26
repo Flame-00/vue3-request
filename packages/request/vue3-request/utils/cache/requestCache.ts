@@ -6,23 +6,19 @@ export const setRequestCache = <D, P extends any[]>(
   cacheKey: string,
   service: ReturnType<ServiceType<D, P>>
 ) => {
-  console.log(requestCache.has(cacheKey), "has");
-
   requestCache.set(cacheKey, service);
 
-  console.log("注册->finally, 请求完成后删除缓存", cacheKey);
+  // console.log("注册->finally, 请求完成后删除缓存", cacheKey);
   service
-    .then((res) => {
-      console.log(res);
-    })
+    .then(() => {})
     .catch(() => {})
     .finally(() => {
-      console.log(
-        "完成了，删了requestCache 中的key=>",
-        cacheKey,
-        requestCache,
-        requestCache.size
-      );
+      // console.log(
+      //   "完成了，删了requestCache 中的key=>",
+      //   cacheKey,
+      //   requestCache,
+      //   requestCache.size
+      // );
       clearRequestCache(cacheKey);
     });
 };

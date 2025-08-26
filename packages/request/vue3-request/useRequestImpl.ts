@@ -22,6 +22,7 @@ export function useRequestImpl<D, P extends any[] = any[], O = {}>(
   requestInstance.pluginImpls = plugins.map((plugin) =>
     plugin(requestInstance, requestOptions)
   );
+  
   onMounted(() => {
     if (!requestOptions.manual) {
       const params = requestInstance.state.params;

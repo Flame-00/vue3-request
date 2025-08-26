@@ -20,7 +20,6 @@
         showComponents ? "Destroy child component" : "Create child component"
       }}
     </n-button>
-
     <div v-if="showComponents">
       <A />
       <hr />
@@ -97,7 +96,7 @@ function createUserComponent(hasCache: boolean) {
             },
             () => [
               data.value &&
-                h(NFlex, { wrap: false }, () => [
+                h(NFlex, null, () => [
                   h(NImage, {
                     showToolbarTooltip: true,
                     src: data.value.data.avatar,
@@ -238,7 +237,7 @@ function createUserComponent(title: string) {
             },
             () => [
               data.value &&
-                h(NFlex, { wrap: false }, () => [
+                h(NFlex, null, () => [
                   h(NImage, {
                     showToolbarTooltip: true,
                     src: data.value.data.avatar,
@@ -370,7 +369,7 @@ function createUserComponent() {
             },
             () => [
               data.value &&
-                h(NFlex, { wrap: false }, () => [
+                h(NFlex, null, () => [
                   h(NImage, {
                     showToolbarTooltip: true,
                     src: data.value.data.avatar,
@@ -501,7 +500,7 @@ function createUserComponent() {
             },
             () => [
               data.value &&
-                h(NFlex, { wrap: false }, () => [
+                h(NFlex, null, () => [
                   h(NImage, {
                     showToolbarTooltip: true,
                     src: data.value.data.avatar,
@@ -641,7 +640,7 @@ function createUserComponent(cacheKey: string) {
             },
             () => [
               data.value &&
-                h(NFlex, { wrap: false }, () => [
+                h(NFlex, null, () => [
                   h(NImage, {
                     showToolbarTooltip: true,
                     src: data.value.data.avatar,
@@ -781,7 +780,7 @@ function createUserComponent() {
             },
             () => [
               data.value &&
-                h(NFlex, { wrap: false }, () => [
+                h(NFlex, null, () => [
                   h(NImage, {
                     showToolbarTooltip: true,
                     src: data.value.data.avatar,
@@ -819,6 +818,142 @@ function createUserComponent() {
 }
 
 const Component = createUserComponent();
+</script>
+```
+
+:::
+
+## 动态缓存
+
+在实际项目中，我们经常需要根据不同的参数来生成不同的缓存 key，比如根据用户 ID、查询条件等。通过动态生成 `cacheKey`，我们可以为不同的用户或不同的查询条件缓存不同的数据。
+
+下面的示例展示了如何根据用户 ID 动态生成缓存 key，不同的用户会有独立的缓存：
+
+:::demo
+
+```vue
+<template>
+  <section>
+    <n-flex>
+      <n-select
+        v-model:value="selectedUserId"
+        :options="userOptions"
+        placeholder="选择用户"
+        style="width: 200px"
+        @update:value="run"
+      />
+      <n-button @click="clearCache()">清空所有缓存</n-button>
+    </n-flex>
+    <hr />
+    <n-card v-if="selectedUserId" :title="`用户 ${selectedUserId} 的数据`">
+      <n-spin :show="loading">
+        <div v-if="data">
+          <n-flex>
+            <n-image :src="data.data.avatar" />
+            <div>
+              <n-flex>
+                <n-text italic>ID:</n-text>
+                <n-text :depth="3">{{ data.data.id }}</n-text>
+              </n-flex>
+              <n-flex>
+                <n-text italic>姓名:</n-text>
+                <n-text :depth="3">{{ data.data.name }}</n-text>
+              </n-flex>
+              <n-flex>
+                <n-text italic>邮箱:</n-text>
+                <n-text :depth="3">{{ data.data.email }}</n-text>
+              </n-flex>
+              <n-flex>
+                <n-text italic>部门:</n-text>
+                <n-text :depth="3">{{ data.data.department }}</n-text>
+              </n-flex>
+              <n-flex>
+                <n-text italic>身份:</n-text>
+                <n-text :depth="3">{{ data.data.roles }}</n-text>
+              </n-flex>
+            </div>
+          </n-flex>
+        </div>
+        <n-empty v-else size="huge" description="暂无数据" />
+      </n-spin>
+    </n-card>
+  </section>
+</template>
+
+<script setup lang="ts">
+import { useRequest, clearCache } from "vue3-request";
+import { ref, watch } from "vue";
+import {
+  NSpin,
+  NButton,
+  NEmpty,
+  NFlex,
+  NText,
+  NImage,
+  NSelect,
+  NCard,
+} from "naive-ui";
+import faker from "@/utils/faker";
+
+const selectedUserId = ref<number>(1);
+
+const userOptions = [
+  { label: "用户 1", value: 1 },
+  { label: "用户 2", value: 2 },
+  { label: "用户 3", value: 3 },
+];
+
+interface IResult {
+  code: number;
+  msg: string;
+  data: {
+    id: string;
+    name: string;
+    email: string;
+    avatar: string;
+    department: string;
+    roles: string;
+  };
+}
+
+const service = (userId: number): Promise<IResult> => {
+  return new Promise((resolve) => {
+    const gender = Math.random() > 0.5 ? "female" : "male";
+
+    setTimeout(() => {
+      resolve({
+        code: 200,
+        msg: "success",
+        data: {
+          id: faker.string.uuid(),
+          name: faker.person.fullName({ sex: gender }),
+          email: faker.internet.email(),
+          avatar: faker.image.personPortrait({ sex: gender, size: 128 }),
+          department: faker.helpers.arrayElement([
+            "技术部",
+            "产品部",
+            "运营部",
+            "设计部",
+            "市场部",
+          ]),
+          roles: faker.helpers.arrayElement(["admin", "user"]),
+        },
+      });
+    }, 1000);
+  });
+};
+
+const { data, loading, run } = useRequest(service, {
+  defaultParams: [1],
+  staleTime: 5000,
+  cacheKey: (params) => {
+    // 动态生成 cacheKey // [!code highlight]
+    if (params && params.length) {
+      return `user-data-${params[0]}`;
+    }
+    return ``;
+  },
+});
 </script>
 ```
 

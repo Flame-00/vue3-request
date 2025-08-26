@@ -35,11 +35,10 @@ const newData = computed(() => `${data.value} 是个肌肉男。`);
     </n-button>
     <hr />
     <n-spin :show="loading">
-      <n-flex :wrap="false" v-if="data">
+      <n-flex v-if="data">
         <n-image
           width="128"
           height="128"
-          style="flex:1;"
           show-toolbar-tooltip
           :src="data.data.avatar"
         />

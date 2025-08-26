@@ -23,6 +23,8 @@ export default definePlugin(
     if (!isStaleTime) {
       return {};
     }
+    const _getCacheKey =
+      typeof cacheKey === "function" ? cacheKey : () => cacheKey;
 
     const _setCache = (cacheKey: string, cacheData: CacheParamsType) => {
       if (customSetCache) {
@@ -42,7 +44,9 @@ export default definePlugin(
     };
 
     function recoverCache() {
+      const cacheKey = _getCacheKey();
       if (!cacheKey) return;
+
       const cacheData = _getCache(cacheKey);
       if (cacheData && Reflect.has(cacheData, "data")) {
         requestInstance.setState({
@@ -63,7 +67,8 @@ export default definePlugin(
     });
 
     return {
-      onBefore: () => {
+      onBefore: (params) => {
+        const cacheKey = _getCacheKey(params);
         if (!cacheKey) return null;
 
         const cacheData = _getCache(cacheKey);
@@ -73,7 +78,6 @@ export default definePlugin(
           Date.now() - cacheData.time < staleTimeValue
         ) {
           return {
-            loading: false,
             data: cacheData.data,
             error: undefined,
             isReturn: true,
@@ -86,28 +90,43 @@ export default definePlugin(
         }
       },
       onRequest: <D>(service: () => Promise<D>) => {
+        const cacheKey = _getCacheKey(requestInstance.state.params);
         if (!cacheKey) return service;
         let servicePromise = getRequestCache(cacheKey);
         if (servicePromise && servicePromise !== currentRequest) {
-          console.log("缓存servicePromise ->", servicePromise);
-          return () => servicePromise as Promise<D>;
+          return () => servicePromise!;
         }
         servicePromise = service(); // 新的promise执行,后续会添加.then方法去等待他的返回值
         currentRequest = servicePromise;
-        console.log("新的servicePromise ->", servicePromise);
         setRequestCache(cacheKey, servicePromise);
         return () => servicePromise;
       },
       onSuccess: (data, params) => {
+        const cacheKey = _getCacheKey(params);
         if (!cacheKey) return;
+        unSubscribe.value?.();
 
-        const cacheData = {
+        _setCache(cacheKey, {
           data,
           params,
           time: Date.now(),
-        };
+        });
+        unSubscribe.value = on(cacheKey, (cacheData) => {
+          requestInstance.setState({
+            data: cacheData.data,
+          });
+        });
+      },
+      onMutate(data) {
+        const cacheKey = _getCacheKey(requestInstance.state.params);
+        if (!cacheKey) return;
         unSubscribe.value?.();
-        _setCache(cacheKey, cacheData);
+
+        _setCache(cacheKey, {
+          data,
+          params: requestInstance.state.params,
+          time: Date.now(),
+        });
         unSubscribe.value = on(cacheKey, (cacheData) => {
           requestInstance.setState({
             data: cacheData.data,

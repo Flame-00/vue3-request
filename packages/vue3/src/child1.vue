@@ -1,90 +1,72 @@
 <template>
-  <section>
-    <h3>模拟请求</h3>
-    <button @click="request">请求</button>
-    <button @click="cancel">取消</button>
+  <div>
+    <NRadioGroup v-model:value="type" @update:value="handleRun">
+      <NSpace>
+        <NRadio :key="0" :value="0"> Chinese Names </NRadio>
+        <NRadio :key="1" :value="1"> English Names </NRadio>
+      </NSpace>
+    </NRadioGroup>
     <NSpin :show="loading">
-      <h2>data:{{ data }}</h2>
-      <h2>error: {{ error?.message }}</h2>
-      <h2>params: {{ params }}</h2>
+      <ul v-if="data">
+        <li v-for="item in data" :key="item">{{ item }}</li>
+      </ul>
     </NSpin>
-
-  </section>
+  </div>
 </template>
-<script setup lang="ts">
-import { useRequest, definePlugin } from "vue3-request";
-import { NSpin } from "naive-ui";
 
-interface IResult {
-  code: number;
-  msg: string;
-  data: {
-    name: string;
-    age: number;
-  };
-}
+<script lang="ts">
+import { NRadio, NRadioGroup, NSpace, NSpin } from 'naive-ui';
+import { defineComponent, ref } from 'vue';
+import { useRequest } from "vue3-request";
 
-const service = ({ id }: { id: number }): Promise<IResult> => {
-  return new Promise((resolve) => {
+const cnameData = ['华强', '大鹏', '猹', '张三', '马冬梅'];
+const nameData = ['HuaQiang', 'Peng', 'Cha', 'ZhangSan', 'MaDongMei'];
+
+function getLocalName(type: number): Promise<string[]> {
+  console.log(`[vue-request] fetching data..., type = ${type}`);
+  return new Promise(resolve => {
     setTimeout(() => {
-      resolve({
-        code: 200,
-        msg: "success",
-        data: {
-          name: "zs",
-          age: 24,
-        },
-      });
+      resolve(type ? nameData : cnameData);
     }, 1000);
   });
-};
+} 
 
-interface IPlugin {
-  level: string
-}
 
-const customPlugin = definePlugin<IResult, [{ id: number }], IPlugin>(
-  (requestInstance, options) => {
-    // 插件初始化逻辑
-  
-    return {
-      onBefore: (params) => {
-        // 请求前执行
-      },
-      onRequest: (service) => {
-        // 请求时执行，可以修改 service
-        return service;
-      },
-      onSuccess: (data, params) => {
-        // 请求成功时执行
-      },
-      onError: (error, params) => {
-        // 请求失败时执行
-      },
-      onFinally: (params, data, error) => {
-        // 请求完成时执行（无论成功或失败）
-      },
-      onCancel: () => {
-        // 请求取消时执行
-      },
-      onMutate: (data) => {
-        // 数据变更时执行
-      },
-    };
-  }
-);
-const { data, loading, cancel, params, error, run } = useRequest(
-  service,
-  {
-    level: '1',
-    manual: true,
-    // options
+export default defineComponent({
+  components: {
+    NRadioGroup,
+    NRadio,
+    NSpin,
+    NSpace,
   },
-  [customPlugin]// [!code ++]
-);
+  setup() {
+    const type = ref(0);
+    const { data, loading, run, } = useRequest(getLocalName, {
+      defaultParams: [0],
+      
+      cacheKey: params => {
+        console.log('params', params)
+        if (params?.[0] !== undefined) {
+          return `CacheDynamic-${params[0]}`;
+        }
+        // default params is 0
+        return '';
+      },
+    });
 
-const request = () => {
-  run({ id: 1 });
-};
+    const handleRun = (value: number) => {
+      console.log("handleRun", value)
+      run(value);
+    };
 
+    return {
+      data,
+      loading,
+      type,
+      handleRun,
+    };
+  },
+});
 </script>
+
+<style scoped lang="scss"></style>

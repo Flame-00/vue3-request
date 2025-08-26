@@ -1,6 +1,6 @@
 {
   "name": "vue3-request",
-  "version": "1.0.23",
+  "version": "1.0.24",
   "type": "module",
   "description": "A Vue3 asynchronous request processing library, designed to simplify your asynchronous operations and API calls.",
   "main": "dist/vue3-request.es.js",

@@ -35,7 +35,7 @@ const { data } = useRequest(fetchUser, {
     </n-switch>
     <hr />
     <n-spin :show="loading">
-      <n-flex :wrap="false" v-if="data">
+      <n-flex v-if="data">
         <n-image show-toolbar-tooltip :src="data.data.avatar" />
         <div>
           <n-flex>
@@ -168,7 +168,7 @@ watch(isLoggedIn, (newValue) => {
     </n-flex>
     <hr />
     <n-spin :show="loading">
-      <n-flex :wrap="false" v-if="data">
+      <n-flex v-if="data">
         <n-image show-toolbar-tooltip :src="data.data.avatar" />
         <div>
           <n-flex>
