@@ -39,8 +39,8 @@ importers:
         specifier: ^0.0.3
         version: 0.0.3
       vue3-request:
-        specifier: ^1.0.23
-        version: 1.0.23(typescript@5.8.3)
+        specifier: ^1.0.24
+        version: 1.0.24(typescript@5.8.3)
     devDependencies:
       naive-ui:
         specifier: ^2.42.0
@@ -67,8 +67,8 @@ importers:
         specifier: ^2.0.4
         version: 2.0.4(vue@3.5.17(typescript@5.8.3))
       vue3-request:
-        specifier: ^1.0.21
-        version: 1.0.21(typescript@5.8.3)
+        specifier: ^1.0.24
+        version: 1.0.24(typescript@5.8.3)
     devDependencies:
       '@tsconfig/node22':
         specifier: ^22.0.2
@@ -2489,11 +2489,8 @@ packages:
     peerDependencies:
       typescript: '>=5.0.0'
 
-  vue3-request@1.0.21:
-    resolution: {integrity: sha512-B/CISKRW1NwTqCfIZ2AimZ7NkV0gUdMS0sHY3TI/IguE/Y9+skEyvm7nxR6aud7Qf/CNtsn8GopPgLytwXZUzA==}
-
-  vue3-request@1.0.23:
-    resolution: {integrity: sha512-AmtSkl8MnZhh49FmqhjU3DwaYMCHFXqpZe7nSBXpmzPbyFf63scRaPDYSpNE8VmFUr/43H2zbJlm71YVhSQypA==}
+  vue3-request@1.0.24:
+    resolution: {integrity: sha512-fsg8Rnp5NzCwd6a/ahkPQXHC86Laj3XGAhRBzW9pJadzkBn9nJpTWNoYw0kYg16bUOwm7JVH31X5srS6IRE0TQ==}
 
   vue@3.5.17:
     resolution: {integrity: sha512-LbHV3xPN9BeljML+Xctq4lbz2lVHCR6DtbpTf5XIO6gugpXUN49j2QQPcMj086r9+AkJ0FfUT8xjulKKBkkr9g==}
@@ -5141,13 +5138,7 @@ snapshots:
       '@vue/language-core': 2.2.12(typescript@5.8.3)
       typescript: 5.8.3
 
-  vue3-request@1.0.21(typescript@5.8.3):
-    dependencies:
-      vue: 3.5.17(typescript@5.8.3)
-    transitivePeerDependencies:
-      - typescript
-
-  vue3-request@1.0.23(typescript@5.8.3):
+  vue3-request@1.0.24(typescript@5.8.3):
     dependencies:
       vue: 3.5.17(typescript@5.8.3)
     transitivePeerDependencies:
