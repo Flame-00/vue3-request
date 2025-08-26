@@ -233,7 +233,7 @@ watch(refreshDeps, refresh);
 
 ### cacheKey
 
-- **类型：** `string`
+- **类型：** `string \| ((params?: P) => string)`
 - **默认值：** `undefined`
 
 - 我们会缓存每次请求的 data , params
