@@ -63,7 +63,6 @@ const getUserInfo = async () => {
 };
 
 // 一行代码搞定状态管理
-const { data, error, loading, signal, refresh, abort } =
-  useRequest(getUserInfo);
+const { data, error, loading, signal, refresh, abort } = useRequest(getUserInfo);
 </script>
 ```
