@@ -1,4 +1,4 @@
-更多内容请查看文档 -><a href="https://badwoman0826.github.io/vue3-request/" target="_blank">文档</a>
+更多内容请查看文档 -><a href="https://badwoman0826.github.io/vue3-request/" target="blank">文档</a>
 
 ## 核心优势
 
