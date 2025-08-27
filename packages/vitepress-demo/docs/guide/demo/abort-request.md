@@ -151,3 +151,7 @@ const ChildComponent = generateComponent();
 | ------ | ----------------------------------------------------------------------------------------------------------------------------- | ------------------ |
 | signal | [`AbortController`](https://developer.mozilla.org/zh-CN/docs/Web/API/AbortController) 的信号对象，用于传递给 `xhr` 或 `fetch` | `Ref<AbortSignal>` |
 | abort  | 中止当前请求                                                                                                                  | `() => void`       |
+
+## 贡献者 :shamrock:
+
+<Team />

@@ -19,3 +19,7 @@ Vue3Request 默认启用以下插件
 | **useCachePlugin**                | [缓存 & SWR](../demo/cache.md)                     |
 
 默认插件系统让 Vue3Request 能够应对各种复杂的业务场景，同时保持 API 的简洁性和易用性。如果默认插件无法满足需求，你还可以开发[自定义插件](./custom-plugin.md)来扩展功能。
+
+## 贡献者 :shamrock:
+
+<Team />

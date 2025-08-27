@@ -126,3 +126,7 @@ const { data, error, loading } = useRequest(getSystemStatus, {
 | ----------------- | ------------------------------------ | ------------------------- | ------ |
 | pollingInterval   | 轮询间隔时间（毫秒），支持响应式变量 | `number \| Ref<number>`   | -      |
 | pollingWhenHidden | 页面隐藏时是否继续轮询               | `boolean \| Ref<boolean>` | `true` |
+
+## 贡献者 :shamrock:
+
+<Team />

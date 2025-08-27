@@ -166,3 +166,7 @@ watch(searchQuery, (newValue) => {
 | --------------- | --------------------------------------------------------------- | ------------------------------------------- | ----------------------------------- |
 | throttleWait    | 节流等待时间（毫秒）                                            | `number \| Ref<number>`                     | -                                   |
 | throttleOptions | leading: 指定调用在节流开始前，trailing: 指定调用在节流结束后 | `{ leading?: boolean, trailing?: boolean }` | `{ leading: true, trailing: true }` |
+
+## 贡献者 :shamrock:
+
+<Team />

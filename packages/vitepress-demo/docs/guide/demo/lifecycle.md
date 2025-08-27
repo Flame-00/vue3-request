@@ -145,3 +145,7 @@ const {
 | onSuccess | Service resolve 时触发 | `(data: D, params: P) => void`                 | -      |
 | onError   | Service reject 时触发  | `(error: Error, params: P) => void`            | -      |
 | onFinally | Service 执行完成时触发 | `(params: P, data?: D, error?: Error) => void` | -      |
+
+## 贡献者 :shamrock:
+
+<Team />

@@ -968,3 +968,7 @@ const { data, loading, run } = useRequest(service, {
 | staleTime | 数据保持新鲜时间，在该时间内认为数据是新鲜的，不会重新发起请求（毫秒），如果设置为 `-1`，则表示数据永远新鲜 | `number`                                                 | `0`               |
 | setCache  | 自定义设置缓存                                                                                              | `(cacheKey: string, cacheData: CacheParamsType) => void` | -                 |
 | getCache  | 自定义读取缓存                                                                                              | `(cacheKey: string) => CacheParamsType`                  | -                 |
+
+## 贡献者 :shamrock:
+
+<Team />

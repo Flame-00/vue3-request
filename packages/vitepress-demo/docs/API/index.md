@@ -342,3 +342,7 @@ type ThrottleOptionsType = {
 - **类型：** `Plugin<D, P, O>[]`
 
 用于扩展`useRequest`的插件数组，可参考 [自定义插件](../guide/plugin/custom-plugin.md)。
+
+## 贡献者 :shamrock:
+
+<Team />

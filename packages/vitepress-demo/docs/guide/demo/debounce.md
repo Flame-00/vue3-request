@@ -166,3 +166,7 @@ watch(searchQuery, (newValue) => {
 | --------------- | ------------------------------------------------------------- | ------------------------------------------- | ------------------------------------ |
 | debounceWait    | 防抖等待时间（毫秒）                                          | `number \| Ref<number>`                     | -                                    |
 | debounceOptions | leading: 指定调用在防抖开始前，trailing: 指定调用在防抖结束后 | `{ leading?: boolean, trailing?: boolean }` | `{ leading: false, trailing: true }` |
+
+## 贡献者 :shamrock:
+
+<Team />

@@ -67,3 +67,7 @@ yarn add vue3-request
 ```
 
 :::
+
+## 贡献者 :shamrock:
+
+<Team />

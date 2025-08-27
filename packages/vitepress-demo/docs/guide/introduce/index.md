@@ -49,3 +49,7 @@ Vue3-Request 是一个专为 Vue 3 设计的异步请求处理库，它通过统
 
 - https://attojs.com/
 - https://ahooks.js.org/zh-CN/hooks/use-request/index
+
+## 贡献者 :shamrock:
+
+<Team />
