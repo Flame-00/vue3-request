@@ -35,7 +35,7 @@ yarn add vue3-request
 ```html [ES Module]
 <script type="module">
   // 直接导入 ES Module 版本
-  import { useRequest } from "https://unpkg.com/vue3-request@1.0.18/dist/vue3-request.es.js";
+  import { useRequest } from "https://unpkg.com/vue3-request@1.0.24/dist/vue3-request.es.js";
   import { createApp } from "https://unpkg.com/vue@3/dist/vue.esm-browser.js";
 
   // 使用导入的模块
@@ -59,7 +59,7 @@ yarn add vue3-request
 ```
 
 ```html [浏览器全局变量方式]
-<script src="https://unpkg.com/vue3-request@1.0.18/dist/vue3-request.umd.js"></script>
+<script src="https://unpkg.com/vue3-request@1.0.24/dist/vue3-request.umd.js"></script>
 <script>
   // 直接使用全局变量
   const { useRequest } = Vue3Request;
