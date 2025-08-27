@@ -1,7 +1,5 @@
 更多内容请查看文档 -> [**文档**](https://fslflame.github.io/vue3-request/)
 
-## 核心解决方案
-
 Vue3-Request 是一个专为 Vue 3 设计的异步请求处理库，它通过统一的 useRequest Hook 和强大的插件生态，彻底简化了异步操作和 API 调用的复杂性：
 
 ✨ 统一状态管理

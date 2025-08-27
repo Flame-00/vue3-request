@@ -1,6 +1,6 @@
 # Vue3Request
 
-:::warning
+:::tip
 Vue 版本>=**3.5**
 :::
 
