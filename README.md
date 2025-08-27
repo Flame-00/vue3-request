@@ -1,4 +1,4 @@
-更多内容请查看文档 -> [**文档**](https://badwoman0826.github.io/vue3-request/)
+更多内容请查看文档 -><a href="https://badwoman0826.github.io/vue3-request/" target="_blank">文档</a>
 
 ## 核心优势
 
@@ -26,6 +26,7 @@ Vue3-Request 是一个专为 Vue 3 设计的异步请求处理库，它通过统
 - 📝 丰富的生命周期
 - 🎨 可扩展架构
 - 📚 完善文档
+
 ## ⚡ 快速安装
 
 ```bash [pnpm]
