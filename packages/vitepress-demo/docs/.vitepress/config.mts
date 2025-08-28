@@ -16,7 +16,7 @@ export default defineConfig({
       { text: "演示", link: "/guide/demo/basic/" },
       { text: "API", link: "/API/" },
       {
-        text: "在线沙盒示例",
+        text: "演练场",
         link: "https://codesandbox.io/p/sandbox/admiring-ride-4sz9l7",
       },
     ],

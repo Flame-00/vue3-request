@@ -4,7 +4,7 @@
 Vue 版本>=**3.5**
 :::
 
-[在线沙盒示例](https://codesandbox.io/p/sandbox/admiring-ride-4sz9l7)
+[演练场](https://codesandbox.io/p/sandbox/admiring-ride-4sz9l7)
 
 ## 背景
 

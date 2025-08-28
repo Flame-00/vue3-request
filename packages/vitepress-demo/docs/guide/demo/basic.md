@@ -20,7 +20,7 @@ const { data, error, loading } = useRequest(service);
     <n-card title="模拟请求">
       <n-spin :show="loading">
         <pre v-if="data">{{ data }}</pre>
-        <pre v-else-if="error">{{ error.message }}</pre>
+        <n-text type="error" v-else-if="error">{{ error.message }}</n-text>
         <n-empty size="huge" v-else> </n-empty>
       </n-spin>
     </n-card>
@@ -30,7 +30,9 @@ const { data, error, loading } = useRequest(service);
     <n-card title="Axios">
       <n-spin :show="loadingAxios">
         <pre v-if="dataAxios">{{ dataAxios }}</pre>
-        <pre v-else-if="errorAxios">{{ errorAxios.message }}</pre>
+        <n-text type="error" v-else-if="errorAxios">{{
+          errorAxios.message
+        }}</n-text>
         <n-empty size="huge" v-else> </n-empty>
       </n-spin>
     </n-card>
@@ -40,7 +42,9 @@ const { data, error, loading } = useRequest(service);
     <n-card title="Fetch">
       <n-spin :show="loadingFetch">
         <pre v-if="dataFetch">{{ dataFetch }}</pre>
-        <pre v-else-if="errorFetch">{{ errorFetch.message }}</pre>
+        <n-text type="error" v-else-if="errorFetch">{{
+          errorFetch.message
+        }}</n-text>
         <n-empty size="huge" v-else> </n-empty>
       </n-spin>
     </n-card>
@@ -49,7 +53,7 @@ const { data, error, loading } = useRequest(service);
 <script setup lang="ts">
 import { useRequest } from "vue3-request";
 import axios from "axios";
-import { NSpin, NEmpty, NCard } from "naive-ui";
+import { NSpin, NText, NEmpty, NCard } from "naive-ui";
 import faker from "@/utils/faker";
 
 interface IResult {
