@@ -1,4 +1,4 @@
-更多内容请查看文档 -><a href="https://badwoman0826.github.io/vue3-request/" target="_blank">文档</a>
+更多内容请查看文档 -><a href="https://Flame-00.github.io/vue3-request/" target="_blank">文档</a>
 
 ## 核心优势
 
@@ -13,7 +13,7 @@ Vue3-Request 是一个专为 Vue 3 设计的异步请求处理库，它通过统
 
 🧩 强大的插件生态 内置 9 大核心插件，开箱即用：
 
-- <img src="https://badwoman0826.github.io/vue3-request/cancel.svg" alt="取消请求" width="20" height="20" /> 请求中止
+- <img src="https://Flame-00.github.io/vue3-request/cancel.svg" alt="取消请求" width="20" height="20" /> 请求中止
 - 🔄 错误重试
 - ⚡ 防抖节流
 - 💾 智能缓存

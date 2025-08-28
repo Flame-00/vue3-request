@@ -7,12 +7,12 @@ const props = withDefaults(defineProps<Props>(), {
   members: () => [
     {
       avatar: withBase("/avatar.jpg"),
-      name: "badwoman0826",
+      name: "Flame-00",
       title: "Creator",
       links: [
         {
           icon: "github",
-          link: "https://github.com/badwoman0826/vue3-request",
+          link: "https://github.com/Flame-00/vue3-request",
         },
       ],
     },

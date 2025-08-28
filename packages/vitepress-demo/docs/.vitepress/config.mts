@@ -25,7 +25,7 @@ export default defineConfig({
       next: "下一页",
     },
     editLink: {
-      pattern: "https://github.com/badwoman0826/vue3-request",
+      pattern: "https://github.com/Flame-00/vue3-request",
       text: "在 GitHub 上为此开源项目点个Star吧！",
     },
     search: {
@@ -91,7 +91,7 @@ export default defineConfig({
     },
 
     socialLinks: [
-      { icon: "github", link: "https://github.com/badwoman0826/vue3-request" },
+      { icon: "github", link: "https://github.com/Flame-00/vue3-request" },
     ],
   },
   markdown: {

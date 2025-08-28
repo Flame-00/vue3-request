@@ -3,7 +3,7 @@
 ## 安装
 
 ### NPM
-更多内容请查看文档 -><a href="https://badwoman0826.github.io/vue3-request/" target="_blank">文档</a>
+更多内容请查看文档 -><a href="https://Flame-00.github.io/vue3-request/" target="_blank">文档</a>
 推荐使用 `pnpm` 安装极速体验 vue3-request
 
 ::: code-group
