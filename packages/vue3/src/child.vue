@@ -26,7 +26,6 @@ axiosInstance.interceptors.response.use((response) => response.data); // 响应�
 
 
 function service(params: number): Promise<number> {
-  console.log(signal.value)
   return axiosInstance.get("https://v2.xxapi.cn/api/aiqinggongyu", {
     signal: signal.value,
   });
