@@ -1,6 +1,6 @@
 更多内容请查看文档 -><a href="https://Flame-00.github.io/vue3-request/" target="_blank">文档</a>
 
-[演练场](https://codesandbox.io/p/sandbox/admiring-ride-4sz9l7)
+[演练场](https://codesandbox.io/p/devbox/yrxqp8)
 
 ## 核心优势
 
