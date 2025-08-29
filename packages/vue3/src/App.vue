@@ -1,6 +1,6 @@
 <template>
     <div class="container">
-        <Form style="flex: 1" :items :model :x-gap="20" :y-gap="20">
+        <Form ref="formRef" style="flex: 1" :items :model :x-gap="20" :y-gap="20">
             <template #actions>
                 <div style="display: flex; justify-content: flex-end;">
                     <n-button type="primary" @click="handleValidateButtonClick">
@@ -14,10 +14,12 @@
 </template>
 
 <script setup lang="tsx">
-import {  ref } from 'vue'
+import {  ref,useTemplateRef } from 'vue'
 import Form from './components/Form/index.vue'
 import type { ItemType } from './components/Form/types'
-import { NCheckboxGroup, NCheckbox, NSpace, NInput, NRadioGroup, NRadio, NRadioButton ,NGi,NButton} from 'naive-ui'
+import { NCheckboxGroup, NCheckbox, NSpace, NInput, NRadioGroup, NRadio, NRadioButton ,NButton,type FormInst} from 'naive-ui'
+
+const formRef = useTemplateRef<FormInst>('formRef')
 
 const model = ref({
     inputValue: null,
@@ -222,8 +224,9 @@ const items : ItemType[] = [
     },
 ]
 
-function handleValidateButtonClick() {
-    console.log(model.value)
+async function handleValidateButtonClick() {
+    const res = await formRef.value?.validate()
+    console.log(res)
 }
 
 </script>
