@@ -17,7 +17,7 @@ export default defineConfig({
       { text: "API", link: "/API/" },
       {
         text: "演练场",
-        link: "https://codesandbox.io/p/sandbox/admiring-ride-4sz9l7",
+        link: "https://codesandbox.io/p/devbox/yrxqp8",
       },
     ],
     docFooter: {
