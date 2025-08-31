@@ -1,45 +1,105 @@
 <template>
-    <n-form v-bind="$attrs" :ref="(exposed) => vm!.exposed = exposed">
-        <n-grid v-bind="$attrs">
-            <n-form-item-gi v-bind="item" v-for="item in props.items" :key="item.path">
-                <slot :name="item.path">
-                    <component :is="h(getComponent(item.type), {
-                        ...item.props,
-                        [`onUpdate:${item.modelKey ?? 'value'}`]: (value: any) => {
-                            if (item.path) {
-                                props.model[item.path] = value
-                            }
-                        },
-                        [item.modelKey ?? 'value']: props.model?.[item.path ?? '']
-                    })" />
-                </slot>
-            </n-form-item-gi>
-        </n-grid>
-        <slot name="actions"></slot>
-    </n-form>
+  <n-form
+    v-bind="mergeFormProps"
+    :model
+    :ref="(exposed) => vm!.exposed = exposed"
+  >
+    <n-grid v-bind="mergeGridProps">
+      <n-grid-item
+        v-bind="mergeFormItemGiProps(item)"
+        v-for="(item, index) in formItems"
+        :key="item.path"
+      >
+        <slot
+          :name="item.path"
+          v-if="!item.hidden"
+          :item
+          :index
+          :value="model[item.path ?? '']"
+        >
+          <component
+            v-if="item.render && !item.isFormItem"
+            :is="getComponent({ item, index, value: model[item.path ?? ''] })"
+          ></component>
+          <n-form-item v-bind="mergeFormItemGiProps(item)" v-else>
+            <component
+              :is="h(getComponent({ item, index, value: model[item.path ?? ''] }), {
+              ...item.props,
+              [`onUpdate:${item.vModelKey ?? 'value'}`]: (value: any) => {
+                console.log(value);
+                if (item.path) {
+                  model[item.path] = value
+                }
+              },
+              [item.vModelKey ?? 'value']: model?.[item.path ?? '']
+            })"
+            ></component>
+          </n-form-item>
+        </slot>
+      </n-grid-item>
+    </n-grid>
+    <slot name="actions"></slot>
+  </n-form>
 </template>
 
-<script setup lang="ts">
-import { NForm, NFormItemGi, NGrid, NInput } from 'naive-ui'
-import { h, type ComponentInstance, getCurrentInstance } from 'vue'
-import type { ItemType, Type } from './types'
-import { components } from './components'
-
-const vm = getCurrentInstance()
+<script setup lang="tsx">
+import { NForm, type FormProps, type GridProps } from "naive-ui";
+import { type ComponentInstance, getCurrentInstance, useAttrs } from "vue";
+import type { BaseItem, FormItemScope } from "./types";
+import { components } from "./components";
+import {
+  NInput,
+  NFormItem,
+  NGridItem,
+  NGrid,
+  type FormItemGiProps,
+} from "naive-ui";
+import { h, mergeProps, computed } from "vue";
+const vm = getCurrentInstance();
 
 const props = defineProps<{
-    items: ItemType[],
-    model: Record<string, any>,
-}>()
+  items: BaseItem[];
+  grid?: GridProps;
+  model: Record<string, any>;
+}>();
 
-const getComponent = (type?: Type) => {
-    if (type && typeof type === 'string') {
-        return components[type]
-    }
-    return type ?? NInput
-}
+const defaultGridProps: GridProps = {
+  xGap: 24,
+  yGap: 24,
+};
+const mergeGridProps = mergeProps(defaultGridProps, props.grid ?? {});
 
-defineExpose({} as ComponentInstance<typeof NForm> & ComponentInstance<typeof NGrid>)
+const defaultFormProps: FormProps = {};
+const attrs = useAttrs();
+const mergeFormProps = mergeProps(defaultFormProps, attrs ?? {});
+
+const defaultFormItemGiProps: FormItemGiProps = {
+  span: 24,
+};
+const mergeFormItemGiProps = (item: BaseItem) => {
+  console.log();
+  return mergeProps(defaultFormItemGiProps, item ?? {});
+};
+
+const formItems = props.items.map((item) =>
+  item.isFormItem === undefined ? { ...item, isFormItem: true } : item
+);
+
+const getComponent = (scope: FormItemScope) => {
+  const {
+    item: { type, render },
+  } = scope;
+  if (render) {
+    return render(scope);
+  }
+  if (type && typeof type === "string") {
+    return components[type];
+  }
+  console.log(type);
+  return type ?? NInput;
+};
+
+defineExpose({} as ComponentInstance<typeof NForm>);
 </script>
 
 <style scoped></style>

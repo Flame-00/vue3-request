@@ -1,8 +1,23 @@
-import type { FormItemGiProps, FormProps } from "naive-ui";
-import type { VNode, Component } from "vue";
-export type ItemType = {
+import type { FormItemGiProps } from "naive-ui";
+import type { VNode } from "vue";
+
+export type BaseItem<V = any> = {
   type?: Type;
+  render?: Render<V>;
   props?: Record<string, any>;
-  modelKey?: string;
+  vModelKey?: string;
+  hidden?: boolean;
+  isFormItem?: boolean;
 } & FormItemGiProps;
-export type Type = string | VNode | Component;  
+
+export type Item = BaseItem;
+
+export type FormItemScope<V = any> = {
+  item: Item;
+  index: number;
+  value: V;
+};
+
+export type Render<V = any> = (scope: FormItemScope<V>) => VNode;
+
+export type Type = string | (() => VNode);
