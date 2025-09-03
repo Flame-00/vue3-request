@@ -1,15 +1,19 @@
 <template>
   <div class="container">
+    <n-dropdown trigger="hover" :options="options" @select="handleSelect">
+      <n-button>找个地方休息</n-button>
+    </n-dropdown>
     <Form
       ref="formRef"
-      :items
+      label-placement="left"
+      :items="items"
       :model
       :rules
       :grid="{
         yGap: 50,
       }"
     >
-      <template #hobbies="{ value }">
+      <!-- <template #hobbies="{ value }">
         <n-form-item
           v-for="(item, index) in value"
           :key="item.id"
@@ -26,7 +30,7 @@
             删除
           </n-button>
         </n-form-item>
-      </template>
+      </template> -->
       <template #actions>
         <div style="display: flex; justify-content: flex-end">
           <n-button type="primary" @click="handleValidateButtonClick">
@@ -36,6 +40,7 @@
       </template>
     </Form>
     <n-button type="primary" @click="handleAddButtonClick"> 添加 </n-button>
+    {{ testvalue }}
     <pre>{{ JSON.stringify(model, null, 2) }}</pre>
   </div>
 </template>
@@ -52,6 +57,7 @@ import {
   NRadioButton,
   NFormItem,
   NButton,
+  NDropdown,
 } from "naive-ui";
 
 import {
@@ -62,6 +68,8 @@ import {
   type FormRules,
   type FormItemRule,
 } from "./components/Form";
+
+const testvalue = ref(null);
 
 const formRef = useTemplateRef<FormInst>("formRef");
 
@@ -76,6 +84,7 @@ const model = ref({
     path2: null,
   },
   switchValue: false,
+  checkboxValue: false,
   checkboxGroupValue: null,
   radioGroupValue: null,
   inputNumberValue: null,
@@ -83,6 +92,7 @@ const model = ref({
   sliderValue: 0,
   transferValue: null,
   hobbies: [{ id: crypto.randomUUID(), hobby: "" }],
+  dropdownValue: null,
 });
 
 const rules: FormRules = {
@@ -195,47 +205,94 @@ function removeItem(index: number) {
 const hobbies: BaseItem<{ id: string; hobby: string }[]> = {
   path: "hobbies",
   span: 24,
-  isFormItem: false,
+  defaultFormItem: false,
   render: (scope) => (
-    console.log("scope", scope),
-    (
-      <>
-        {scope.value.map((item: any, index: number) => (
-          <NFormItem
-            key={item.id}
-            label={`爱好${index + 1}`}
-            path={`hobbies[${index}].hobby`}
-            rule={{
-              required: true,
-              message: `请输入爱好${index + 1}`,
-              trigger: ["input", "blur"],
-            }}
-          >
-            <NInput v-model:value={item.hobby} />
-            <NButton
-              style="margin-left: 12px"
-              onClick={() => removeItem(index)}
-            >
-              删除
-            </NButton>
-          </NFormItem>
-        ))}
-      </>
-    )
+    <>
+      {scope.value.map((item, index) => (
+        <NFormItem
+          key={item.id}
+          label={`爱好${index + 1}`}
+          path={`hobbies[${index}].hobby`}
+          rule={{
+            required: true,
+            message: `请输入爱好${index + 1}`,
+            trigger: ["input", "blur"],
+          }}
+        >
+          <NInput v-model:value={item.hobby} />
+          <NButton style="margin-left: 12px" onClick={() => removeItem(index)}>
+            删除
+          </NButton>
+        </NFormItem>
+      ))}
+    </>
   ),
 };
 
+function handleSelect(key: string | number) {
+  console.log("handleSelect", key);
+}
+const options = ref([
+  {
+    label: "滨海湾金沙，新加坡",
+    key: "marina bay sands",
+    disabled: true,
+  },
+  {
+    label: "布朗酒店，伦敦",
+    key: "brown's hotel, london",
+  },
+  {
+    label: "亚特兰蒂斯巴哈马，拿骚",
+    key: "atlantis nahamas, nassau",
+  },
+  {
+    label: "比佛利山庄酒店，洛杉矶",
+    key: "the beverly hills hotel, los angeles",
+  },
+]);
+const railStyle = ({
+  focused,
+  checked,
+}: {
+  focused: boolean;
+  checked: boolean;
+}) => {
+  const style: any = {};
+  if (checked) {
+    style.background = "#d03050";
+    if (focused) {
+      style.boxShadow = "0 0 0 2px #d0305040";
+    }
+  } else {
+    style.background = "#2080f0";
+    if (focused) {
+      style.boxShadow = "0 0 0 2px #2080f040";
+    }
+  }
+  return style;
+};
 const items = computed<Item[]>(() => {
   return [
-    // hobbies,
+    hobbies,
+    // {
+    //   path: "hobbies",
+    //   span: 24,
+    // },
     {
-      path: "hobbies",
-      span: 24,
+      label: "Checkbox",
+      path: "checkboxValue",
+      type: "checkbox",
+      span: 12,
+      props: {
+        "onUpdate:checked": (value: boolean) => {
+          console.log("Checkbox", value);
+        },
+      },
     },
     {
       label: "Input",
       path: "inputValue",
-      type: () => h(NInput),
       span: 12,
       props: {
         placeholder: "Input",
@@ -262,6 +319,10 @@ const items = computed<Item[]>(() => {
       props: {
         options: generalOptions,
         placeholder: "Select",
+      },
+      slots: {
+        header: () => "不知道放些什么",
+        action: () => "如果你点开了这个例子，你可能需要它",
       },
     },
     {
@@ -290,46 +351,125 @@ const items = computed<Item[]>(() => {
       path: "switchValue",
       type: "switch",
       span: 12,
+      props: {
+        "onUpdate:value": (value: boolean) => {
+          console.log("Switch", value);
+        },
+        railStyle,
+      },
+      slots: {
+        checked: () => "自然赠予你，树冠 微风 肩头的暴雨",
+        unchecked: () => "片刻后生成，平衡 忠诚 不息的身体",
+      },
     },
     {
       label: "Checkbox Group",
       path: "checkboxGroupValue",
       span: 12,
-      render: () => (
-        <NCheckboxGroup v-model:value={model.value.checkboxGroupValue}>
-          <NSpace>
-            <NCheckbox value="Option 1">Option 1</NCheckbox>
-            <NCheckbox value="Option 2">Option 2</NCheckbox>
-            <NCheckbox value="Option 3">Option 3</NCheckbox>
-          </NSpace>
-        </NCheckboxGroup>
-      ),
+      type: "checkbox-group",
+      props: {
+        "onUpdate:value": (value: boolean) => {
+          console.log("Checkbox Group", value);
+        },
+      },
+      childrenOptions: [
+        {
+          tag: "checkbox",
+          props: {
+            label: "Option 1",
+            value: "Option 1",
+          },
+        },
+        {
+          tag: "checkbox",
+          props: {
+            label: "Option 2",
+            value: "Option 2",
+          },
+        },
+        {
+          tag: "checkbox",
+          props: {
+            label: "Option 3",
+            value: "Option 3",
+          },
+        },
+      ],
+      // slots: {
+      //   default: () => {
+      //     return (
+      //       <NSpace>
+      //         <NCheckbox value="Option 1">Option 1</NCheckbox>
+      //         <NCheckbox value="Option 2">Option 2</NCheckbox>
+      //         <NCheckbox value="Option 3">Option 3</NCheckbox>
+      //       </NSpace>
+      //     );
+      //   },
+      // },
     },
     {
       label: "Radio Group",
       path: "radioGroupValue",
-      render: () => (
-        <NRadioGroup v-model:value={model.value.radioGroupValue}>
-          <NSpace>
-            <NRadio value="Option 1">Option 1</NRadio>
-            <NRadio value="Option 2">Option 2</NRadio>
-            <NRadio value="Option 3">Option 3</NRadio>
-          </NSpace>
-        </NRadioGroup>
-      ),
+      type: "radio-group",
       span: 12,
+      childrenOptions: [
+        {
+          tag: "radio",
+          props: {
+            label: "Option 1",
+            value: "Option 1",
+          },
+        },
+        {
+          tag: "radio",
+          props: {
+            label: "Option 2",
+            value: "Option 2",
+          },
+        },
+        {
+          tag: "radio-button",
+          props: {
+            label: "Option 3",
+            value: "Option 3",
+          },
+        },
+      ],
     },
     {
       label: "Radio Button Group",
       path: "radioGroupValue",
-
-      render: () => (
-        <NRadioGroup v-model:value={model.value.radioGroupValue}>
-          <NRadioButton value="Option 1">Option 1</NRadioButton>
-          <NRadioButton value="Option 2">Option 2</NRadioButton>
-          <NRadioButton value="Option 3">Option 3</NRadioButton>
-        </NRadioGroup>
-      ),
+      type: "radio-group",
+      childrenOptions: [
+        {
+          tag: "radio",
+          props: {
+            label: "Option 1",
+            value: "Option 1",
+          },
+        },
+        {
+          tag: "radio",
+          props: {
+            label: "Option 2",
+            value: "Option 2",
+          },
+        },
+        {
+          tag: "radio",
+          props: {
+            label: "Option 3",
+            value: "Option 3",
+          },
+        },
+        {
+          tag: "radio-button",
+          props: {
+            label: "Option 4",
+            value: "Option 4",
+          },
+        },
+      ],
       span: 12,
     },
     {
@@ -363,7 +503,7 @@ const items = computed<Item[]>(() => {
       label: "Nested Path",
       path: "nestedValue.path1",
       type: "cascader",
-      span: 5,
+      span: 10,
       props: {
         placeholder: "Nested Path 1",
         options: nestedOptions,
@@ -373,7 +513,7 @@ const items = computed<Item[]>(() => {
       label: "Nested Path 2",
       path: "nestedValue.path2",
       type: "select",
-      span: 5,
+      span: 24,
       props: {
         options: generalOptions,
         placeholder: "Nested Path 2",
@@ -381,6 +521,7 @@ const items = computed<Item[]>(() => {
     },
   ];
 });
+
 async function handleValidateButtonClick() {
   const res = await formRef.value?.validate();
   console.log(res);
@@ -393,7 +534,6 @@ function handleAddButtonClick() {
 
 <style scoped>
 .container {
-  width: 1200px;
   margin: 50px auto;
   display: flex;
   gap: 20px;

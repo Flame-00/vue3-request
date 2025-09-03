@@ -15,24 +15,16 @@
           v-if="!item.hidden"
           :item
           :index
-          :value="model[item.path ?? '']"
+          :value="model[item.path!]"
         >
           <component
-            v-if="item.render && !item.isFormItem"
-            :is="getComponent({ item, index, value: model[item.path ?? ''] })"
+            v-bind="item.props"
+            v-if="item.render && !item.defaultFormItem"
+            :is="getComponent({ item, index, value: model[item.path!] })"
           ></component>
           <n-form-item v-bind="mergeFormItemGiProps(item)" v-else>
             <component
-              :is="h(getComponent({ item, index, value: model[item.path ?? ''] }), {
-              ...item.props,
-              [`onUpdate:${item.vModelKey ?? 'value'}`]: (value: any) => {
-                console.log(value);
-                if (item.path) {
-                  model[item.path] = value
-                }
-              },
-              [item.vModelKey ?? 'value']: model?.[item.path ?? '']
-            })"
+              :is="getComponent({ item, index, value: model[item.path!] })"
             ></component>
           </n-form-item>
         </slot>
@@ -44,17 +36,19 @@
 
 <script setup lang="tsx">
 import { NForm, type FormProps, type GridProps } from "naive-ui";
-import { type ComponentInstance, getCurrentInstance, useAttrs } from "vue";
+import {
+  type ComponentInstance,
+  getCurrentInstance,
+  useAttrs,
+  type Component,
+  computed,
+  isVNode,
+} from "vue";
 import type { BaseItem, FormItemScope } from "./types";
 import { components } from "./components";
-import {
-  NInput,
-  NFormItem,
-  NGridItem,
-  NGrid,
-  type FormItemGiProps,
-} from "naive-ui";
-import { h, mergeProps, computed } from "vue";
+import { NFormItem, NGridItem, NGrid, type FormItemGiProps } from "naive-ui";
+import { h, mergeProps } from "vue";
+
 const vm = getCurrentInstance();
 
 const props = defineProps<{
@@ -72,31 +66,85 @@ const mergeGridProps = mergeProps(defaultGridProps, props.grid ?? {});
 const defaultFormProps: FormProps = {};
 const attrs = useAttrs();
 const mergeFormProps = mergeProps(defaultFormProps, attrs ?? {});
+console.log(mergeFormProps);
 
 const defaultFormItemGiProps: FormItemGiProps = {
   span: 24,
 };
 const mergeFormItemGiProps = (item: BaseItem) => {
-  console.log();
   return mergeProps(defaultFormItemGiProps, item ?? {});
 };
 
-const formItems = props.items.map((item) =>
-  item.isFormItem === undefined ? { ...item, isFormItem: true } : item
-);
+function _setDefaultProps(item: BaseItem, defaultProps: [string, any][]) {
+  return defaultProps.reduce((acc, [key, value]) => {
+    acc[key] = acc[key] ?? value;
+    return acc;
+  }, item as Record<string, any>);
+}
+
+const formItems = computed(() => {
+  return props.items.map((item) => {
+    const defaultProps = _setDefaultProps(item, [
+      ["isFormItem", true],
+      ["vModelKey", components[item.type!]?.vModelKey ?? "value"],
+    ]);
+    return { ...item, ...defaultProps };
+  });
+});
+
+console.log("formItems", formItems.value);
 
 const getComponent = (scope: FormItemScope) => {
   const {
-    item: { type, render },
+    item: {
+      type,
+      vModelKey,
+      path,
+      render,
+      props: itemProps,
+      slots,
+      childrenOptions,
+    },
   } = scope;
+
+  const componentProps = {
+    ...itemProps,
+    [`onUpdate:${vModelKey}`]: (newValue: any) => {
+      if (path) {
+        props.model[path] = newValue;
+        itemProps?.[`onUpdate:${vModelKey}`]?.(newValue);
+      }
+    },
+    [vModelKey!]: props.model?.[path!],
+  };
+
   if (render) {
-    return render(scope);
+    const r = render(scope);
+    if (r && !isVNode(r)) {
+      return h("div", r);
+    }
+    return r;
   }
-  if (type && typeof type === "string") {
-    return components[type];
+
+  function _getComponent(tag?: keyof typeof components) {
+    return components[tag ?? "input"].component as Component;
   }
-  console.log(type);
-  return type ?? NInput;
+
+  const component = _getComponent(type);
+
+  if (type && slots) {
+    return h(component, componentProps, slots);
+  }
+
+  if (type && childrenOptions) {
+    return h(component, componentProps, {
+      default: () =>
+        childrenOptions.map((ot) =>
+          h(_getComponent(ot.tag), ot.props, ot.slots)
+        ),
+    });
+  }
+  return h(component, componentProps);
 };
 
 defineExpose({} as ComponentInstance<typeof NForm>);
