@@ -1,19 +1,17 @@
 <template>
   <div class="container">
-    <n-dropdown trigger="hover" :options="options" @select="handleSelect">
-      <n-button>找个地方休息</n-button>
-    </n-dropdown>
+    <n-button type="primary" @click="handleClick"> 点击</n-button>
     <Form
       ref="formRef"
       label-placement="left"
       :items="items"
-      :model
+      v-model:value="model"
       :rules
       :grid="{
         yGap: 50,
       }"
     >
-      <!-- <template #hobbies="{ value }">
+      <template #hobbies="{ value }">
         <n-form-item
           v-for="(item, index) in value"
           :key="item.id"
@@ -30,7 +28,7 @@
             删除
           </n-button>
         </n-form-item>
-      </template> -->
+      </template>
       <template #actions>
         <div style="display: flex; justify-content: flex-end">
           <n-button type="primary" @click="handleValidateButtonClick">
@@ -46,18 +44,21 @@
 </template>
 
 <script setup lang="tsx">
-import { ref, useTemplateRef, computed, h } from "vue";
+import { ref, useTemplateRef, computed, h, defineComponent } from "vue";
 import {
   NCheckboxGroup,
   NCheckbox,
   NSpace,
   NInput,
+  NSelect,
   NRadioGroup,
   NRadio,
   NRadioButton,
   NFormItem,
   NButton,
   NDropdown,
+  type SelectInst,
+  type FormItemInst,
 } from "naive-ui";
 
 import {
@@ -72,7 +73,7 @@ import {
 const testvalue = ref(null);
 
 const formRef = useTemplateRef<FormInst>("formRef");
-
+const selectInstRef = ref<SelectInst | null>(null);
 const model = ref({
   inputValue: null,
   textareaValue: null,
@@ -92,8 +93,11 @@ const model = ref({
   sliderValue: 0,
   transferValue: null,
   hobbies: [{ id: crypto.randomUUID(), hobby: "" }],
-  dropdownValue: null,
 });
+async function handleClick() {
+  formItemRefSelect.value?.validate();
+  formItemRefInput.value?.validate();
+}
 
 const rules: FormRules = {
   inputValue: {
@@ -228,29 +232,6 @@ const hobbies: BaseItem<{ id: string; hobby: string }[]> = {
     </>
   ),
 };
-
-function handleSelect(key: string | number) {
-  console.log("handleSelect", key);
-}
-const options = ref([
-  {
-    label: "滨海湾金沙，新加坡",
-    key: "marina bay sands",
-    disabled: true,
-  },
-  {
-    label: "布朗酒店，伦敦",
-    key: "brown's hotel, london",
-  },
-  {
-    label: "亚特兰蒂斯巴哈马，拿骚",
-    key: "atlantis nahamas, nassau",
-  },
-  {
-    label: "比佛利山庄酒店，洛杉矶",
-    key: "the beverly hills hotel, los angeles",
-  },
-]);
 const railStyle = ({
   focused,
   checked,
@@ -272,255 +253,292 @@ const railStyle = ({
   }
   return style;
 };
-const items = computed<Item[]>(() => {
-  return [
-    hobbies,
-    // {
-    //   path: "hobbies",
-    //   span: 24,
-    // },
-    {
-      label: "Checkbox",
-      path: "checkboxValue",
-      type: "checkbox",
-      span: 12,
-      props: {
-        "onUpdate:checked": (value: boolean) => {
-          console.log("Checkbox", value);
-        },
-      },
-    },
-    {
-      label: "Input",
-      path: "inputValue",
-      span: 12,
-      props: {
-        placeholder: "Input",
-      },
-    },
-    {
-      label: "Textarea",
-      path: "textareaValue",
-      type: "input",
-      props: {
-        type: "textarea",
-        placeholder: "Textarea",
-        autosize: {
-          minRows: 3,
-          maxRows: 5,
-        },
-      },
-    },
-    {
-      label: "Select",
-      path: "selectValue",
-      type: "select",
-      span: 12,
-      props: {
-        options: generalOptions,
-        placeholder: "Select",
-      },
-      slots: {
-        header: () => "不知道放些什么",
-        action: () => "如果你点开了这个例子，你可能需要它",
-      },
-    },
-    {
-      label: "Multiple Select",
-      path: "multipleSelectValue",
-      span: 12,
-      type: "select",
-      props: {
-        placeholder: "Select",
-        options: generalOptions,
-        multiple: true,
-      },
-    },
-    {
-      label: "Datetime",
-      path: "datetimeValue",
-      type: "date-picker",
-      span: 12,
-      hidden: model.value.switchValue,
-      props: {
-        type: "datetime",
-      },
-    },
-    {
-      label: "Switch",
-      path: "switchValue",
-      type: "switch",
-      span: 12,
-      props: {
-        "onUpdate:value": (value: boolean) => {
-          console.log("Switch", value);
-        },
-        railStyle,
-      },
-      slots: {
-        checked: () => "自然赠予你，树冠 微风 肩头的暴雨",
-        unchecked: () => "片刻后生成，平衡 忠诚 不息的身体",
-      },
-    },
-    {
-      label: "Checkbox Group",
-      path: "checkboxGroupValue",
-      span: 12,
-      type: "checkbox-group",
-      props: {
-        "onUpdate:value": (value: boolean) => {
-          console.log("Checkbox Group", value);
-        },
-      },
-      childrenOptions: [
-        {
-          tag: "checkbox",
-          props: {
-            label: "Option 1",
-            value: "Option 1",
-          },
-        },
-        {
-          tag: "checkbox",
-          props: {
-            label: "Option 2",
-            value: "Option 2",
-          },
-        },
-        {
-          tag: "checkbox",
-          props: {
-            label: "Option 3",
-            value: "Option 3",
-          },
-        },
-      ],
-      // slots: {
-      //   default: () => {
-      //     return (
-      //       <NSpace>
-      //         <NCheckbox value="Option 1">Option 1</NCheckbox>
-      //         <NCheckbox value="Option 2">Option 2</NCheckbox>
-      //         <NCheckbox value="Option 3">Option 3</NCheckbox>
-      //       </NSpace>
-      //     );
-      //   },
-      // },
-    },
-    {
-      label: "Radio Group",
-      path: "radioGroupValue",
-      type: "radio-group",
-      span: 12,
-      childrenOptions: [
-        {
-          tag: "radio",
-          props: {
-            label: "Option 1",
-            value: "Option 1",
-          },
-        },
-        {
-          tag: "radio",
-          props: {
-            label: "Option 2",
-            value: "Option 2",
-          },
-        },
-        {
-          tag: "radio-button",
-          props: {
-            label: "Option 3",
-            value: "Option 3",
-          },
-        },
-      ],
-    },
-    {
-      label: "Radio Button Group",
-      path: "radioGroupValue",
-      type: "radio-group",
-      childrenOptions: [
-        {
-          tag: "radio",
-          props: {
-            label: "Option 1",
-            value: "Option 1",
-          },
-        },
-        {
-          tag: "radio",
-          props: {
-            label: "Option 2",
-            value: "Option 2",
-          },
-        },
-        {
-          tag: "radio",
-          props: {
-            label: "Option 3",
-            value: "Option 3",
-          },
-        },
-        {
-          tag: "radio-button",
-          props: {
-            label: "Option 4",
-            value: "Option 4",
-          },
-        },
-      ],
-      span: 12,
-    },
-    {
-      label: "Input Number",
-      path: "inputNumberValue",
-      type: "input-number",
-      span: 12,
-    },
-    {
-      label: "Time Picker",
-      path: "timePickerValue",
-      type: "time-picker",
-      span: 12,
-    },
-    {
-      label: "Slider",
-      path: "sliderValue",
-      type: "slider",
-      span: 12,
-    },
-    {
-      label: "Transfer",
-      path: "transferValue",
-      type: "transfer",
-      span: 14,
-      props: {
-        options: generalOptions,
-      },
-    },
-    {
-      label: "Nested Path",
-      path: "nestedValue.path1",
-      type: "cascader",
-      span: 10,
-      props: {
-        placeholder: "Nested Path 1",
-        options: nestedOptions,
-      },
-    },
-    {
-      label: "Nested Path 2",
-      path: "nestedValue.path2",
-      type: "select",
-      span: 24,
-      props: {
-        options: generalOptions,
-        placeholder: "Nested Path 2",
-      },
-    },
-  ];
+
+const formItemRefSelect = ref<FormItemInst | null>(null);
+const formItemRefInput = ref<FormItemInst | null>(null);
+
+const CheckboxComponent = defineComponent({
+  setup(props, { attrs, slots }) {
+    console.log(props);
+    console.log(attrs);
+    console.log(slots);
+    return () => <NCheckbox> {slots.default?.()}</NCheckbox>;
+  },
 });
+const items: BaseItem[] = [
+  // hobbies,
+  {
+    path: "hobbies",
+    defaultFormItem: false,
+    span: 24,
+  },
+  {
+    label: "Checkbox",
+    // render(scope) {
+    //   console.log(scope);
+    //   return <CheckboxComponent />;
+    // },
+    // vModelKey: "checked",
+    // childrenOptions: [
+    //   {
+    //     tag: "checkbox",
+    //     props: {
+    //       label: "Option 1",
+    //       value: "Option 1",
+    //     },
+    //   },
+    // ],
+    props: {
+      name: "范德彪",
+      age: 18,
+    },
+
+    path: "checkboxValue",
+    type: "checkbox",
+    span: 12,
+    slots: {
+      default: () => "自然赠予你，树冠 微风 肩头的暴雨",
+    },
+  },
+  {
+    label: "Input",
+    path: "inputValue",
+    ref: formItemRefInput,
+    span: 12,
+    render(scope) {
+      return <NInput />;
+    },
+    props: {
+      placeholder: "Input",
+    },
+  },
+  {
+    label: "Textarea",
+    path: "textareaValue",
+    type: "input",
+    props: {
+      type: "textarea",
+      placeholder: "Textarea",
+      autosize: {
+        minRows: 3,
+        maxRows: 5,
+      },
+    },
+  },
+  {
+    label: "Select",
+    path: "selectValue",
+    type: "select",
+    span: 12,
+    ref: (instance) => {
+      formItemRefSelect.value = instance;
+    },
+    props: {
+      options: generalOptions,
+      placeholder: "Select",
+      // ref: selectRef,
+    },
+
+    slots: {
+      header: () => "不知道放些什么",
+      action: () => "如果你点开了这个例子，你可能需要它",
+    },
+  },
+  {
+    label: "Multiple Select",
+    path: "multipleSelectValue",
+    span: 12,
+    type: "select",
+    props: {
+      placeholder: "Select",
+      options: generalOptions,
+      multiple: true,
+    },
+  },
+  {
+    label: "Datetime",
+    path: "datetimeValue",
+    type: "date-picker",
+    span: 12,
+    hidden: model.value.switchValue,
+    props: {
+      type: "datetime",
+    },
+  },
+  {
+    label: "Switch",
+    path: "switchValue",
+    type: "switch",
+    span: 12,
+    props: {
+      "onUpdate:value": (value: boolean) => {
+        console.log("Switch", value);
+      },
+      railStyle,
+    },
+    // slots: {
+    //   checked: () => "自然赠予你，树冠 微风 肩头的暴雨",
+    //   unchecked: () => "片刻后生成，平衡 忠诚 不息的身体",
+    // },
+  },
+  {
+    label: "Checkbox Group",
+    path: "checkboxGroupValue",
+    span: 12,
+    type: "checkbox-group",
+    props: {
+      "onUpdate:value": (value: boolean) => {
+        console.log("Checkbox Group", value);
+      },
+    },
+    childrenOptions: [
+      {
+        tag: "checkbox",
+        props: {
+          label: "Option 1",
+          value: "Option 1",
+        },
+      },
+      {
+        tag: "checkbox",
+        props: {
+          label: "Option 2",
+          value: "Option 2",
+        },
+      },
+      {
+        tag: "checkbox",
+        props: {
+          label: "Option 3",
+          value: "Option 3",
+        },
+      },
+    ],
+    slots: {
+      default: () => {
+        return (
+          <NSpace>
+            <NCheckbox value="Option 4">Option 4</NCheckbox>
+            <NCheckbox value="Option 5">Option 5</NCheckbox>
+            <NCheckbox value="Option 6">Option 6</NCheckbox>
+          </NSpace>
+        );
+      },
+    },
+  },
+  {
+    label: "Radio Group",
+    path: "radioGroupValue",
+    type: "radio-group",
+    span: 12,
+    childrenOptions: [
+      {
+        tag: "radio",
+        props: {
+          label: "Option 1",
+          value: "Option 1",
+        },
+      },
+      {
+        tag: "radio",
+        props: {
+          label: "Option 2",
+          value: "Option 2",
+        },
+      },
+      {
+        tag: "radio-button",
+        props: {
+          label: "Option 3",
+          value: "Option 3",
+        },
+      },
+    ],
+  },
+  {
+    label: "Radio Button Group",
+    path: "radioGroupValue",
+    type: "radio-group",
+    childrenOptions: [
+      {
+        tag: "radio",
+        props: {
+          label: "Option 1",
+          value: "Option 1",
+        },
+      },
+      {
+        tag: "radio",
+        props: {
+          label: "Option 2",
+          value: "Option 2",
+        },
+      },
+      {
+        tag: "radio",
+        props: {
+          label: "Option 3",
+          value: "Option 3",
+        },
+      },
+      {
+        tag: "radio-button",
+        props: {
+          label: "Option 4",
+          value: "Option 4",
+        },
+      },
+    ],
+    span: 12,
+  },
+  {
+    label: "Input Number",
+    path: "inputNumberValue",
+    type: "input-number",
+    span: 12,
+  },
+  {
+    label: "Time Picker",
+    path: "timePickerValue",
+    type: "time-picker",
+    span: 12,
+  },
+  {
+    label: "Slider",
+    path: "sliderValue",
+    type: "slider",
+    span: 12,
+  },
+  {
+    label: "Transfer",
+    path: "transferValue",
+    type: "transfer",
+    span: 14,
+    props: {
+      options: generalOptions,
+    },
+  },
+  {
+    label: "Nested Path",
+    path: "nestedValue.path1",
+    type: "cascader",
+    span: 10,
+    props: {
+      placeholder: "Nested Path 1",
+      options: nestedOptions,
+    },
+  },
+  {
+    label: "Nested Path 2",
+    path: "nestedValue.path2",
+    type: "select",
+    span: 24,
+    props: {
+      options: generalOptions,
+      placeholder: "Nested Path 2",
+    },
+  },
+];
 
 async function handleValidateButtonClick() {
   const res = await formRef.value?.validate();

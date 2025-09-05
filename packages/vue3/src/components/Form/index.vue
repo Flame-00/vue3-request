@@ -10,23 +10,34 @@
         v-for="(item, index) in formItems"
         :key="item.path"
       >
+        <n-form-item
+          v-if="item.defaultFormItem"
+          v-bind="mergeFormItemGiProps(item)"
+          :ref="
+            (instance) => {
+              if(instance) {  
+                formItemRef[item.path] = instance as unknown as FormItemInst;
+              }
+            }
+          "
+        >
+          <slot
+            :name="item.path"
+            v-bind="{ item, index, value: model[item.path] }"
+          >
+            <component
+              :is="generateComponent({ item, index, value: model[item.path] })"
+            ></component>
+          </slot>
+        </n-form-item>
         <slot
           :name="item.path"
-          v-if="!item.hidden"
-          :item
-          :index
-          :value="model[item.path!]"
+          v-bind="{ item, index, value: model[item.path] }"
+          v-else
         >
           <component
-            v-bind="item.props"
-            v-if="item.render && !item.defaultFormItem"
-            :is="getComponent({ item, index, value: model[item.path!] })"
+            :is="generateComponent({ item, index, value: model[item.path] })"
           ></component>
-          <n-form-item v-bind="mergeFormItemGiProps(item)" v-else>
-            <component
-              :is="getComponent({ item, index, value: model[item.path!] })"
-            ></component>
-          </n-form-item>
         </slot>
       </n-grid-item>
     </n-grid>
@@ -43,19 +54,30 @@ import {
   type Component,
   computed,
   isVNode,
+  reactive,
+  isRef,
+  watch,
 } from "vue";
 import type { BaseItem, FormItemScope } from "./types";
 import { components } from "./components";
-import { NFormItem, NGridItem, NGrid, type FormItemGiProps } from "naive-ui";
+import {
+  NFormItem,
+  NGridItem,
+  NGrid,
+  type FormItemGiProps,
+  type FormItemInst,
+} from "naive-ui";
 import { h, mergeProps } from "vue";
+import { omit } from "./util";
 
 const vm = getCurrentInstance();
 
 const props = defineProps<{
   items: BaseItem[];
   grid?: GridProps;
-  model: Record<string, any>;
 }>();
+
+const model = defineModel<Record<string, any>>("value", { required: true });
 
 const defaultGridProps: GridProps = {
   xGap: 24,
@@ -66,13 +88,12 @@ const mergeGridProps = mergeProps(defaultGridProps, props.grid ?? {});
 const defaultFormProps: FormProps = {};
 const attrs = useAttrs();
 const mergeFormProps = mergeProps(defaultFormProps, attrs ?? {});
-console.log(mergeFormProps);
 
 const defaultFormItemGiProps: FormItemGiProps = {
   span: 24,
 };
 const mergeFormItemGiProps = (item: BaseItem) => {
-  return mergeProps(defaultFormItemGiProps, item ?? {});
+  return mergeProps(defaultFormItemGiProps, omit(item, ["ref"]) ?? {});
 };
 
 function _setDefaultProps(item: BaseItem, defaultProps: [string, any][]) {
@@ -82,19 +103,34 @@ function _setDefaultProps(item: BaseItem, defaultProps: [string, any][]) {
   }, item as Record<string, any>);
 }
 
+const formItemRef: Record<string, FormItemInst> = reactive({});
+
 const formItems = computed(() => {
   return props.items.map((item) => {
-    const defaultProps = _setDefaultProps(item, [
-      ["isFormItem", true],
+    const setDefaultProps = _setDefaultProps(item, [
+      ["defaultFormItem", true],
       ["vModelKey", components[item.type!]?.vModelKey ?? "value"],
     ]);
-    return { ...item, ...defaultProps };
+    if ("ref" in item && Reflect.has(item, "ref")) {
+      typeof item.ref === "function" 
+        ? item.ref(formItemRef[item.path])
+        : isRef(item.ref)
+        ? (item.ref.value = formItemRef[item.path])
+        : (item.ref = formItemRef[item.path]);
+    }
+    return { ...item, ...setDefaultProps };
   });
 });
 
-console.log("formItems", formItems.value);
+watch(formItems, () => {
+  console.log("formItems", formItems.value);
+});
 
-const getComponent = (scope: FormItemScope) => {
+function _getComponent(tag?: keyof typeof components): Component {
+  return components[tag ?? "input"].component;
+}
+
+const generateComponent = (scope: FormItemScope) => {
   const {
     item: {
       type,
@@ -111,40 +147,28 @@ const getComponent = (scope: FormItemScope) => {
     ...itemProps,
     [`onUpdate:${vModelKey}`]: (newValue: any) => {
       if (path) {
-        props.model[path] = newValue;
+        model.value[path] = newValue;
         itemProps?.[`onUpdate:${vModelKey}`]?.(newValue);
       }
     },
-    [vModelKey!]: props.model?.[path!],
+    [vModelKey!]: model.value?.[path],
   };
 
   if (render) {
-    const r = render(scope);
-    if (r && !isVNode(r)) {
-      return h("div", r);
+    const rd = render(scope);
+    if (!isVNode(rd)) {
+      return h("div", rd);
     }
-    return r;
+    return h(rd, componentProps, slots);
   }
 
-  function _getComponent(tag?: keyof typeof components) {
-    return components[tag ?? "input"].component as Component;
-  }
-
-  const component = _getComponent(type);
-
-  if (type && slots) {
-    return h(component, componentProps, slots);
-  }
-
-  if (type && childrenOptions) {
-    return h(component, componentProps, {
-      default: () =>
-        childrenOptions.map((ot) =>
-          h(_getComponent(ot.tag), ot.props, ot.slots)
-        ),
-    });
-  }
-  return h(component, componentProps);
+  return h(_getComponent(type), componentProps, {
+    default: () =>
+      childrenOptions?.map(({ tag, props, slots }) =>
+        h(_getComponent(tag), props, slots)
+      ),
+    ...slots,
+  });
 };
 
 defineExpose({} as ComponentInstance<typeof NForm>);

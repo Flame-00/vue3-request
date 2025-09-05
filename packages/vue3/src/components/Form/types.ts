@@ -1,5 +1,10 @@
-import type { CheckboxProps, FormItemGiProps, RadioProps } from "naive-ui";
-import type { VNodeChild } from "vue";
+import type {
+  CheckboxProps,
+  FormItemGiProps,
+  FormItemInst,
+  RadioProps,
+} from "naive-ui";
+import type { Ref, VNode } from "vue";
 import { components } from "./components";
 
 type Type = keyof typeof components;
@@ -10,7 +15,7 @@ export type FormItemScope<V = any> = {
   value: V;
 };
 
-type Render<V = any> = (scope: FormItemScope<V>) => VNodeChild;
+type Render<V = any> = (scope: FormItemScope<V>) => VNode;
 
 type BaseProps<V = any> = {
   render?: Render<V>;
@@ -19,24 +24,24 @@ type BaseProps<V = any> = {
   hidden?: boolean;
   defaultFormItem?: boolean;
   slots?: Record<string, any>;
+  ref?: Ref<FormItemInst | null> | ((el: FormItemInst) => void) | FormItemInst;
+  path: string;
 } & FormItemGiProps;
 
+type ChildrenOptions<T, P> = {
+  tag: T;
+  props: P;
+  slots?: Record<string, any>;
+};
+
 type CheckboxGroupItem = {
-  type: "checkbox-group";
-  childrenOptions?: {
-    tag: "checkbox";
-    props: CheckboxProps;
-    slots?: Record<string, any>;
-  }[];
+  type?: "checkbox-group";
+  childrenOptions?: ChildrenOptions<"checkbox", CheckboxProps>[];
 };
 
 type RadioGroupItem = {
-  type: "radio-group";
-  childrenOptions?: {
-    tag: "radio" | "radio-button";
-    props: RadioProps;
-    slots?: Record<string, any>;
-  }[];
+  type?: "radio-group";
+  childrenOptions?: ChildrenOptions<"radio" | "radio-button", RadioProps>[];
 };
 
 type OtherComponentItem = {
@@ -44,11 +49,7 @@ type OtherComponentItem = {
   childrenOptions?: never;
 };
 
-export type BaseItem<V = any> = (
-  | CheckboxGroupItem
-  | RadioGroupItem
-  | OtherComponentItem
-) &
-  BaseProps<V>;
+export type BaseItem<V = any> = BaseProps<V> &
+  (CheckboxGroupItem | RadioGroupItem | OtherComponentItem);
 
 export type Item = BaseItem;
