@@ -3,6 +3,7 @@ import type {
   FormItemGiProps,
   FormItemInst,
   RadioProps,
+  GridProps,
 } from "naive-ui";
 import type { Ref, VNode } from "vue";
 import { components } from "./components";
@@ -15,6 +16,11 @@ export type FormItemScope<V = any> = {
   value: V;
 };
 
+export type Props = {
+  items: BaseItem[];
+  grid?: GridProps;
+};
+
 type Render<V = any> = (scope: FormItemScope<V>) => VNode;
 
 type BaseProps<V = any> = {
@@ -24,7 +30,7 @@ type BaseProps<V = any> = {
   hidden?: boolean;
   defaultFormItem?: boolean;
   slots?: Record<string, any>;
-  ref?: Ref<FormItemInst | null> | ((el: FormItemInst) => void) | FormItemInst;
+  ref?: Ref<FormItemInst | null> | ((el: FormItemInst) => void) | FormItemInst | null;
   path: string;
 } & FormItemGiProps;
 

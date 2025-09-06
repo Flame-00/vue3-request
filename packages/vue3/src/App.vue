@@ -44,7 +44,14 @@
 </template>
 
 <script setup lang="tsx">
-import { ref, useTemplateRef, computed, h, defineComponent } from "vue";
+import {
+  ref,
+  useTemplateRef,
+  computed,
+  h,
+  defineComponent,
+  reactive,
+} from "vue";
 import {
   NCheckboxGroup,
   NCheckbox,
@@ -265,7 +272,7 @@ const CheckboxComponent = defineComponent({
     return () => <NCheckbox> {slots.default?.()}</NCheckbox>;
   },
 });
-const items: BaseItem[] = [
+const items: Item[] = [
   // hobbies,
   {
     path: "hobbies",

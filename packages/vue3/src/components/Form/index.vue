@@ -58,7 +58,7 @@ import {
   isRef,
   watch,
 } from "vue";
-import type { BaseItem, FormItemScope } from "./types";
+import type { BaseItem, FormItemScope, Props } from "./types";
 import { components } from "./components";
 import {
   NFormItem,
@@ -72,10 +72,7 @@ import { omit } from "./util";
 
 const vm = getCurrentInstance();
 
-const props = defineProps<{
-  items: BaseItem[];
-  grid?: GridProps;
-}>();
+const props = defineProps<Props>();
 
 const model = defineModel<Record<string, any>>("value", { required: true });
 
@@ -106,16 +103,14 @@ function _setDefaultProps(item: BaseItem, defaultProps: [string, any][]) {
 const formItemRef: Record<string, FormItemInst> = reactive({});
 
 const formItems = computed(() => {
-  return props.items.map((item) => {
+  return (reactive(props.items) as BaseItem[]).map((item) => {
     const setDefaultProps = _setDefaultProps(item, [
       ["defaultFormItem", true],
       ["vModelKey", components[item.type!]?.vModelKey ?? "value"],
     ]);
     if ("ref" in item && Reflect.has(item, "ref")) {
-      typeof item.ref === "function" 
+      typeof item.ref === "function"
         ? item.ref(formItemRef[item.path])
-        : isRef(item.ref)
-        ? (item.ref.value = formItemRef[item.path])
         : (item.ref = formItemRef[item.path]);
     }
     return { ...item, ...setDefaultProps };
