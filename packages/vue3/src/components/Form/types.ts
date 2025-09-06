@@ -35,12 +35,12 @@ type ChildrenOptions<T, P> = {
 };
 
 type CheckboxGroupItem = {
-  type?: "checkbox-group";
+  type: "checkbox-group";
   childrenOptions?: ChildrenOptions<"checkbox", CheckboxProps>[];
 };
 
 type RadioGroupItem = {
-  type?: "radio-group";
+  type: "radio-group";
   childrenOptions?: ChildrenOptions<"radio" | "radio-button", RadioProps>[];
 };
 

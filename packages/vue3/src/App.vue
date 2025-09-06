@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <n-button type="primary" @click="handleClick"> 点击</n-button>
-    <Form
+    <n-form-pro
       ref="formRef"
       label-placement="left"
       :items="items"
@@ -36,7 +36,7 @@
           </n-button>
         </div>
       </template>
-    </Form>
+    </n-form-pro>
     <n-button type="primary" @click="handleAddButtonClick"> 添加 </n-button>
     {{ testvalue }}
     <pre>{{ JSON.stringify(model, null, 2) }}</pre>
@@ -62,7 +62,7 @@ import {
 } from "naive-ui";
 
 import {
-  Form,
+  NFormPro,
   type BaseItem,
   type Item,
   type FormInst,
