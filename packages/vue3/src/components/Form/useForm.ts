@@ -1,17 +1,31 @@
-import { NFormPro } from "./";
-import { defineComponent, useTemplateRef, h } from "vue";
-import type { FormProps, FormInst } from "naive-ui";
-import type { Props } from "./types";
+import { NFormPro} from "./";
+import {
+  h,
+  type ComponentInstance,
+  reactive,
+  ref,
+  type Ref,
+  type FunctionalComponent,
+} from "vue";
+import { type FormInst } from "naive-ui";
 
-export function useForm(options: Props & FormProps) {
+type UseFormProps = ComponentInstance<typeof NFormPro> & {
+  ref: Ref<FormInst | null>;
+};
+
+export function useForm(props: Partial<UseFormProps>) {
+  const formRef = ref<FormInst | null>(null);
+
+  const Component: FunctionalComponent = (_, { slots }) => {
+    return h(
+      NFormPro,
+      { ...reactive(props), ref: formRef } as UseFormProps,
+      slots
+    );
+  };
+
   return {
-    NFormPro: defineComponent({
-      setup(_, { slots }) {
-        const ref = useTemplateRef<FormInst>("formRef");
-        const componentProps = { ...options, ref };
-        return () => h(NFormPro, componentProps, slots);
-      },
-    }),
+    NFormPro: Component,
+    formRef,
   };
 }
-  

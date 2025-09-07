@@ -1,28 +1,14 @@
 <template>
   <div class="container">
     <n-button type="primary" @click="handleClick"> 点击</n-button>
-    <n-form-pro
-      ref="formRef"
-      label-placement="left"
-      :items="items"
-      v-model:value="model"
-      :rules
-      :grid="{
-        yGap: 50,
-      }"
-    >
+    <NFormPro>
       <template #hobbies="{ value }">
-        <n-form-item
-          v-for="(item, index) in value"
-          :key="item.id"
-          :label="`爱好${index + 1}`"
-          :path="`hobbies[${index}].hobby`"
-          :rule="{
+        <n-form-item v-for="(item, index) in value" :key="item.id" :label="`爱好${index + 1}`"
+          :path="`hobbies[${index}].hobby`" :rule="{
             required: true,
             message: `请输入爱好${index + 1}`,
             trigger: ['input', 'blur'],
-          }"
-        >
+          }">
           <n-input v-model:value="item.hobby" />
           <n-button style="margin-left: 12px" @click="removeItem(index)">
             删除
@@ -36,7 +22,7 @@
           </n-button>
         </div>
       </template>
-    </n-form-pro>
+    </NFormPro>
     <n-button type="primary" @click="handleAddButtonClick"> 添加 </n-button>
     {{ testvalue }}
     <pre>{{ JSON.stringify(model, null, 2) }}</pre>
@@ -69,7 +55,7 @@ import {
 } from "naive-ui";
 
 import {
-  NFormPro,
+  // NFormPro,
   type BaseItem,
   type Item,
   type FormInst,
@@ -77,9 +63,11 @@ import {
   type FormItemRule,
 } from "./components/Form";
 
+import { useForm } from "./components/Form/useForm";
+
 const testvalue = ref(null);
 
-const formRef = useTemplateRef<FormInst>("formRef");
+// const formRef = useTemplateRef<FormInst>("formRef");
 const selectInstRef = ref<SelectInst | null>(null);
 const model = ref({
   inputValue: null,
@@ -264,15 +252,7 @@ const railStyle = ({
 const formItemRefSelect = ref<FormItemInst | null>(null);
 const formItemRefInput = ref<FormItemInst | null>(null);
 
-const CheckboxComponent = defineComponent({
-  setup(props, { attrs, slots }) {
-    console.log(props);
-    console.log(attrs);
-    console.log(slots);
-    return () => <NCheckbox> {slots.default?.()}</NCheckbox>;
-  },
-});
-const items: Item[] = [
+const items = ref<Item[]>([
   // hobbies,
   {
     path: "hobbies",
@@ -545,15 +525,27 @@ const items: Item[] = [
       placeholder: "Nested Path 2",
     },
   },
-];
+]);
+
+function handleAddButtonClick() {
+  model.value.hobbies.push({ id: crypto.randomUUID(), hobby: "" });
+}
+
+const { NFormPro, formRef } = useForm({
+  items,
+  grid: {
+    xGap: 12,
+    yGap: 12,
+  },
+  rules,
+  value: model,
+  labelPlacement: "left",
+  showLabel: false, 
+});
 
 async function handleValidateButtonClick() {
   const res = await formRef.value?.validate();
   console.log(res);
-}
-
-function handleAddButtonClick() {
-  model.value.hobbies.push({ id: crypto.randomUUID(), hobby: "" });
 }
 </script>
 

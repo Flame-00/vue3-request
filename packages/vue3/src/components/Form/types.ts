@@ -17,7 +17,7 @@ export type FormItemScope<V = any> = {
 };
 
 export type Props = {
-  items: BaseItem[];
+  items: Item[] | Ref<Item[]>;
   grid?: GridProps;
 };
 
@@ -30,7 +30,11 @@ type BaseProps<V = any> = {
   hidden?: boolean;
   defaultFormItem?: boolean;
   slots?: Record<string, any>;
-  ref?: Ref<FormItemInst | null> | ((el: FormItemInst) => void) | FormItemInst | null;
+  ref?:
+    | Ref<FormItemInst | null>
+    | ((el: FormItemInst) => void)
+    | FormItemInst
+    | null;
   path: string;
 } & FormItemGiProps;
 

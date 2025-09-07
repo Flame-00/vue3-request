@@ -1,43 +1,19 @@
 <template>
-  <n-form
-    v-bind="mergeFormProps"
-    :model
-    :ref="(exposed) => vm!.exposed = exposed"
-  >
+  <n-form v-bind="mergeFormProps" :model :ref="(exposed) => vm!.exposed = exposed">
     <n-grid v-bind="mergeGridProps">
-      <n-grid-item
-        v-bind="mergeFormItemGiProps(item)"
-        v-for="(item, index) in formItems"
-        :key="item.path"
-      >
-        <n-form-item
-          v-if="item.defaultFormItem"
-          v-bind="mergeFormItemGiProps(item)"
-          :ref="
-            (instance) => {
-              if(instance) {  
-                formItemRef[item.path] = instance as unknown as FormItemInst;
-              }
-            }
-          "
-        >
-          <slot
-            :name="item.path"
-            v-bind="{ item, index, value: model[item.path] }"
-          >
-            <component
-              :is="generateComponent({ item, index, value: model[item.path] })"
-            ></component>
+      <n-grid-item v-bind="mergeFormItemGiProps(item)" v-for="(item, index) in formItems" :key="item.path">
+        <n-form-item v-if="item.defaultFormItem" v-bind="mergeFormItemGiProps(item)" :ref="(instance) => {
+          if (instance) {
+            formItemRef[item.path] = instance as unknown as FormItemInst;
+          }
+        }
+          ">
+          <slot :name="item.path" v-bind="{ item, index, value: model[item.path] }">
+            <component :is="generateComponent({ item, index, value: model[item.path] })"></component>
           </slot>
         </n-form-item>
-        <slot
-          :name="item.path"
-          v-bind="{ item, index, value: model[item.path] }"
-          v-else
-        >
-          <component
-            :is="generateComponent({ item, index, value: model[item.path] })"
-          ></component>
+        <slot :name="item.path" v-bind="{ item, index, value: model[item.path] }" v-else>
+          <component :is="generateComponent({ item, index, value: model[item.path] })"></component>
         </slot>
       </n-grid-item>
     </n-grid>
@@ -55,10 +31,9 @@ import {
   computed,
   isVNode,
   reactive,
-  isRef,
   watch,
 } from "vue";
-import type { BaseItem, FormItemScope, Props } from "./types";
+import type { BaseItem, FormItemScope, Item, Props } from "./types";
 import { components } from "./components";
 import {
   NFormItem,
@@ -74,18 +49,19 @@ const vm = getCurrentInstance();
 
 const props = defineProps<Props>();
 
-const model = defineModel<Record<string, any>>("value", { required: true });
+const model = defineModel<Record<string, any>>('value', { required: true });
 
 const defaultGridProps: GridProps = {
   xGap: 24,
   yGap: 24,
 };
+console.log(props);
 const mergeGridProps = mergeProps(defaultGridProps, props.grid ?? {});
 
 const defaultFormProps: FormProps = {};
 const attrs = useAttrs();
 const mergeFormProps = mergeProps(defaultFormProps, attrs ?? {});
-
+console.log(mergeFormProps);
 const defaultFormItemGiProps: FormItemGiProps = {
   span: 24,
 };
@@ -103,7 +79,7 @@ function _setDefaultProps(item: BaseItem, defaultProps: [string, any][]) {
 const formItemRef: Record<string, FormItemInst> = reactive({});
 
 const formItems = computed(() => {
-  return (reactive(props.items) as BaseItem[]).map((item) => {
+  return (reactive(props.items) as Item[]).map((item) => {
     const setDefaultProps = _setDefaultProps(item, [
       ["defaultFormItem", true],
       ["vModelKey", components[item.type!]?.vModelKey ?? "value"],
