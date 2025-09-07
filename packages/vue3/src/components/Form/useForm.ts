@@ -1,4 +1,4 @@
-import { NFormPro} from "./";
+import { NFormPro } from "./";
 import {
   h,
   type ComponentInstance,

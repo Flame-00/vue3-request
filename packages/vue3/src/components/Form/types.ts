@@ -5,7 +5,7 @@ import type {
   RadioProps,
   GridProps,
 } from "naive-ui";
-import type { Ref, VNode } from "vue";
+import type { Ref, VNode, Reactive } from "vue";
 import { components } from "./components";
 
 type Type = keyof typeof components;
@@ -17,7 +17,7 @@ export type FormItemScope<V = any> = {
 };
 
 export type Props = {
-  items: Item[] | Ref<Item[]>;
+  items: Item[] | Ref<Item[]> | Reactive<Item[]>;
   grid?: GridProps;
 };
 

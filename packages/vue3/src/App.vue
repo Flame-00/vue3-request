@@ -252,7 +252,7 @@ const railStyle = ({
 const formItemRefSelect = ref<FormItemInst | null>(null);
 const formItemRefInput = ref<FormItemInst | null>(null);
 
-const items = ref<Item[]>([
+const items = reactive<Item[]>([
   // hobbies,
   {
     path: "hobbies",
@@ -530,7 +530,6 @@ const items = ref<Item[]>([
 function handleAddButtonClick() {
   model.value.hobbies.push({ id: crypto.randomUUID(), hobby: "" });
 }
-
 const { NFormPro, formRef } = useForm({
   items,
   grid: {
