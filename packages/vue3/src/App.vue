@@ -3,12 +3,17 @@
     <n-button type="primary" @click="handleClick"> 点击</n-button>
     <NFormPro>
       <template #hobbies="{ value }">
-        <n-form-item v-for="(item, index) in value" :key="item.id" :label="`爱好${index + 1}`"
-          :path="`hobbies[${index}].hobby`" :rule="{
+        <n-form-item
+          v-for="(item, index) in value"
+          :key="item.id"
+          :label="`爱好${index + 1}`"
+          :path="`hobbies[${index}].hobby`"
+          :rule="{
             required: true,
             message: `请输入爱好${index + 1}`,
             trigger: ['input', 'blur'],
-          }">
+          }"
+        >
           <n-input v-model:value="item.hobby" />
           <n-button style="margin-left: 12px" @click="removeItem(index)">
             删除
@@ -99,7 +104,6 @@ const rules: FormRules = {
     key: "inputValue",
     required: true,
     trigger: ["blur", "input"],
-    message: "请输入 inputValue",
   },
   textareaValue: {
     required: true,
@@ -127,12 +131,10 @@ const rules: FormRules = {
     path1: {
       required: true,
       trigger: ["blur", "input"],
-      message: "请输入 nestedValue.path1",
     },
     path2: {
       required: true,
       trigger: ["blur", "change"],
-      message: "请输入 nestedValue.path2",
     },
   },
   checkboxGroupValue: {
@@ -258,6 +260,9 @@ const items = reactive<Item[]>([
     path: "hobbies",
     defaultFormItem: false,
     span: 24,
+    ref(el) {
+      console.log("el", el);
+    },
   },
   {
     label: "Checkbox",
@@ -292,6 +297,7 @@ const items = reactive<Item[]>([
     path: "inputValue",
     ref: formItemRefInput,
     span: 12,
+    feedbackStyle: "text-align: center;",
     render(scope) {
       return <NInput />;
     },
@@ -530,6 +536,7 @@ const items = reactive<Item[]>([
 function handleAddButtonClick() {
   model.value.hobbies.push({ id: crypto.randomUUID(), hobby: "" });
 }
+
 const { NFormPro, formRef } = useForm({
   items,
   grid: {
@@ -538,8 +545,10 @@ const { NFormPro, formRef } = useForm({
   },
   rules,
   value: model,
-  labelPlacement: "left",
-  showLabel: false, 
+  size: "large",
+  validateMessages: {
+    required: "我们非常需要 %s",
+  },
 });
 
 async function handleValidateButtonClick() {

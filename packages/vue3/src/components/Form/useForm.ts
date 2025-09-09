@@ -4,14 +4,11 @@ import {
   type ComponentInstance,
   reactive,
   ref,
-  type Ref,
   type FunctionalComponent,
 } from "vue";
 import { type FormInst } from "naive-ui";
 
-type UseFormProps = ComponentInstance<typeof NFormPro> & {
-  ref: Ref<FormInst | null>;
-};
+type UseFormProps = ComponentInstance<typeof NFormPro>;
 
 export function useForm(props: Partial<UseFormProps>) {
   const formRef = ref<FormInst | null>(null);

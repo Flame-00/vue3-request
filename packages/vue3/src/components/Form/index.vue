@@ -55,13 +55,11 @@ const defaultGridProps: GridProps = {
   xGap: 24,
   yGap: 24,
 };
-console.log(props);
 const mergeGridProps = mergeProps(defaultGridProps, props.grid ?? {});
 
 const defaultFormProps: FormProps = {};
 const attrs = useAttrs();
 const mergeFormProps = mergeProps(defaultFormProps, attrs ?? {});
-console.log(mergeFormProps);
 const defaultFormItemGiProps: FormItemGiProps = {
   span: 24,
 };
@@ -77,7 +75,7 @@ function _setDefaultProps(item: BaseItem, defaultProps: [string, any][]) {
 }
 
 const formItemRef: Record<string, FormItemInst> = reactive({});
-
+console.log("formItemRef", formItemRef);
 const formItems = computed(() => {
   return (reactive(props.items) as Item[]).map((item) => {
     const setDefaultProps = _setDefaultProps(item, [
