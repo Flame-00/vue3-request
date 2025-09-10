@@ -27,7 +27,7 @@
     "naive-ui": "^2.42.0",
     "npm-run-all2": "^8.0.4",
     "sass": "^1.89.2",
-    "typescript": "~5.8.0",
+    "typescript": "~5.8.3",
     "vite": "^7.0.0",
     "vite-plugin-vue-devtools": "^7.7.7",
     "vue-tsc": "^2.2.10"

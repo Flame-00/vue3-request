@@ -1,21 +1,44 @@
 <template>
-  <n-form v-bind="mergeFormProps" :model :ref="(exposed) => vm!.exposed = exposed">
+  <n-form
+    v-bind="mergeFormProps"
+    :model
+    :ref="(exposed) => vm!.exposed = exposed"
+  >
     <n-grid v-bind="mergeGridProps">
-      <n-grid-item v-bind="mergeFormItemGiProps(item)" v-for="(item, index) in formItems" :key="item.path">
-        <n-form-item v-if="item.defaultFormItem" v-bind="mergeFormItemGiProps(item)" :ref="(instance) => {
+      <template v-for="(item, index) in formItems" :key="item.path">
+        <n-grid-item v-bind="mergeFormItemGiProps(item)" v-if="!isHidden(item)">
+          <n-form-item
+            v-if="item.defaultFormItem"
+            v-bind="mergeFormItemGiProps(item)"
+            :ref="(instance) => {
           if (instance) {
             formItemRef[item.path] = instance as unknown as FormItemInst;
           }
         }
-          ">
-          <slot :name="item.path" v-bind="{ item, index, value: model[item.path] }">
-            <component :is="generateComponent({ item, index, value: model[item.path] })"></component>
+          "
+          >
+            <slot
+              :name="item.path"
+              v-bind="{ item, index, value: model[item.path] }"
+            >
+              <component
+                :is="
+                  generateComponent({ item, index, value: model[item.path] })
+                "
+              ></component>
+            </slot>
+          </n-form-item>
+          <slot
+            :name="item.path"
+            v-bind="{ item, index, value: model[item.path] }"
+            v-else
+          >
+            <component
+              :is="generateComponent({ item, index, value: model[item.path] })"
+            ></component>
           </slot>
-        </n-form-item>
-        <slot :name="item.path" v-bind="{ item, index, value: model[item.path] }" v-else>
-          <component :is="generateComponent({ item, index, value: model[item.path] })"></component>
-        </slot>
-      </n-grid-item>
+        </n-grid-item>
+      </template>
     </n-grid>
     <slot name="actions"></slot>
   </n-form>
@@ -48,8 +71,8 @@ import { omit } from "./util";
 const vm = getCurrentInstance();
 
 const props = defineProps<Props>();
-
-const model = defineModel<Record<string, any>>('value', { required: true });
+console.log(props.items)
+const model = defineModel<Record<string, any>>("value", { required: true });
 
 const defaultGridProps: GridProps = {
   xGap: 24,
@@ -75,12 +98,12 @@ function _setDefaultProps(item: BaseItem, defaultProps: [string, any][]) {
 }
 
 const formItemRef: Record<string, FormItemInst> = reactive({});
-console.log("formItemRef", formItemRef);
 const formItems = computed(() => {
   return (reactive(props.items) as Item[]).map((item) => {
     const setDefaultProps = _setDefaultProps(item, [
       ["defaultFormItem", true],
       ["vModelKey", components[item.type!]?.vModelKey ?? "value"],
+      ["hide", false],
     ]);
     if ("ref" in item && Reflect.has(item, "ref")) {
       typeof item.ref === "function"
@@ -94,6 +117,14 @@ const formItems = computed(() => {
 watch(formItems, () => {
   console.log("formItems", formItems.value);
 });
+
+function isHidden(item: Item) {
+  if (typeof item.hide === "function") {
+    console.log('model.value',model.value)
+    return item.hide(model.value);
+  }
+  return item.hide;
+}
 
 function _getComponent(tag?: keyof typeof components): Component {
   return components[tag ?? "input"].component;

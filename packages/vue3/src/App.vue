@@ -70,11 +70,33 @@ import {
 
 import { useForm } from "./components/Form/useForm";
 
+// 定义表单数据类型
+interface FormModel {
+  inputValue: null | string;
+  textareaValue: null | string;
+  selectValue: null | string | number;
+  multipleSelectValue: null | (string | number)[];
+  datetimeValue: null | number;
+  nestedValue: {
+    path1: null | string;
+    path2: null | string;
+  };
+  switchValue: boolean;
+  checkboxValue: boolean;
+  checkboxGroupValue: null | (string | number)[];
+  radioGroupValue: null | string | number;
+  inputNumberValue: null | number;
+  timePickerValue: null | number;
+  sliderValue: number;
+  transferValue: null | (string | number)[];
+  hobbies: { id: string; hobby: string }[];
+}
+
 const testvalue = ref(null);
 
 // const formRef = useTemplateRef<FormInst>("formRef");
 const selectInstRef = ref<SelectInst | null>(null);
-const model = ref({
+const model = ref<FormModel>({
   inputValue: null,
   textareaValue: null,
   selectValue: null,
@@ -97,6 +119,7 @@ const model = ref({
 async function handleClick() {
   formItemRefSelect.value?.validate();
   formItemRefInput.value?.validate();
+  // items.value[1].label = "666666";
 }
 
 const rules: FormRules = {
@@ -203,7 +226,7 @@ function removeItem(index: number) {
   model.value.hobbies.splice(index, 1);
 }
 
-const hobbies: BaseItem<{ id: string; hobby: string }[]> = {
+const hobbies: BaseItem<FormModel, { id: string; hobby: string }[]> = {
   path: "hobbies",
   span: 24,
   defaultFormItem: false,
@@ -254,15 +277,15 @@ const railStyle = ({
 const formItemRefSelect = ref<FormItemInst | null>(null);
 const formItemRefInput = ref<FormItemInst | null>(null);
 
-const items = reactive<Item[]>([
+const items = computed<Item<FormModel>[]>(() => [
   // hobbies,
   {
     path: "hobbies",
     defaultFormItem: false,
     span: 24,
-    ref(el) {
-      console.log("el", el);
-    },
+    ref(el) {},
+
+    // hide: model.value.switchValue,
   },
   {
     label: "Checkbox",
@@ -303,6 +326,10 @@ const items = reactive<Item[]>([
     },
     props: {
       placeholder: "Input",
+      round: true,
+    },
+    slots: {
+      suffix: () => h("h4", "元"),
     },
   },
   {
@@ -353,7 +380,7 @@ const items = reactive<Item[]>([
     path: "datetimeValue",
     type: "date-picker",
     span: 12,
-    hidden: model.value.switchValue,
+
     props: {
       type: "datetime",
     },
@@ -384,6 +411,7 @@ const items = reactive<Item[]>([
         console.log("Checkbox Group", value);
       },
     },
+    hide: (row) => row.switchValue,
     childrenOptions: [
       {
         tag: "checkbox",
@@ -424,6 +452,7 @@ const items = reactive<Item[]>([
     path: "radioGroupValue",
     type: "radio-group",
     span: 12,
+    hide: model.value.switchValue,
     childrenOptions: [
       {
         tag: "radio",
@@ -539,16 +568,14 @@ function handleAddButtonClick() {
 
 const { NFormPro, formRef } = useForm({
   items,
+  rules,
+  value: model,
   grid: {
     xGap: 12,
     yGap: 12,
   },
-  rules,
-  value: model,
   size: "large",
-  validateMessages: {
-    required: "我们非常需要 %s",
-  },
+  validateMessages: { required: "我们非常需要 %s" },
 });
 
 async function handleValidateButtonClick() {
