@@ -227,8 +227,10 @@ function removeItem(index: number) {
 }
 
 const hobbies: BaseItem<FormModel, { id: string; hobby: string }[]> = {
-  path: "hobbies",
-  span: 24,
+  field: "hobbies",
+  formItemGiProps: {
+    span: 24,
+  },
   defaultFormItem: false,
   render: (scope) => (
     <>
@@ -277,18 +279,18 @@ const railStyle = ({
 const formItemRefSelect = ref<FormItemInst | null>(null);
 const formItemRefInput = ref<FormItemInst | null>(null);
 
-const items = computed<Item<FormModel>[]>(() => [
+const items = ref<Item<FormModel>[]>([
   // hobbies,
   {
-    path: "hobbies",
+    field: "hobbies",
     defaultFormItem: false,
-    span: 24,
-    ref(el) {},
+    formItemGiProps: {
+      span: 24,
+    },
 
     // hide: model.value.switchValue,
   },
   {
-    label: "Checkbox",
     // render(scope) {
     //   console.log(scope);
     //   return <CheckboxComponent />;
@@ -307,20 +309,24 @@ const items = computed<Item<FormModel>[]>(() => [
       name: "范德彪",
       age: 18,
     },
-
-    path: "checkboxValue",
+    field: "checkboxValue",
     type: "checkbox",
-    span: 12,
+    formItemGiProps: {
+      span: 12,
+      label: "Checkbox",
+    },
     slots: {
       default: () => "自然赠予你，树冠 微风 肩头的暴雨",
     },
   },
   {
-    label: "Input",
-    path: "inputValue",
-    ref: formItemRefInput,
-    span: 12,
-    feedbackStyle: "text-align: center;",
+    field: "inputValue",
+    formItemGiProps: {
+      label: "Input",
+      span: 12,
+      ref: formItemRefInput,
+      feedbackStyle: "text-align: center;",
+    },
     render(scope) {
       return <NInput />;
     },
@@ -333,9 +339,12 @@ const items = computed<Item<FormModel>[]>(() => [
     },
   },
   {
-    label: "Textarea",
-    path: "textareaValue",
+    field: "textareaValue",
     type: "input",
+    formItemGiProps: {
+      label: "Textarea",
+      span: 12,
+    },
     props: {
       type: "textarea",
       placeholder: "Textarea",
@@ -346,12 +355,14 @@ const items = computed<Item<FormModel>[]>(() => [
     },
   },
   {
-    label: "Select",
-    path: "selectValue",
+    field: "selectValue",
     type: "select",
-    span: 12,
-    ref: (instance) => {
-      formItemRefSelect.value = instance;
+    formItemGiProps: {
+      label: "Select",
+      span: 12,
+      ref: (instance) => {
+        formItemRefSelect.value = instance;
+      },
     },
     props: {
       options: generalOptions,
@@ -365,9 +376,11 @@ const items = computed<Item<FormModel>[]>(() => [
     },
   },
   {
-    label: "Multiple Select",
-    path: "multipleSelectValue",
-    span: 12,
+    field: "multipleSelectValue",
+    formItemGiProps: {
+      label: "Multiple Select",
+      span: 12,
+    },
     type: "select",
     props: {
       placeholder: "Select",
@@ -376,20 +389,24 @@ const items = computed<Item<FormModel>[]>(() => [
     },
   },
   {
-    label: "Datetime",
-    path: "datetimeValue",
+    field: "datetimeValue",
     type: "date-picker",
-    span: 12,
+    formItemGiProps: {
+      label: "Datetime",
+      span: 12,
+    },
 
     props: {
       type: "datetime",
     },
   },
   {
-    label: "Switch",
-    path: "switchValue",
+    field: "switchValue",
     type: "switch",
-    span: 12,
+    formItemGiProps: {
+      label: "Switch",
+      span: 12,
+    },
     props: {
       "onUpdate:value": (value: boolean) => {
         console.log("Switch", value);
@@ -402,9 +419,11 @@ const items = computed<Item<FormModel>[]>(() => [
     // },
   },
   {
-    label: "Checkbox Group",
-    path: "checkboxGroupValue",
-    span: 12,
+    field: "checkboxGroupValue",
+    formItemGiProps: {
+      label: "Checkbox Group",
+      span: 12,
+    },
     type: "checkbox-group",
     props: {
       "onUpdate:value": (value: boolean) => {
@@ -448,10 +467,12 @@ const items = computed<Item<FormModel>[]>(() => [
     },
   },
   {
-    label: "Radio Group",
-    path: "radioGroupValue",
+    field: "radioGroupValue",
     type: "radio-group",
-    span: 12,
+    formItemGiProps: {
+      label: "Radio Group",
+      span: 12,
+    },
     hide: model.value.switchValue,
     childrenOptions: [
       {
@@ -478,9 +499,12 @@ const items = computed<Item<FormModel>[]>(() => [
     ],
   },
   {
-    label: "Radio Button Group",
-    path: "radioGroupValue",
+    field: "radioGroupValue",
     type: "radio-group",
+    formItemGiProps: {
+      label: "Radio Button Group",
+      span: 12,
+    },
     childrenOptions: [
       {
         tag: "radio",
@@ -511,50 +535,61 @@ const items = computed<Item<FormModel>[]>(() => [
         },
       },
     ],
-    span: 12,
   },
   {
-    label: "Input Number",
-    path: "inputNumberValue",
+    field: "inputNumberValue",
     type: "input-number",
-    span: 12,
+    formItemGiProps: {
+      label: "Input Number",
+      span: 12,
+    },
   },
   {
-    label: "Time Picker",
-    path: "timePickerValue",
+    field: "timePickerValue",
     type: "time-picker",
-    span: 12,
+    formItemGiProps: {
+      span: 12,
+      label: "Time Picker",
+    },
   },
   {
-    label: "Slider",
-    path: "sliderValue",
+    field: "sliderValue",
     type: "slider",
-    span: 12,
+    formItemGiProps: {
+      span: 12,
+      label: "Slider",
+    },
   },
   {
-    label: "Transfer",
-    path: "transferValue",
+    field: "transferValue",
     type: "transfer",
-    span: 14,
+    formItemGiProps: {
+      span: 14,
+      label: "Transfer",
+    },
     props: {
       options: generalOptions,
     },
   },
   {
-    label: "Nested Path",
-    path: "nestedValue.path1",
+    field: "nestedValue.path1",
     type: "cascader",
-    span: 10,
+    formItemGiProps: {
+      span: 10,
+      label: "Nested Path",
+    },
     props: {
       placeholder: "Nested Path 1",
       options: nestedOptions,
     },
   },
   {
-    label: "Nested Path 2",
-    path: "nestedValue.path2",
+    field: "nestedValue.path2",
     type: "select",
-    span: 24,
+    formItemGiProps: {
+      span: 24,
+      label: "Nested Path 2",
+    },
     props: {
       options: generalOptions,
       placeholder: "Nested Path 2",

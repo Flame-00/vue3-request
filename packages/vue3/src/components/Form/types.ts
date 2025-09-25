@@ -30,13 +30,15 @@ type BaseProps<T = any, V = any> = {
   hide?: boolean | ((model: T) => boolean);
   defaultFormItem?: boolean;
   slots?: Record<string, any>;
-  ref?:
-    | Ref<FormItemInst | null>
-    | ((el: FormItemInst) => void)
-    | FormItemInst
-    | null;
-  path: string;
-} & Omit<FormItemGiProps, "labelProps">; // Naive UI 使用了HTMLAttributes这种多层级嵌套类型对象， ts 递归最大值是 1000，会报错 类型实例化过深，可能无限
+  field: string;
+  formItemGiProps?: Omit<FormItemGiProps, "labelProps"> & {
+    ref?:
+      | Ref<FormItemInst | null>
+      | ((el: FormItemInst) => void)
+      | FormItemInst
+      | null;
+  }; // Naive UI 使用了HTMLAttributes这种多层级嵌套类型对象， ts 递归最大值是 1000，会报错 类型实例化过深，可能无限;
+};
 
 type ChildrenOptions<T, P> = {
   tag: T;

@@ -5,36 +5,37 @@
     :ref="(exposed) => vm!.exposed = exposed"
   >
     <n-grid v-bind="mergeGridProps">
-      <template v-for="(item, index) in formItems" :key="item.path">
+      <template v-for="(item, index) in formItems" :key="item.field">
         <n-grid-item v-bind="mergeFormItemGiProps(item)" v-if="!isHidden(item)">
           <n-form-item
             v-if="item.defaultFormItem"
+            :path="item.field"
             v-bind="mergeFormItemGiProps(item)"
             :ref="(instance) => {
-          if (instance) {
-            formItemRef[item.path] = instance as unknown as FormItemInst;
+            if (instance) {
+              formItemRef[item.field] = instance as unknown as FormItemInst;
+            }
           }
-        }
-          "
+            "
           >
             <slot
-              :name="item.path"
-              v-bind="{ item, index, value: model[item.path] }"
+              :name="item.field"
+              v-bind="{ item, index, value: model[item.field] }"
             >
               <component
                 :is="
-                  generateComponent({ item, index, value: model[item.path] })
+                  generateComponent({ item, index, value: model[item.field] })
                 "
               ></component>
             </slot>
           </n-form-item>
           <slot
-            :name="item.path"
-            v-bind="{ item, index, value: model[item.path] }"
+            :name="item.field"
+            v-bind="{ item, index, value: model[item.field] }"
             v-else
           >
             <component
-              :is="generateComponent({ item, index, value: model[item.path] })"
+              :is="generateComponent({ item, index, value: model[item.field] })"
             ></component>
           </slot>
         </n-grid-item>
@@ -54,7 +55,7 @@ import {
   computed,
   isVNode,
   reactive,
-  watch,
+  toRaw,
 } from "vue";
 import type { BaseItem, FormItemScope, Item, Props } from "./types";
 import { components } from "./components";
@@ -71,7 +72,7 @@ import { omit } from "./util";
 const vm = getCurrentInstance();
 
 const props = defineProps<Props>();
-console.log(props.items)
+
 const model = defineModel<Record<string, any>>("value", { required: true });
 
 const defaultGridProps: GridProps = {
@@ -87,7 +88,10 @@ const defaultFormItemGiProps: FormItemGiProps = {
   span: 24,
 };
 const mergeFormItemGiProps = (item: BaseItem) => {
-  return mergeProps(defaultFormItemGiProps, omit(item, ["ref"]) ?? {});
+  return mergeProps(
+    defaultFormItemGiProps,
+    omit(item.formItemGiProps ?? {}, ["ref"]) ?? {}
+  );
 };
 
 function _setDefaultProps(item: BaseItem, defaultProps: [string, any][]) {
@@ -99,43 +103,37 @@ function _setDefaultProps(item: BaseItem, defaultProps: [string, any][]) {
 
 const formItemRef: Record<string, FormItemInst> = reactive({});
 const formItems = computed(() => {
-  return (reactive(props.items) as Item[]).map((item) => {
-    const setDefaultProps = _setDefaultProps(item, [
+  return (props.items as Item[]).map((item) => {
+    const setDefaultProps = _setDefaultProps(toRaw(item), [
       ["defaultFormItem", true],
       ["vModelKey", components[item.type!]?.vModelKey ?? "value"],
       ["hide", false],
     ]);
-    if ("ref" in item && Reflect.has(item, "ref")) {
-      typeof item.ref === "function"
-        ? item.ref(formItemRef[item.path])
-        : (item.ref = formItemRef[item.path]);
+    if (item.formItemGiProps && Reflect.has(item.formItemGiProps, "ref")) {
+      typeof item.formItemGiProps.ref === "function"
+        ? item.formItemGiProps.ref(formItemRef[item.field])
+        : (item.formItemGiProps.ref = formItemRef[item.field]);
     }
     return { ...item, ...setDefaultProps };
   });
 });
 
-watch(formItems, () => {
-  console.log("formItems", formItems.value);
-});
-
 function isHidden(item: Item) {
   if (typeof item.hide === "function") {
-    console.log('model.value',model.value)
     return item.hide(model.value);
   }
   return item.hide;
 }
 
-function _getComponent(tag?: keyof typeof components): Component {
-  return components[tag ?? "input"].component;
-}
+const _getComponent = (tag?: keyof typeof components): Component =>
+  components[tag ?? "input"].component;
 
 const generateComponent = (scope: FormItemScope) => {
   const {
     item: {
       type,
       vModelKey,
-      path,
+      field,
       render,
       props: itemProps,
       slots,
@@ -146,12 +144,12 @@ const generateComponent = (scope: FormItemScope) => {
   const componentProps = {
     ...itemProps,
     [`onUpdate:${vModelKey}`]: (newValue: any) => {
-      if (path) {
-        model.value[path] = newValue;
+      if (field) {
+        model.value[field] = newValue;
         itemProps?.[`onUpdate:${vModelKey}`]?.(newValue);
       }
     },
-    [vModelKey!]: model.value?.[path],
+    [vModelKey!]: model.value?.[field],
   };
 
   if (render) {
