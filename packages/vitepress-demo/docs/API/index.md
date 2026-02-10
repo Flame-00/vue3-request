@@ -17,6 +17,19 @@ const { ...ReturnValues } = useRequest(Service, Options, Plugins);
 
 **参考：** [基本使用](../guide/demo/basic.md)
 
+### res <Badge text="响应式" />
+
+- **类型：** `Ref<ExtractFieldType<D, K> | undefined>`
+- **默认值：** `undefined`
+
+从 Service 返回的数据对象中提取的特定字段。默认提取 `data` 字段，可以通过 [resKey](#reskey) 选项自定义提取的字段名。
+
+例如，当 Service 返回 `{ code: 0, data: { name: 'John' } }` 时：
+- `data` 为完整的响应对象
+- `res` 默认为 `{ name: 'John' }`（提取了 `data` 字段）
+
+**参考：** [基本使用](../guide/demo/basic.md)
+
 ### loading <Badge text="响应式" />
 
 - **类型：** `Ref<boolean>`
@@ -408,6 +421,27 @@ type ThrottleOptionsType = {
 是否中止前一个未完成的请求
 
 **参考：** [中止请求](../guide/demo/abort-request.md)
+
+### resKey
+
+- **类型：** `string`
+- **默认值：** `"data"`
+
+指定从 Service 返回的数据对象中提取哪个字段作为 [res](#res) 的值。
+
+例如，当 Service 返回 `{ code: 0, result: { name: 'John' } }` 时：
+
+```ts
+// 默认情况（resKey: "data"）
+const { res } = useRequest(getUser);
+// res.value 为 undefined（因为响应中没有 data 字段）
+
+// 自定义 resKey
+const { res } = useRequest(getUser, { resKey: "result" });
+// res.value 为 { name: 'John' }
+```
+
+**参考：** [基本使用](../guide/demo/basic.md)
 
 ## Plugins
 

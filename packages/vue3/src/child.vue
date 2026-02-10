@@ -13,15 +13,8 @@
   </section>
 </template>
 <script setup lang="ts">
-import { useRequest, definePlugin } from "@async-handler/request/vue3-request";
-// import { useRequest } from "vue-request";
-import axios from "axios";
-import { reactive, ref, watch } from "vue";
+import { useRequest, definePlugin } from "vue3-request";
 import { NSpin } from "naive-ui";
-
-const axiosInstance = axios.create({});
-
-axiosInstance.interceptors.response.use((response) => response.data); // 响应拦截器，自己业务项目想怎么配置都可以
 
 const { data, res, error, params, run, loading, abort } = useRequest(service, {
   onSuccess: (params) => {

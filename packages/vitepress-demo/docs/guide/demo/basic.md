@@ -371,6 +371,7 @@ const onClick = async () => {
 | 参数                           | 说明                                                                                   | 类型                           |
 | ------------------------------ | -------------------------------------------------------------------------------------- | ------------------------------ |
 | [data](/API/#data)             | Service 返回的数据                                                                     | `Ref<D \| undefined>`          |
+| [res](/API/#res)               | 从 Service 返回数据中提取的特定字段，默认提取 `data` 字段                               | `Ref<ExtractFieldType<D, K> \| undefined>`          |
 | [error](/API/#error)           | Service 抛出的异常                                                                     | `Ref<Error \| undefined>`      |
 | [loading](/API/#loading)       | Service 是否正在执行                                                                   | `Ref<boolean>`                 |
 | [run](/API/#run)               | 手动执行 Service，同步执行                                                             | `(...params: P) => void`       |
