@@ -6,6 +6,6 @@ export const plugins: PluginOption[] = [
     insertTypesEntry: true,
     include: ["packages/request/vue3-request/**/*.ts"],
     rollupTypes: true,
-    outDir: path.resolve(__dirname, "dist"),
+    outDir: path.resolve(__dirname, "../dist"),
   }),
 ];
