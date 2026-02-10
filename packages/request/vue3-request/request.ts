@@ -6,7 +6,7 @@ import type {
   PluginReturn,
 } from "./types";
 import { reactive } from "vue";
-import { composeMiddleware, isFunction, neverPromise } from "./utils";
+import { composeMiddleware, neverPromise, isNil } from "./utils";
 export class Request<D, P extends any[]> {
   currentRequestId: number = 0;
 
@@ -18,20 +18,31 @@ export class Request<D, P extends any[]> {
 
   constructor(
     public service: ServiceType<D, P>,
-    public options: BaseOptions<D, P>
+    public options: BaseOptions<D, P> & { resKey: keyof D }
   ) {
+    // @ts-ignore
     this.state = reactive({
       data: undefined,
+      res: undefined,
       error: undefined,
       params: options?.defaultParams || [],
       loading: false,
       isFinished: false,
       isAborted: false,
       signal: new AbortController().signal,
-    }) as IState<D, P>;
+    });
   }
   setState = (s: Partial<IState<D, P>>) => {
     Object.assign(this.state, s);
+
+    if (s.data && typeof s.data === "object" && !isNil(s.data)) {
+      const resKey = this.options.resKey || "data";
+      if (Reflect.has(s.data, resKey)) {
+        // @ts-ignore
+        this.state.res = s.data[resKey];
+      }
+    }
+    console.log("res", this.state.res);
   };
   executePlugin = (
     event: keyof PluginReturn<D, P>,
@@ -55,29 +66,26 @@ export class Request<D, P extends any[]> {
       return Object.assign({}, ...r);
     }
   };
-  // 设置加载状态
   loading = (loading: boolean) => {
     this.setState({ loading, isFinished: !loading });
   };
-  // 请求完成
   onFinished = () => {
     this.executePlugin(
       "onFinally",
-      this.state.params,
-      this.state.data,
-      this.state.error
-    ); // 执行插件的onFinally方法
+      this.state.params
+      // this.state.data,
+      // this.state.error
+    );
     this.loading(false);
     this.options.onFinally?.(
-      this.state.params,
-      this.state.data,
-      this.state.error
+      this.state.params
+      // this.state.data,
+      // this.state.error
     );
   };
   runAsync = async (...params: P): Promise<D> => {
     const requestId = ++this.currentRequestId;
 
-    // 执行插件的onBefore方法
     const { isReturn, isReady, ...rest } = this.executePlugin(
       "onBefore",
       params
@@ -104,29 +112,29 @@ export class Request<D, P extends any[]> {
       if (!servicePromise) {
         servicePromise = serviceWrapper();
       }
-      const res = await servicePromise;
-     
+      this.setState({ data: await servicePromise, error: undefined });
+
       if (requestId !== this.currentRequestId) {
         return neverPromise();
       }
-
-      this.setState({ data: res, error: undefined });
-      this.executePlugin("onSuccess", res, params); // 执行插件的onSuccess方法
-      this.options.onSuccess?.(res, params);
+      this.executePlugin("onSuccess", params);
+      // this.options.onSuccess?.(this.state.data!, params);
+      this.options.onSuccess?.(params);
       this.onFinished();
 
-      return res;
+      return this.state.data!;
     } catch (err) {
       if (requestId !== this.currentRequestId) {
         return neverPromise();
       }
-      const error = err as Error;
-      this.setState({ data: undefined, error });
-      this.executePlugin("onError", error, params); // 执行插件的onError方法
-      this.options.onError?.(error, params);
+      this.setState({ data: undefined, res: undefined, error: err as Error });
+      // this.executePlugin("onError", this.state.error!, params);
+      this.executePlugin("onError", params);
+      // this.options.onError?.(this.state.error!, params);
+      this.options.onError?.(params);
       this.onFinished();
 
-      throw error;
+      throw this.state.error!;
     }
   };
 
@@ -146,14 +154,14 @@ export class Request<D, P extends any[]> {
     return await this.runAsync(...this.state.params);
   };
 
-  mutate = (data: D | ((data: D) => D)) => {
-    if (isFunction(data)) {
-      data(this.state.data as D);
-    } else {
-      this.setState({ data });
-    }
-    this.executePlugin("onMutate", this.state.data);
-  };
+  // mutate = (data: D | ((data: D) => D)) => {
+  //   if (isFunction(data)) {
+  //     this.setState({ data: data(this.state.data!) });
+  //   } else {
+  //     this.setState({ data });
+  //   }
+  //   this.executePlugin("onMutate", this.state.data);
+  // };
 
   cancel = () => {
     this.executePlugin("onCancel");

@@ -135,8 +135,8 @@ getUserInfo(1);
 
 | 参数         | 说明                                                             | 类型               |
 | ------------ | ---------------------------------------------------------------- | ------------------ |
-| refresh      | 使用上一次的 params，重新调用 `run`，同步执行                    | `() => void`       |
-| refreshAsync | 使用上一次的 params，重新调用 `runAsync`，异步执行，返回 Promise | `() => Promise<D>` |
+| [refresh](/API/#refresh)      | 使用上一次的 params，重新调用 run，同步执行                    | `() => void`       |
+| [refreshAsync](/API/#refreshasync) | 使用上一次的 params，重新调用 runAsync，异步执行，返回 Promise | `() => Promise<D>` |
 
 ## 贡献者 :shamrock:
 

@@ -18,7 +18,7 @@ Vue3-Request 是一个专为 Vue 3 设计的异步请求处理库，它通过统
 ✨ 统一状态管理
 
 - 🚀 所有数据都具有响应式
-- 📊 自动管理 loading、data、error、signal、params 等状态
+- 📊 自动管理 loading、data、res、error、signal、params 等状态
 - 🔄 提供 run、runAsync、refresh、cancel、abort 等便捷方法
 - 🎛️ 支持手动和自动执行模式，满足不同业务场景
 

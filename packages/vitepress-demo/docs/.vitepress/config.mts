@@ -60,7 +60,6 @@ export default defineConfig({
           text: "演示",
           items: [
             { text: "基本使用", link: "/guide/demo/basic" },
-            { text: "数据更改", link: "/guide/demo/mutate" },
             { text: "参数管理", link: "/guide/demo/parameter-management" },
             { text: "生命周期", link: "/guide/demo/lifecycle" },
             { text: "刷新（重复上一次请求）", link: "/guide/demo/refresh" },
@@ -73,6 +72,7 @@ export default defineConfig({
             { text: "节流", link: "/guide/demo/throttle" },
             { text: "防抖", link: "/guide/demo/debounce" },
             { text: "屏幕聚焦重新请求", link: "/guide/demo/focus-refresh" },
+            { text: "数据更改", link: "/guide/demo/mutate" },
           ],
         },
         {
@@ -108,10 +108,10 @@ export default defineConfig({
       },
     },
     ssr: {
-      noExternal: ['naive-ui']
+      noExternal: ["naive-ui"],
     },
     optimizeDeps: {
-      include: ['naive-ui']
-    }
+      include: ["naive-ui"],
+    },
   },
 });

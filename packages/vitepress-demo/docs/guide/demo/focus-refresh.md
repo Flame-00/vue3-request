@@ -144,8 +144,8 @@ const { data, error, loading } = useRequest(getUserInfo, {
 
 | 参数                 | 说明                       | 类型                      | 默认值  |
 | -------------------- | -------------------------- | ------------------------- | ------- |
-| refreshOnWindowFocus | 窗口聚焦时是否自动刷新     | `boolean \| Ref<boolean>` | `false` |
-| refocusTimespan      | 重新聚焦时间间隔，（毫秒） | `number \| Ref<number>`   | `5000`  |
+| [refreshOnWindowFocus](/API/#refreshonwindowfocus) | 窗口聚焦时是否自动刷新     | `boolean \| Ref<boolean>` | `false` |
+| [refocusTimespan](/API/#refocustimespan)      | 重新聚焦时间间隔，（毫秒） | `number \| Ref<number>`   | `5000`  |
 
 ## 贡献者 :shamrock:
 

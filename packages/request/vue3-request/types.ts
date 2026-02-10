@@ -25,12 +25,14 @@ export type ServiceType<D = any, P extends any[] = any> = (
 //   signal?: AbortSignal
 // ) => ServiceType<D, P>;
 
-// 基础选项类型
-export type BaseOptions<D, P extends any[]> = Partial<{
+export type BaseOptions<D, P extends any[], K = "data"> = Partial<{
   onBefore: (params: P) => void;
-  onSuccess: (data: D, params: P) => void;
-  onFinally: (params: P, data?: D, error?: Error) => void;
-  onError: (error: Error, params: P) => void;
+  onSuccess: (params: P) => void;
+  onFinally: (params: P) => void;
+  onError: (params: P) => void;
+  // onSuccess: (data: D, params: P) => void;
+  // onFinally: (params: P, data: D | null, error: Error) => void;
+  // onError: (error: Error, params: P) => void;
   manual: boolean;
   defaultParams: P;
   refreshDeps: WatchSource | WatchSource[] | object;
@@ -52,7 +54,8 @@ export type BaseOptions<D, P extends any[]> = Partial<{
   throttleWait: Ref<number> | number;
   throttleOptions: Reactive<ThrottleOptionsType> | ThrottleOptionsType;
   abortPrevious: boolean;
-}>;
+}> &
+  (D extends object ? { resKey?: K } : {});
 
 type DebounceOptionsType = {
   leading?: boolean;
@@ -63,18 +66,27 @@ type ThrottleOptionsType = {
   trailing?: boolean;
 };
 
-export interface IState<D, P extends any[]> {
-  data?: D;
+type ExtractFieldType<D, K> = D extends object
+  ? K extends keyof D
+    ? D[K]
+    : "data" extends keyof D
+    ? D["data"]
+    : never
+  : never;
+
+export interface IState<D, P extends any[], K = "data"> {
+  data: D;
+  res: ExtractFieldType<D, K>;
   loading: boolean;
   isFinished: boolean;
   isAborted: boolean;
-  error?: Error;
-  params: P;
+  error: Error;
+  params: P; 
   signal: AbortSignal;
 }
 
-export interface UseRequestReturnType<D, P extends any[]>
-  extends ToRefs<IState<D, P>> {
+export interface UseRequestReturnType<D, P extends any[], K = "data">
+  extends ToRefs<IState<D, P, K>> {
   run: (...args: P) => void;
   cancel: () => void;
   refresh: () => void;
@@ -82,7 +94,7 @@ export interface UseRequestReturnType<D, P extends any[]>
   abort: () => void;
   refreshAsync: () => Promise<D>;
   clearCache: (key?: string) => void;
-  mutate: (data: D | ((data: D) => D)) => void;
+  // mutate: (data: D | ((data: D) => D)) => void;
 }
 
 // export type DataType<T> = ExtractResultDataType<T>;
@@ -96,11 +108,14 @@ export type Plugin<D = any, P extends any[] = any, O = {}> = (
 
 export type PluginReturn<D, P extends any[]> = Partial<{
   onBefore: (params: P) => void;
-  onSuccess: (data: D, params: P) => void;
-  onFinally: (params: P, data: D, error: Error) => void;
-  onError: (error: Error, params: P) => void;
+  onSuccess: (params: P) => void;
+  onError: (params: P) => void;
+  onFinally: (params: P) => void;
+  // onSuccess: (data: D, params: P) => void;
+  // onFinally: (params: P, data: D, error: Error) => void;
+  // onError: (error: Error, params: P) => void;
   onCancel: () => void;
-  onMutate: (data: D) => void;
+  // onMutate: (data: D) => void;
   onRequest: (service: ServiceType<D, P>) => ServiceType<D, P>;
 }>;
 
@@ -109,11 +124,11 @@ export type PluginMethodsReturn<D, P extends any[]> = Partial<{
   signal: AbortSignal;
   isReturn: boolean;
   isReady: boolean;
-  data?: D;
+  data: D;
 }>;
 
 export type CacheParamsType<D = any, P = any> = {
-  data?: D;
+  data: D;
   params: P;
   time: number;
 } & {

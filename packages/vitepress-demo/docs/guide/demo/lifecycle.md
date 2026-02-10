@@ -47,7 +47,7 @@
   </section>
 </template>
 <script setup lang="ts">
-import { useRequest } from "vue3-request";
+import { useRequest } from "@async-handler/request/vue3-request";
 import { ref } from "vue";
 import {
   NSpin,
@@ -120,16 +120,24 @@ const {
 } = useRequest(service, {
   manual: true,
   onBefore: (params) => {
-    message.info(`onBefore`);
+    message.info(`onBefore 触发`);
   },
-  onSuccess: (data, params) => {
-    message.success(`onSuccess`);
+  onSuccess: (params) => {
+    message.success(`onSuccess 触发`);
+    // 使用 useRequest 返回的响应式 data
+    console.log('响应数据:', data.value);
   },
-  onError: (error, params) => {
-    message.error(`onError`);
+  onError: (params) => {
+    message.error(`onError 触发`);
+    // 使用 useRequest 返回的响应式 error
+    console.log('错误信息:', error.value);
   },
-  onFinally: (params, data, error) => {
-    message.info(`onFinally`);
+  onFinally: (params) => {
+    message.info(`onFinally 触发`);
+    // 可以同时访问 data 和 error
+      console.log('请求成功，数据:', data.value);
+      console.log('请求失败，错误:', error.value);
+    
   },
 });
 </script>
@@ -139,12 +147,12 @@ const {
 
 ## Options
 
-| 参数      | 说明                   | 类型                                           | 默认值 |
-| --------- | ---------------------- | ---------------------------------------------- | ------ |
-| onBefore  | Service 执行前触发     | `(params: P) => void`                          | -      |
-| onSuccess | Service resolve 时触发 | `(data: D, params: P) => void`                 | -      |
-| onError   | Service reject 时触发  | `(error: Error, params: P) => void`            | -      |
-| onFinally | Service 执行完成时触发 | `(params: P, data?: D, error?: Error) => void` | -      |
+| 参数                         | 说明                                    | 类型                  | 默认值 |
+| ---------------------------- | --------------------------------------- | --------------------- | ------ |
+| [onBefore](/API/#onbefore)   | [Service](/API/#service) 执行前触发     | `(params: P) => void` | -      |
+| [onSuccess](/API/#onsuccess) | [Service](/API/#service) resolve 时触发 | `(params: P) => void` | -      |
+| [onError](/API/#onerror)     | [Service](/API/#service) reject 时触发  | `(params: P) => void` | -      |
+| [onFinally](/API/#onfinally) | [Service](/API/#service) 执行完成时触发 | `(params: P) => void` | -      |
 
 ## 贡献者 :shamrock:
 

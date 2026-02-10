@@ -101,13 +101,13 @@ export default definePlugin(
         setRequestCache(cacheKey, servicePromise);
         return () => servicePromise;
       },
-      onSuccess: (data, params) => {
+      onSuccess: (params) => {
         const cacheKey = _getCacheKey(params);
         if (!cacheKey) return;
         unSubscribe.value?.();
 
         _setCache(cacheKey, {
-          data,
+          data: requestInstance.state.data,
           params,
           time: Date.now(),
         });
@@ -117,22 +117,22 @@ export default definePlugin(
           });
         });
       },
-      onMutate(data) {
-        const cacheKey = _getCacheKey(requestInstance.state.params);
-        if (!cacheKey) return;
-        unSubscribe.value?.();
+      // onMutate(data) {
+      //   const cacheKey = _getCacheKey(requestInstance.state.params);
+      //   if (!cacheKey) return;
+      //   unSubscribe.value?.();
 
-        _setCache(cacheKey, {
-          data,
-          params: requestInstance.state.params,
-          time: Date.now(),
-        });
-        unSubscribe.value = on(cacheKey, (cacheData) => {
-          requestInstance.setState({
-            data: cacheData.data,
-          });
-        });
-      },
+      //   _setCache(cacheKey, {
+      //     data,
+      //     params: requestInstance.state.params,
+      //     time: Date.now(),
+      //   });
+      //   unSubscribe.value = on(cacheKey, (cacheData) => {
+      //     requestInstance.setState({
+      //       data: cacheData.data,
+      //     });
+      //   });
+      // },
     };
   }
 );

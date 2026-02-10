@@ -132,11 +132,11 @@ const getUserInfo = (): Promise<IResult> => {
 
 const { data, error, loading, refresh } = useRequest(getUserInfo, {
   errorRetryCount, // [!code highlight]
-  onSuccess: (data) => {
-    message.success(data.msg);
+  onSuccess: () => {
+    message.success(data.value?.msg || '请求成功');
   },
-  onError: (error) => {
-    message.error(error.message);
+  onError: () => {
+    message.error(error.value?.message || '请求失败');
   },
   onFinally: () => {
     currentRetryCount.value++;
@@ -151,8 +151,8 @@ const { data, error, loading, refresh } = useRequest(getUserInfo, {
 
 | 参数               | 说明                                                                                                                                                                          | 类型                    | 默认值 |
 | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- | ------ |
-| errorRetryCount    | 错误重试次数。设置为 `-1` 时启用无限重试模式                                                                                                                                  | `number \| Ref<number>` | `0`    |
-| errorRetryInterval | 重试间隔时间（毫秒），默认采用[指数退避算法](https://en.wikipedia.org/wiki/Exponential_backoff)，也就是第一次重试等待 2s，第二次重试等待 4s，以此类推，如果大于 30s，则取 30s | `number`                | -      |
+| [errorRetryCount](/API/#errorretrycount)    | 错误重试次数。设置为 `-1` 时启用无限重试模式                                                                                                                                  | `number \| Ref<number>` | `0`    |
+| [errorRetryInterval](/API/#errorretryinterval) | 重试间隔时间（毫秒），默认采用[指数退避算法](https://en.wikipedia.org/wiki/Exponential_backoff)，也就是第一次重试等待 2s，第二次重试等待 4s，以此类推，如果大于 30s，则取 30s | `number`                | -      |
 
 ## 贡献者 :shamrock:
 

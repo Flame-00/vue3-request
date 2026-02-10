@@ -14,7 +14,7 @@ const { data, run } = useRequest(searchService, {
 
 Vue3Request 的节流是使用 [lodash](https://lodash.com/) 提供的 [throttle](https://lodash.com/docs/4.17.15#throttle) 实现的，`options.throttleOptions.leading` 和 `options.throttleOptions.trailing` 选项默认为 true，**因此，多次触发 throttle 会在结束后再调用一次**。
 
-你可以通过`options.throttleOptions` 来自定义 `throttle` 的行为。
+你可以通过 `options.throttleOptions` 来自定义 `throttle` 的行为。
 
 :::demo
 
@@ -164,8 +164,8 @@ watch(searchQuery, (newValue) => {
 
 | 参数            | 说明                                                            | 类型                                        | 默认值                              |
 | --------------- | --------------------------------------------------------------- | ------------------------------------------- | ----------------------------------- |
-| throttleWait    | 节流等待时间（毫秒）                                            | `number \| Ref<number>`                     | -                                   |
-| throttleOptions | leading: 指定调用在节流开始前，trailing: 指定调用在节流结束后 | `{ leading?: boolean, trailing?: boolean }` | `{ leading: true, trailing: true }` |
+| [throttleWait](/API/#throttlewait)    | 节流等待时间（毫秒）                                            | `number \| Ref<number>`                     | -                                   |
+| [throttleOptions](/API/#throttleoptions) | leading: 指定调用在节流开始前，trailing: 指定调用在节流结束后 | `{ leading?: boolean, trailing?: boolean }` | `{ leading: true, trailing: true }` |
 
 ## 贡献者 :shamrock:
 

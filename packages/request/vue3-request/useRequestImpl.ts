@@ -10,7 +10,7 @@ import { clearCache } from "./utils/cache";
 
 export function useRequestImpl<D, P extends any[] = any[], O = {}>(
   service: ServiceType<D, P>,
-  options: BaseOptions<D, P> & O,
+  options: BaseOptions<D, P> & O & { resKey: keyof D },
   plugins: Plugin<D, P, O>[]
 ): UseRequestReturnType<D, P> {
   const requestOptions = {
@@ -18,11 +18,10 @@ export function useRequestImpl<D, P extends any[] = any[], O = {}>(
     ...options,
   };
   const requestInstance = new Request<D, P>(service, requestOptions);
-
   requestInstance.pluginImpls = plugins.map((plugin) =>
     plugin(requestInstance, requestOptions)
   );
-  
+
   onMounted(() => {
     if (!requestOptions.manual) {
       const params = requestInstance.state.params;
@@ -32,7 +31,7 @@ export function useRequestImpl<D, P extends any[] = any[], O = {}>(
 
   onUnmounted(requestInstance.cancel);
 
-  const { run, cancel, refresh, runAsync, refreshAsync, abort, mutate } =
+  const { run, cancel, refresh, runAsync, refreshAsync, abort } =
     requestInstance;
 
   return {
@@ -41,7 +40,7 @@ export function useRequestImpl<D, P extends any[] = any[], O = {}>(
     cancel,
     refresh,
     runAsync,
-    mutate,
+    // mutate,
     abort,
     refreshAsync,
     clearCache,

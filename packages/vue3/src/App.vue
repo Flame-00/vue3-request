@@ -1,4 +1,12 @@
+
 <template>
+  <Child />
+  <Child />
+</template>
+<script setup lang="ts">
+import Child from "./child.vue";
+</script>
+<!-- <template>
   <div class="container">
     <n-button type="primary" @click="handleClick"> 点击</n-button>
     <NFormPro>
@@ -625,4 +633,4 @@ async function handleValidateButtonClick() {
   display: flex;
   gap: 20px;
 }
-</style>
+</style> -->

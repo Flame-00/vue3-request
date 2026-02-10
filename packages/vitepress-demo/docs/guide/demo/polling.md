@@ -3,7 +3,7 @@
 通过设置 `options.pollingInterval` 选项，`useRequest` 会定期重新执行请求，实现数据的自动刷新功能，让你的应用保持数据同步
 
 - 轮询会在第一次请求完成后开始计时
-- 组件卸载时或调用 [`cancel`](./cancel-response.md) 方法会自动停止轮询
+- 组件卸载时或调用 `cancel` 方法会自动停止轮询
 
 ```ts
 const { data, loading } = useRequest(getUserInfo, {
@@ -124,8 +124,8 @@ const { data, error, loading } = useRequest(getSystemStatus, {
 
 | 参数              | 说明                                 | 类型                      | 默认值 |
 | ----------------- | ------------------------------------ | ------------------------- | ------ |
-| pollingInterval   | 轮询间隔时间（毫秒），支持响应式变量 | `number \| Ref<number>`   | -      |
-| pollingWhenHidden | 页面隐藏时是否继续轮询               | `boolean \| Ref<boolean>` | `true` |
+| [pollingInterval](/API/#pollinginterval)   | 轮询间隔时间（毫秒），支持响应式变量 | `number \| Ref<number>`   | -      |
+| [pollingWhenHidden](/API/#pollingwhenhidden) | 页面隐藏时是否继续轮询               | `boolean \| Ref<boolean>` | `true` |
 
 ## 贡献者 :shamrock:
 

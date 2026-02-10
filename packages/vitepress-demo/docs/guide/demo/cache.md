@@ -8,7 +8,7 @@
 
 ## SWR
 
-下面的示例，我们设置了 `cacheKey`，在组件重新加载时，会优先返回缓存的内容，然后在背后重新发起请求。你可以通过点击按钮来体验效果。`
+下面的示例，我们设置了 `cacheKey`，在组件重新加载时，会优先返回缓存的内容，然后在背后重新发起请求。你可以通过点击按钮来体验效果。
 
 :::demo
 
@@ -963,11 +963,11 @@ const { data, loading, run } = useRequest(service, {
 
 | 参数      | 说明                                                                                                        | 类型                                                     | 默认值            |
 | --------- | ----------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- | ----------------- |
-| cacheKey  | 缓存的唯一标识，相同 `cacheKey` 的请求会共享缓存                                                            | `string \| ((params?: P) => string)`                                                 | -                 |
-| cacheTime | 缓存数据回收时间，超过该时间会清除缓存（毫秒），如果设置为 `-1`，则表示缓存数据永不过期                     | `number`                                                 | `300000` (5 分钟) |
-| staleTime | 数据保持新鲜时间，在该时间内认为数据是新鲜的，不会重新发起请求（毫秒），如果设置为 `-1`，则表示数据永远新鲜 | `number`                                                 | `0`               |
-| setCache  | 自定义设置缓存                                                                                              | `(cacheKey: string, cacheData: CacheParamsType) => void` | -                 |
-| getCache  | 自定义读取缓存                                                                                              | `(cacheKey: string) => CacheParamsType`                  | -                 |
+| [cacheKey](/API/#cachekey)  | 缓存的唯一标识，相同 `cacheKey` 的请求会共享缓存                                                            | `string \| ((params?: P) => string)`                                                 | -                 |
+| [cacheTime](/API/#cachetime) | 缓存数据回收时间，超过该时间会清除缓存（毫秒），如果设置为 `-1`，则表示缓存数据永不过期                     | `number`                                                 | `300000` (5 分钟) |
+| [staleTime](/API/#staletime) | 数据保持新鲜时间，在该时间内认为数据是新鲜的，不会重新发起请求（毫秒），如果设置为 `-1`，则表示数据永远新鲜 | `number`                                                 | `0`               |
+| [setCache](/API/#setcache)  | 自定义设置缓存                                                                                              | `(cacheKey: string, cacheData: CacheParamsType) => void` | -                 |
+| [getCache](/API/#getcache)  | 自定义读取缓存                                                                                              | `(cacheKey: string) => CacheParamsType`                  | -                 |
 
 ## 贡献者 :shamrock:
 

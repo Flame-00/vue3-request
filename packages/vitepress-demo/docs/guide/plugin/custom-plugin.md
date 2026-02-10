@@ -8,7 +8,7 @@ Vue3Request 提供了强大而灵活的插件系统，允许你根据业务需�
 
 插件作为`useRequest`的第三个参数，需要传递一个数组，数组里的插件执行顺序采用洋葱模型（倒序执行）
 
-你可以使用 Vue3Request 导出的`definePlugin`方法来定义插件，此方法具有丰富的 TS 类型提示
+你可以使用 Vue3Request 导出的 `definePlugin` 方法来定义插件，此方法具有丰富的 TS 类型提示
 
 ```ts
 const definePlugin: <D = any, P extends any[] = any, O = {}>(
@@ -16,7 +16,9 @@ const definePlugin: <D = any, P extends any[] = any, O = {}>(
 ) => Plugin<D, P, O>;
 ```
 
-泛型`D`是 `requestInstance.state.data` 的类型，泛型 P 是 `requestInstance.state.params` 和 `options.defaultParams` 的类型，泛型 `O` 用来扩展 `options.` 对象的属性
+泛型 `D` 是 `data` 的类型，即 `requestInstance.state.data`；泛型 `P` 是 `params` 的类型，即 `requestInstance.state.params` 和 `options.defaultParams`；泛型 `O` 用来扩展 `options` 对象的属性
+
+详细说明请参考 [API 文档 - definePlugin](/API/#defineplugin)。
 
 ```ts
 import { useRequest, definePlugin } from "vue3-request";
@@ -50,31 +52,41 @@ interface IPlugin {
 }
 
 const customPlugin = definePlugin<IResult, [{ id: number }], IPlugin>(
-  (requestInstance, options) => {
+(requestInstance, options) => {
     // 插件初始化逻辑
 
     return {
       onBefore: (params) => {
-        // 请求前执行
+        // 请求前执行，对应 options.onBefore
       },
       onRequest: (service) => {
         // 请求时执行，可以修改 service
+        // 必须返回一个新的 service 函数
         return service;
       },
-      onSuccess: (data, params) => {
-        // 请求成功时执行
+      onSuccess: (params) => {
+        // 请求成功时执行，对应 options.onSuccess
+        // 如需访问响应数据，使用 requestInstance.state.data
+        console.log('响应数据:', requestInstance.state.data);
       },
-      onError: (error, params) => {
-        // 请求失败时执行
+      onError: (params) => {
+        // 请求失败时执行，对应 options.onError
+        // 如需访问错误信息，使用 requestInstance.state.error
+        console.log('错误信息:', requestInstance.state.error);
       },
-      onFinally: (params, data, error) => {
-        // 请求完成时执行（无论成功或失败）
+      onFinally: (params) => {
+        // 请求完成时执行（无论成功或失败），对应 options.onFinally
+        // 可以同时访问 data 和 error
+        const { data, error } = requestInstance.state;
+        if (data) {
+          console.log('请求成功');
+        }
+        if (error) {
+          console.log('请求失败');
+        }
       },
       onCancel: () => {
-        // 请求取消时执行
-      },
-      onMutate: (data) => {
-        // 数据变更时执行
+        // 请求取消时执行，对应 cancel() 方法
       },
     };
   }
@@ -148,7 +160,7 @@ interface LogOptions {
   logPrefix: string;
 }
 
-const customPlugin = definePlugin<number, [], LogOptions>(
+const customPlugin = definePlugin<IResult, [], LogOptions>(
   (requestInstance, options) => {
     const { logLevel, logPrefix } = options;
 
@@ -174,21 +186,25 @@ const customPlugin = definePlugin<number, [], LogOptions>(
           return result;
         };
       },
-      onSuccess: () => {
+      onSuccess: (params) => {
         log(
           logLevel,
           "[Success]",
           "请求成功",
           `${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`
         );
+        // 如需访问响应数据，使用 requestInstance.state.data
+        console.log('响应数据:', requestInstance.state.data);
       },
-      onError: () => {
+      onError: (params) => {
         log(
           "error",
           "[Error]",
           "请求失败",
           `${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`
         );
+        // 如需访问错误信息，使用 requestInstance.state.error
+        console.log('错误信息:', requestInstance.state.error);
       },
       onCancel: () => {
         log(

@@ -5,7 +5,7 @@
 :::warning
 **注意：调用 `cancel` 函数并不会取消 promise 的执行**
 
-只是**取消**对 data 和 error 的赋值和生命周期事件的调用
+只是**取消**对 `data` 和 `error` 的赋值和生命周期事件的调用
 
 中止正在请求的接口请查阅 [中止请求](./abort-request.md)
 :::
@@ -74,11 +74,11 @@ function generateComponent() {
 
       const { run, data, error, loading, cancel } = useRequest(service, {
         manual: true,
-        onSuccess: (data, params) => {
+        onSuccess: (params) => {
           message.success(`params -> "${params}"`);
         },
-        onError: (error, params) => {
-          message.error(error.message);
+        onError: (params) => {
+          message.error(error.value.message || '请求失败');
         },
       });
 
@@ -157,7 +157,7 @@ const ChildComponent = generateComponent();
 
 | 参数   | 说明                                                            | 类型         |
 | ------ | --------------------------------------------------------------- | ------------ |
-| cancel | 忽略当前 Promise 的响应，不会中止请求执行，只是忽略响应结果 | `() => void` |
+| [cancel](/API/#cancel) | 忽略当前 Promise 的响应，不会中止请求执行，只是忽略响应结果 | `() => void` |
 
 ## 贡献者 :shamrock:
 

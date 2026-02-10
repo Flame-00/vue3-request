@@ -14,7 +14,7 @@ const { data, run } = useRequest(searchService, {
 
 Vue3Request 的防抖是使用 [lodash](https://lodash.com/) 提供的 [debounce](https://lodash.com/docs/4.17.15#debounce) 实现的
 
-你可以通过`options.debounceOptions` 来自定义 `debounce` 的行为。
+你可以通过 `options.debounceOptions` 来自定义 `debounce` 的行为。
 
 :::demo
 
@@ -164,8 +164,8 @@ watch(searchQuery, (newValue) => {
 
 | 参数            | 说明                                                          | 类型                                        | 默认值                               |
 | --------------- | ------------------------------------------------------------- | ------------------------------------------- | ------------------------------------ |
-| debounceWait    | 防抖等待时间（毫秒）                                          | `number \| Ref<number>`                     | -                                    |
-| debounceOptions | leading: 指定调用在防抖开始前，trailing: 指定调用在防抖结束后 | `{ leading?: boolean, trailing?: boolean }` | `{ leading: false, trailing: true }` |
+| [debounceWait](/API/#debouncewait)    | 防抖等待时间（毫秒）                                          | `number \| Ref<number>`                     | -                                    |
+| [debounceOptions](/API/#debounceoptions) | leading: 指定调用在防抖开始前，trailing: 指定调用在防抖结束后 | `{ leading?: boolean, trailing?: boolean }` | `{ leading: false, trailing: true }` |
 
 ## 贡献者 :shamrock:
 

@@ -20,7 +20,7 @@
 
 ### 🎯 默认参数 + 动态传参（推荐）
 
-这是最灵活的参数管理方式，结合了默认参数`options.defaultParams`和动态传参的优势：
+这是最灵活的参数管理方式，结合了默认参数 `options.defaultParams` 和动态传参的优势：
 
 - 通过 `run(newParams)` 可随时传入新参数
 - 所有参数变化都会被 `params` 准确记录
@@ -89,11 +89,11 @@ const service = (lastName: string): Promise<IResult> => {
 
 const { run, data, params, error, loading } = useRequest(service, {
   defaultParams: ["林"], // [!code highlight]
-  onSuccess: (data, params) => {
+  onSuccess: (params) => {
     message.success(`params -> "${params}"`);
   },
-  onError: (error, params) => {
-    message.error(error.message);
+  onError: (params) => {
+    message.error(error.value?.message || '请求失败');
   },
 });
 </script>
@@ -177,11 +177,11 @@ const { run, data, params, error, loading } = useRequest(
   },
   {
     manual: true,
-    onSuccess: (data, params) => {
+    onSuccess: (params) => {
       message.success(`params -> "${params}"`);
     },
-    onError: (error, params) => {
-      message.error(error.message);
+    onError: (params) => {
+      message.error(error.value?.message || '请求失败');
     },
   }
 );
@@ -279,16 +279,17 @@ const { run, data, params, error, loading } = useRequest(
   () => service(lastName.value), // 参数通过闭包传递，useRequest 无法感知 // [!code highlight]
   {
     manual: true,
-    onFinally: (params, data, error) => {
+    onFinally: (params) => {
       // ⚠️ 这里的 params 始终为空数组 []，无法获取真实参数 // [!code highlight]
       message.info(
-        `useReques收到的params -> "${params}", 实际使用的params -> "${lastName.value}"`
+        `useRequest收到的params -> "${params}", 实际使用的params -> "${lastName.value}"`
       );
-      if (data) {
-        message.success(`params -> "${params}"`);
+      // 使用 useRequest 返回的响应式 data 和 error
+      if (data.value) {
+        message.success(`请求成功`);
       }
-      if (error) {
-        message.error(error.message);
+      if (error.value) {
+        message.error(error.value.message);
       }
     },
   }
@@ -395,13 +396,13 @@ const onClick = () => {
 
 | 参数          | 说明                                                   | 类型 | 默认值 |
 | ------------- | ------------------------------------------------------ | ---- | ------ |
-| defaultParams | 默认参数数组，在自动模式下会作为初始参数传递给 Service | `P`  | `[]`   |
+| [defaultParams](/API/#defaultparams) | 默认参数数组，在自动模式下会作为初始参数传递给 Service | `P`  | `[]`   |
 
 ## Result
 
 | 参数   | 说明                                                                                   | 类型     |
 | ------ | -------------------------------------------------------------------------------------- | -------- |
-| params | 当次执行的 Service 的参数数组。比如你触发了 `run(1, 2, 3)`，则 params 等于 `[1, 2, 3]` | `Ref<P>` |
+| [params](/API/#params) | 当次执行的 Service 的参数数组。比如你触发了 `run(1, 2, 3)`，则 params 等于 `[1, 2, 3]` | `Ref<P>` |
 
 ## 贡献者 :shamrock:
 
