@@ -40,7 +40,6 @@ export function useRequestImpl<D, P extends any[] = any[], O = {}>(
     cancel,
     refresh,
     runAsync,
-    // mutate,
     abort,
     refreshAsync,
     clearCache,

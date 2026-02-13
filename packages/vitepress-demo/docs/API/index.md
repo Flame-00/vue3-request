@@ -137,14 +137,6 @@ const { ...ReturnValues } = useRequest(Service, Options, Plugins);
 
 **参考：** [中止请求](../guide/demo/abort-request.md)
 
-### mutate <Badge type="danger" text="已废弃" />
-
-- **类型：** `(data: D | ((data: D | undefined) => D)) => void`
-
-直接修改 [data](#data) 的结果
-
-**参考：** [数据更改](../guide/demo/mutate.md)
-
 ### clearCache
 
 - **类型：** `(cacheKey?: string) => void`

@@ -150,7 +150,15 @@ const {
 
 如果 `data` 是一个 `object`，那么 `res` 默认会取出其中的 data 这个 字段 的 value 作为值
 
+类似于 `res.value = data.value.data`, 不过库内部已经帮你赋值, 只需从`useRequest`中导出使用
+
 你也可以自定义，`options.resKey="data里的任何一个字段"`**（默认值为 data）**
+
+```ts
+const { res } = useRequest(service, {
+  resKey: "data", // [!code highlight] 默认是data
+});
+```
 
 以下三种情况 `res` 是 undefined，类型为 never，那么可以忽略这个参数继续使用 `data`
 
@@ -368,17 +376,17 @@ const onClick = async () => {
 
 ## Result
 
-| 参数                           | 说明                                                                                   | 类型                           |
-| ------------------------------ | -------------------------------------------------------------------------------------- | ------------------------------ |
-| [data](/API/#data)             | Service 返回的数据                                                                     | `Ref<D \| undefined>`          |
-| [res](/API/#res)               | 从 Service 返回数据中提取的特定字段，默认提取 `data` 字段                               | `Ref<ExtractFieldType<D, K> \| undefined>`          |
-| [error](/API/#error)           | Service 抛出的异常                                                                     | `Ref<Error \| undefined>`      |
-| [loading](/API/#loading)       | Service 是否正在执行                                                                   | `Ref<boolean>`                 |
-| [run](/API/#run)               | 手动执行 Service，同步执行                                                             | `(...params: P) => void`       |
-| [runAsync](/API/#runasync)     | 手动执行 Service，异步执行，返回 Promise                                               | `(...params: P) => Promise<D>` |
-| [params](/API/#params)         | 当次执行的 Service 的参数数组。比如你触发了 `run(1, 2, 3)`，则 params 等于 `[1, 2, 3]` | `Ref<P>`                       |
-| [isFinished](/API/#isfinished) | Service 是否执行完成                                                                   | `Ref<boolean>`                 |
-| [isAborted](/API/#isaborted)   | Service 是否中止                                                                       | `Ref<boolean>`                 |
+| 参数                           | 说明                                                                                   | 类型                                       |
+| ------------------------------ | -------------------------------------------------------------------------------------- | ------------------------------------------ |
+| [data](/API/#data)             | Service 返回的数据                                                                     | `Ref<D \| undefined>`                      |
+| [res](/API/#res)               | 从 Service 返回数据中提取的特定字段，默认提取 `data` 字段                              | `Ref<ExtractFieldType<D, K> \| undefined>` |
+| [error](/API/#error)           | Service 抛出的异常                                                                     | `Ref<Error \| undefined>`                  |
+| [loading](/API/#loading)       | Service 是否正在执行                                                                   | `Ref<boolean>`                             |
+| [run](/API/#run)               | 手动执行 Service，同步执行                                                             | `(...params: P) => void`                   |
+| [runAsync](/API/#runasync)     | 手动执行 Service，异步执行，返回 Promise                                               | `(...params: P) => Promise<D>`             |
+| [params](/API/#params)         | 当次执行的 Service 的参数数组。比如你触发了 `run(1, 2, 3)`，则 params 等于 `[1, 2, 3]` | `Ref<P>`                                   |
+| [isFinished](/API/#isfinished) | Service 是否执行完成                                                                   | `Ref<boolean>`                             |
+| [isAborted](/API/#isaborted)   | Service 是否中止                                                                       | `Ref<boolean>`                             |
 
 ## Options
 

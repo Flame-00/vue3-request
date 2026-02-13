@@ -3,7 +3,6 @@
     <h3>模拟请求</h3>
     <button @click="run">run</button>
     <button @click="abort">abort</button>
-    <button @click="newMutate">mutate</button>
     <NSpin :show="loading">
       <h2>data:{{ data }}</h2>
       <h2>res :{{ res }}</h2>
@@ -43,19 +42,5 @@ function service(): Promise<{
       });
     }, 1000);
   });
-}
-
-function newMutate() {
-  // mutate((data) => {
-  //   console.log(111, data);
-  //   return {
-  //     ...data,
-  //     count: 100,
-  //     data: {
-  //       ...data.data,
-  //       title: "new Flame",
-  //     },
-  //   };
-  // });
 }
 </script>

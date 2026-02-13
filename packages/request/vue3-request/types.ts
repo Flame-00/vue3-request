@@ -94,7 +94,6 @@ export interface UseRequestReturnType<D, P extends any[], K = "data">
   abort: () => void;
   refreshAsync: () => Promise<D>;
   clearCache: (key?: string) => void;
-  // mutate: (data: D | ((data: D) => D)) => void;
 }
 
 // export type DataType<T> = ExtractResultDataType<T>;
@@ -115,7 +114,6 @@ export type PluginReturn<D, P extends any[]> = Partial<{
   // onFinally: (params: P, data: D, error: Error) => void;
   // onError: (error: Error, params: P) => void;
   onCancel: () => void;
-  // onMutate: (data: D) => void;
   onRequest: (service: ServiceType<D, P>) => ServiceType<D, P>;
 }>;
 

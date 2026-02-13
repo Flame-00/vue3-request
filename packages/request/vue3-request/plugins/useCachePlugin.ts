@@ -117,22 +117,6 @@ export default definePlugin(
           });
         });
       },
-      // onMutate(data) {
-      //   const cacheKey = _getCacheKey(requestInstance.state.params);
-      //   if (!cacheKey) return;
-      //   unSubscribe.value?.();
-
-      //   _setCache(cacheKey, {
-      //     data,
-      //     params: requestInstance.state.params,
-      //     time: Date.now(),
-      //   });
-      //   unSubscribe.value = on(cacheKey, (cacheData) => {
-      //     requestInstance.setState({
-      //       data: cacheData.data,
-      //     });
-      //   });
-      // },
     };
   }
 );

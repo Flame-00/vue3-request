@@ -131,14 +131,14 @@ const service = (): Promise<IResult> => {
 };
 
 // 自动模式：ready 变为 true 时自动请求
-const { data, error, loading, mutate } = useRequest(service, {
+const { data, error, loading } = useRequest(service, {
   ready: isLoggedIn, // [!code highlight]
 });
 
 // 监听登录状态，登出时清空数据
 watch(isLoggedIn, (newValue) => {
   if (!newValue) {
-    mutate(undefined);
+    data.value = undefined
   }
 });
 </script>
@@ -276,7 +276,6 @@ const {
   error,
   loading,
   run: getUserInfo,
-  mutate,
 } = useRequest(service, {
   manual: true,
   ready: isLoggedIn, // [!code highlight]
@@ -284,7 +283,7 @@ const {
 
 watch(isLoggedIn, (newValue) => {
   if (!newValue) {
-    mutate(undefined);
+    data.value = undefined
   }
 });
 </script>

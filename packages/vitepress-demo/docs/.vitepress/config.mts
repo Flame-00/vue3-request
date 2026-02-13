@@ -72,7 +72,6 @@ export default defineConfig({
             { text: "节流", link: "/guide/demo/throttle" },
             { text: "防抖", link: "/guide/demo/debounce" },
             { text: "屏幕聚焦重新请求", link: "/guide/demo/focus-refresh" },
-            { text: "数据更改", link: "/guide/demo/mutate" },
           ],
         },
         {

@@ -154,15 +154,6 @@ export class Request<D, P extends any[]> {
     return await this.runAsync(...this.state.params);
   };
 
-  // mutate = (data: D | ((data: D) => D)) => {
-  //   if (isFunction(data)) {
-  //     this.setState({ data: data(this.state.data!) });
-  //   } else {
-  //     this.setState({ data });
-  //   }
-  //   this.executePlugin("onMutate", this.state.data);
-  // };
-
   cancel = () => {
     this.executePlugin("onCancel");
     this.currentRequestId++;
