@@ -23,7 +23,7 @@
     </n-el>
   </template>
   <script setup lang="ts">
-  import { useRequest } from "@async-handler/request/vue3-request";
+  import { useRequest } from "@async-handler/request/vue3-request"; 
   import {
     NEl,
     NSpin,
