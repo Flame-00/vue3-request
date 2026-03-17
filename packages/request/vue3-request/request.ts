@@ -112,11 +112,11 @@ export class Request<D, P extends any[]> {
       if (!servicePromise) {
         servicePromise = serviceWrapper();
       }
-      this.setState({ data: await servicePromise, error: undefined });
-
       if (requestId !== this.currentRequestId) {
         return neverPromise();
       }
+
+      this.setState({ data: await servicePromise, error: undefined });
       this.executePlugin("onSuccess", params);
       // this.options.onSuccess?.(this.state.data!, params);
       this.options.onSuccess?.(params);
