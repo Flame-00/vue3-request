@@ -117,7 +117,7 @@ const {
 
 上面的基础例子已经说明了 `data` 是[异步函数](../FAQ/#什么是异步函数?)返回的结果数据，而`res`是什么？
 
-我们真实开发中，接口数据一般返回的结构是下面这样的，你还需要再写 `data.data`去取到你想要的数据, 而且 `code` 和 `msg` 一般你也不需要
+我们真实开发中，接口数据一般返回的结构是下面这样的，你还需要再写 `data.value.data`去取到你想要的数据, 而且 `code` 和 `msg` 一般你在处理逻辑的时候也不需要
 
 :::info 假如这是 `data` 的结构
 
@@ -163,8 +163,8 @@ const { res } = useRequest(service, {
 以下三种情况 `res` 是 undefined，类型为 never，那么可以忽略这个参数继续使用 `data`
 
 1. 如果 `data` 是一个基本数据类型
-2. 如果 `data` 中没有指定`options.resKey`的情况下，也没有 data 这个字段
-3. 如果 `options.resKey` 指定了一个 `data` 中没有的字段（TS 会报错）
+2. 如果 `data` 是个object且其中没有指定`options.resKey`的情况下，也没有 `data.value.data` 这个字段
+3. 如果 `options.resKey` 指定了一个 `data` 中没有的字段（TS 也会报错）
 
 ---
 
@@ -282,9 +282,9 @@ const service = (lastName: string): Promise<IName> => {
 const { run, data, error, loading } = useRequest(service, {
   manual: true, // [!code highlight]
   onSuccess: (params) => {
-    message.success(`params -> "${params}"`);
+    message.success(`data.value -> "${data.value}"`);
     // 使用 useRequest 返回的响应式 data
-    console.log("响应数据:", params, data.value);
+    console.log("响应数据:", data.value);
   },
   onError: (params) => {
     // 使用 useRequest 返回的响应式 error
@@ -364,7 +364,7 @@ const { runAsync, data, error, loading, params } = useRequest(service, {
 const onClick = async () => {
   try {
     await runAsync(lastName.value);
-    message.success(`params -> "${params.value}"`);
+    message.success(`data -> "${data.value}"`);
   } catch (error) {
     message.error(error.message);
   }

@@ -74,10 +74,10 @@ function generateComponent() {
 
       const { run, data, error, loading, cancel } = useRequest(service, {
         manual: true,
-        onSuccess: (params) => {
-          message.success(`params -> "${params}"`);
+        onSuccess: () => {
+          message.success(`data -> "${data.value}"`);
         },
-        onError: (params) => {
+        onError: () => {
           message.error(error.value.message || '请求失败');
         },
       });

@@ -10,9 +10,9 @@
 在所有[生命周期](./lifecycle.md)回调中，都会提供 `params` 参数。例如：
 
 - `onBefore: (params) => {}`
-- `onSuccess: (data, params) => {}`
+- `onSuccess: (params) => {}`
 - `onError: (error, params) => {}`
-- `onFinally: (params, data, error) => {}`
+- `onFinally: (params, error) => {}`
 
 ## 参数设置
 
@@ -89,11 +89,11 @@ const service = (lastName: string): Promise<IResult> => {
 
 const { run, data, params, error, loading } = useRequest(service, {
   defaultParams: ["林"], // [!code highlight]
-  onSuccess: (params) => {
-    message.success(`params -> "${params}"`);
+  onSuccess: () => {
+    message.success(`data -> "${data.value}"`);
   },
-  onError: (params) => {
-    message.error(error.value?.message || '请求失败');
+  onError: () => {
+    message.error(error.value?.message || "请求失败");
   },
 });
 </script>
@@ -177,13 +177,13 @@ const { run, data, params, error, loading } = useRequest(
   },
   {
     manual: true,
-    onSuccess: (params) => {
-      message.success(`params -> "${params}"`);
+    onSuccess: (data) => {
+      message.success(`data -> "${data.value}"`);
     },
-    onError: (params) => {
-      message.error(error.value?.message || '请求失败');
+    onError: () => {
+      message.error(error.value?.message || "请求失败");
     },
-  }
+  },
 );
 const onClick = async () => {
   run(lastName.value); // 享受完整的 TypeScript 类型提示 // [!code highlight]
@@ -282,7 +282,7 @@ const { run, data, params, error, loading } = useRequest(
     onFinally: (params) => {
       // ⚠️ 这里的 params 始终为空数组 []，无法获取真实参数 // [!code highlight]
       message.info(
-        `useRequest收到的params -> "${params}", 实际使用的params -> "${lastName.value}"`
+        `useRequest收到的params -> "${params}", 实际使用的params -> "${lastName.value}"`,
       );
       // 使用 useRequest 返回的响应式 data 和 error
       if (data.value) {
@@ -292,7 +292,7 @@ const { run, data, params, error, loading } = useRequest(
         message.error(error.value.message);
       }
     },
-  }
+  },
 );
 
 const onClick = () => {
@@ -394,14 +394,14 @@ const onClick = () => {
 
 ## Options
 
-| 参数          | 说明                                                   | 类型 | 默认值 |
-| ------------- | ------------------------------------------------------ | ---- | ------ |
+| 参数                                 | 说明                                                   | 类型 | 默认值 |
+| ------------------------------------ | ------------------------------------------------------ | ---- | ------ |
 | [defaultParams](/API/#defaultparams) | 默认参数数组，在自动模式下会作为初始参数传递给 Service | `P`  | `[]`   |
 
 ## Result
 
-| 参数   | 说明                                                                                   | 类型     |
-| ------ | -------------------------------------------------------------------------------------- | -------- |
+| 参数                   | 说明                                                                                   | 类型     |
+| ---------------------- | -------------------------------------------------------------------------------------- | -------- |
 | [params](/API/#params) | 当次执行的 Service 的参数数组。比如你触发了 `run(1, 2, 3)`，则 params 等于 `[1, 2, 3]` | `Ref<P>` |
 
 ## 贡献者 :shamrock:
