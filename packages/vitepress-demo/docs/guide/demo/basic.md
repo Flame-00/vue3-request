@@ -282,9 +282,9 @@ const service = (lastName: string): Promise<IName> => {
 const { run, data, error, loading } = useRequest(service, {
   manual: true, // [!code highlight]
   onSuccess: (params) => {
-    message.success(`data.value -> "${data.value}"`);
+    message.success(`data.value -> "${data.value.data}"`);
     // 使用 useRequest 返回的响应式 data
-    console.log("响应数据:", data.value);
+    console.log("响应数据:", data.value.data);
   },
   onError: (params) => {
     // 使用 useRequest 返回的响应式 error
@@ -364,7 +364,7 @@ const { runAsync, data, error, loading, params } = useRequest(service, {
 const onClick = async () => {
   try {
     await runAsync(lastName.value);
-    message.success(`data -> "${data.value}"`);
+    message.success(`data -> "${data.value.data}"`);
   } catch (error) {
     message.error(error.message);
   }

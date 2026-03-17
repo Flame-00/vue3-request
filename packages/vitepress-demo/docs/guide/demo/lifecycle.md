@@ -125,7 +125,7 @@ const {
   onSuccess: (params) => {
     message.success(`onSuccess 触发`);
     // 使用 useRequest 返回的响应式 data
-    console.log('响应数据:', data.value);
+    console.log('响应数据:', data.value.data);
   },
   onError: (params) => {
     message.error(`onError 触发`);
@@ -135,7 +135,7 @@ const {
   onFinally: (params) => {
     message.info(`onFinally 触发`);
     // 可以同时访问 data 和 error
-      console.log('请求成功，数据:', data.value);
+      console.log('请求成功，数据:', data.value.data);
       console.log('请求失败，错误:', error.value);
     
   },

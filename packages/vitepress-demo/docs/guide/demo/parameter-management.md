@@ -90,7 +90,7 @@ const service = (lastName: string): Promise<IResult> => {
 const { run, data, params, error, loading } = useRequest(service, {
   defaultParams: ["林"], // [!code highlight]
   onSuccess: () => {
-    message.success(`data -> "${data.value}"`);
+    message.success(`data -> "${data.value.data}"`);
   },
   onError: () => {
     message.error(error.value?.message || "请求失败");
@@ -178,7 +178,7 @@ const { run, data, params, error, loading } = useRequest(
   {
     manual: true,
     onSuccess: (data) => {
-      message.success(`data -> "${data.value}"`);
+      message.success(`data -> "${data.value.data}"`);
     },
     onError: () => {
       message.error(error.value?.message || "请求失败");
