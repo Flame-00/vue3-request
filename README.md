@@ -1,6 +1,6 @@
 更多内容请查看<a href="https://Flame-00.github.io/vue3-request/" target="_blank">文档</a>
 
-[演练场](https://codesandbox.io/p/devbox/yrxqp8)
+[演练场](https://codesandbox.io/p/devbox/elastic-meninsky-fz8sfj)
 
 ## 核心优势
 
