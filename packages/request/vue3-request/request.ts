@@ -18,7 +18,7 @@ export class Request<D, P extends any[]> {
 
   constructor(
     public service: ServiceType<D, P>,
-    public options: BaseOptions<D, P> & { resKey: keyof D }
+    public options: BaseOptions<D, P> & { resKey: keyof D },
   ) {
     // @ts-ignore
     this.state = reactive({
@@ -42,7 +42,6 @@ export class Request<D, P extends any[]> {
         this.state.res = s.data[resKey];
       }
     }
-    console.log("res", this.state.res);
   };
   executePlugin = (
     event: keyof PluginReturn<D, P>,
@@ -51,9 +50,9 @@ export class Request<D, P extends any[]> {
     if (event === "onRequest") {
       const servicePromise = composeMiddleware<D>(
         this.pluginImpls.map((plugin) => plugin.onRequest).filter(Boolean) as ((
-          service: ServiceType<D>
+          service: ServiceType<D>,
         ) => ServiceType<D>)[],
-        rest[0]
+        rest[0],
       );
       return {
         servicePromise,
@@ -72,13 +71,13 @@ export class Request<D, P extends any[]> {
   onFinished = () => {
     this.executePlugin(
       "onFinally",
-      this.state.params
+      this.state.params,
       // this.state.data,
       // this.state.error
     );
     this.loading(false);
     this.options.onFinally?.(
-      this.state.params
+      this.state.params,
       // this.state.data,
       // this.state.error
     );
@@ -88,7 +87,7 @@ export class Request<D, P extends any[]> {
 
     const { isReturn, isReady, ...rest } = this.executePlugin(
       "onBefore",
-      params
+      params,
     );
 
     if (!isReady) {
@@ -112,11 +111,13 @@ export class Request<D, P extends any[]> {
       if (!servicePromise) {
         servicePromise = serviceWrapper();
       }
+
+      const data = await servicePromise;
+
       if (requestId !== this.currentRequestId) {
         return neverPromise();
       }
-
-      this.setState({ data: await servicePromise, error: undefined });
+      this.setState({ data, error: undefined });
       this.executePlugin("onSuccess", params);
       // this.options.onSuccess?.(this.state.data!, params);
       this.options.onSuccess?.(params);
