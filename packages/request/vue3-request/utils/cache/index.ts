@@ -6,7 +6,7 @@ const cache = new Map<string, CacheParamsType>();
 export const setCache = <D, P>(
   cacheKey: string,
   cacheTime: number,
-  { data, params, time }: CacheParamsType<D, P>
+  { data, params, time }: CacheParamsType<D, P>,
 ) => {
   let timer: Timeout | undefined;
   const cacheData = getCache(cacheKey);
@@ -29,7 +29,19 @@ export const getCache = (cacheKey: string) => {
 };
 
 export const clearCache = (cacheKey?: string) => {
-  cacheKey && typeof cacheKey === "string"
-    ? cache.delete(cacheKey)
-    : cache.clear();
+  if (cacheKey && typeof cacheKey === "string") {
+    const cacheData = cache.get(cacheKey);
+    if (cacheData?.timer) {
+      clearTimeout(cacheData.timer);
+    }
+    cache.delete(cacheKey);
+    return;
+  }
+
+  cache.forEach((cacheData) => {
+    if (cacheData?.timer) {
+      clearTimeout(cacheData.timer);
+    }
+  });
+  cache.clear();
 };

@@ -34,13 +34,19 @@ export class Request<D, P extends any[]> {
   }
   setState = (s: Partial<IState<D, P>>) => {
     Object.assign(this.state, s);
-
+    
     if (s.data && typeof s.data === "object" && !isNil(s.data)) {
       const resKey = this.options.resKey || "data";
       if (Reflect.has(s.data, resKey)) {
         // @ts-ignore
         this.state.res = s.data[resKey];
+      } else {
+        // @ts-ignore
+        this.state.res = undefined;
       }
+    } else {
+      // @ts-ignore
+      this.state.res = undefined;
     }
   };
   executePlugin = (
@@ -95,12 +101,12 @@ export class Request<D, P extends any[]> {
     }
     this.setState({ params, ...rest });
     this.loading(true);
+    this.options.onBefore?.(params);
 
     if (isReturn) {
       this.loading(false);
       return rest.data!;
     }
-    this.options.onBefore?.(params);
 
     try {
       const serviceWrapper = () => this.service(...params);

@@ -2,6 +2,8 @@
     <n-el class="box">
       <n-button type="primary" ghost @click="reload"> 刷新页面</n-button>
       <hr />
+      <CacheSyncDemo />
+      <hr />
       <div class="action">
         <n-button type="primary" @click="run"> Run</n-button>
         <n-button type="primary" @click="refresh"> Refresh</n-button>
@@ -24,6 +26,7 @@
   </template>
   <script setup lang="ts">
   import { useRequest } from "vue3-request"; 
+  import CacheSyncDemo from "./CacheSyncDemo.vue";
   import {
     NEl,
     NSpin,

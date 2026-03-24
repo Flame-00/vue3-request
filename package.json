@@ -30,7 +30,11 @@
     "build:vue3": "pnpm --filter @async-handler/vue3 build-only",
     "build:docs": "pnpm --filter @async-handler/docs build",
     "serve:docs": "pnpm --filter @async-handler/docs serve",
-    "rf": "rimraf node_modules && rimraf dist && pnpm --filter @async-handler/vue3 rf && pnpm --filter @async-handler/docs rf"
+    "rf": "rimraf node_modules && rimraf dist && pnpm --filter @async-handler/vue3 rf && pnpm --filter @async-handler/docs rf",
+    "release": "node ./scripts/release.mjs patch",
+    "release:patch": "node ./scripts/release.mjs patch",
+    "release:minor": "node ./scripts/release.mjs minor",
+    "release:major": "node ./scripts/release.mjs major"
   },
   "keywords": [
     "vue3",

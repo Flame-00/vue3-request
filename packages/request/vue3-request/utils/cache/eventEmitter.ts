@@ -5,7 +5,7 @@ const events = new Map<string, Set<CacheCallbackType>>();
 
 const emit = <D, P>(
   key: string,
-  { data, params, time }: CacheParamsType<D, P>
+  { data, params, time }: CacheParamsType<D, P>,
 ) => {
   if (events.has(key)) {
     const callbacks = events.get(key);
@@ -16,9 +16,8 @@ const emit = <D, P>(
 const on = <D, P>(key: string, callback: CacheCallbackType<D, P>) => {
   if (!events.has(key)) {
     events.set(key, new Set());
-  } else {
-    events.get(key)?.add(callback);
   }
+  events.get(key)?.add(callback);
   // 返回取消订阅函数
   return () => {
     const callbacks = events.get(key);
