@@ -32,7 +32,7 @@ const writePackageJson = (pkg) => {
 const parseSemver = (version) => {
   const match = version.match(/^(\d+)\.(\d+)\.(\d+)$/);
   if (!match) {
-    throw new Error(`Unsupported version format: ${version}`);
+    throw new Error(`不支持的版本号格式: ${version}`);
   }
   return {
     major: Number(match[1]),
@@ -62,14 +62,40 @@ const ensureOnMainBranch = () => {
     stdio: "pipe",
   }).trim();
   if (branch !== "main") {
-    throw new Error(`当前分支是 "${branch}". 请切换到 "main".`);
+    throw new Error(`当前分支是 "${branch}"，请切换到 "main" 后再发布。`);
   }
 };
 
 const ensureCleanWorktree = () => {
   const status = run("git status --porcelain", { stdio: "pipe" }).trim();
   if (status) {
-    throw new Error("请先提交代码");
+    throw new Error("检测到未提交修改，请先提交或暂存后再发布。");
+  }
+};
+
+const ensureNoUnpushedCommits = () => {
+  let upstream = "";
+  try {
+    upstream = run("git rev-parse --abbrev-ref --symbolic-full-name @{u}", {
+      stdio: "pipe",
+    }).trim();
+  } catch {
+    throw new Error(
+      "当前分支未配置上游分支，请先执行 `git push -u origin main`。"
+    );
+  }
+
+  const aheadText = run(`git rev-list --count ${upstream}..HEAD`, {
+    stdio: "pipe",
+  }).trim();
+  const aheadCount = Number(aheadText);
+  if (!Number.isFinite(aheadCount)) {
+    throw new Error("无法判断未推送提交，请手动检查 Git 状态。");
+  }
+  if (aheadCount > 0) {
+    throw new Error(
+      `检测到有 ${aheadCount} 个本地提交尚未推送到远端（${upstream}），请先 push。`
+    );
   }
 };
 
@@ -77,9 +103,10 @@ const ensureLoggedIn = () => {
   try {
     run("pnpm whoami", { stdio: "pipe" });
   } catch {
-    const result = run("pnpm login", { stdio: "pipe" });
-    console.log(5555, result);
-    throw new Error("请先登录 npm");
+    console.log("未检测到 npm 登录状态。");
+    console.log("请先执行: pnpm login");
+    console.log("npm 登录页面: https://www.npmjs.com/login");
+    throw new Error("请先完成 npm 登录后再发布。");
   }
 };
 
@@ -93,6 +120,7 @@ const main = () => {
   console.log("正在检查 Git 状态...");
   ensureOnMainBranch();
   ensureCleanWorktree();
+  ensureNoUnpushedCommits();
 
   const pkg = readPackageJson();
   const oldVersion = pkg.version;
