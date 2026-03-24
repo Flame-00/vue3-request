@@ -103,9 +103,7 @@ const ensureLoggedIn = () => {
   try {
     run("pnpm whoami", { stdio: "pipe" });
   } catch {
-    const result = run("npm login", {
-      stdio: "pipe",
-    }).trim();
+    const result = run("npm login").trim();
     console.log("result", result);
     throw new Error("请先完成 npm 登录后再发布。");
   }
