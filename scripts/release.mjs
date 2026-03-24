@@ -81,7 +81,7 @@ const ensureNoUnpushedCommits = () => {
     }).trim();
   } catch {
     throw new Error(
-      "当前分支未配置上游分支，请先执行 `git push -u origin main`。"
+      "当前分支未配置上游分支，请先执行 `git push -u origin main`。",
     );
   }
 
@@ -94,7 +94,7 @@ const ensureNoUnpushedCommits = () => {
   }
   if (aheadCount > 0) {
     throw new Error(
-      `检测到有 ${aheadCount} 个本地提交尚未推送到远端（${upstream}），请先 push。`
+      `检测到有 ${aheadCount} 个本地提交尚未推送到远端（${upstream}），请先 push。`,
     );
   }
 };
@@ -103,9 +103,10 @@ const ensureLoggedIn = () => {
   try {
     run("pnpm whoami", { stdio: "pipe" });
   } catch {
-    console.log("未检测到 npm 登录状态。");
-    console.log("请先执行: pnpm login");
-    console.log("npm 登录页面: https://www.npmjs.com/login");
+    const result = run("git rev-parse --abbrev-ref --symbolic-full-name @{u}", {
+      stdio: "pipe",
+    }).trim();
+    console.log("result", result);
     throw new Error("请先完成 npm 登录后再发布。");
   }
 };
