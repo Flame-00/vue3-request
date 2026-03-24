@@ -65,13 +65,11 @@ const ensureOnMainBranch = () => {
     throw new Error(`当前分支是 "${branch}". 请切换到 "main".`);
   }
 };
-  
+
 const ensureCleanWorktree = () => {
   const status = run("git status --porcelain", { stdio: "pipe" }).trim();
   if (status) {
-    throw new Error(
-      "请先提交代码",
-    );
+    throw new Error("请先提交代码");
   }
 };
 
@@ -79,9 +77,9 @@ const ensureLoggedIn = () => {
   try {
     run("pnpm whoami", { stdio: "pipe" });
   } catch {
-    throw new Error(
-      "请先登录 npm",
-    );
+    const result = run("pnpm login");
+    console.log(result)
+    throw new Error("请先登录 npm");
   }
 };
 
@@ -116,11 +114,11 @@ const main = () => {
   run("pnpm publish --no-git-checks");
 
   console.log(`发布完成: v${nextVersion}`);
-  // console.log("建议继续执行以下命令:");
-  // console.log("git add package.json pnpm-lock.yaml dist");
-  // console.log(`git commit -m "release: v${nextVersion}"`);
-  // console.log(`git tag v${nextVersion}`);
-  // console.log("git push origin main --tags");
+
+  run("git add package.json");
+  run(`git commit -m "release: v${nextVersion}"`);
+  run(`git tag v${nextVersion}`);
+  run("git push origin main --tags");
 };
 
 try {
