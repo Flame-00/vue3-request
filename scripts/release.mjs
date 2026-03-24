@@ -103,7 +103,7 @@ const ensureLoggedIn = () => {
   try {
     run("pnpm whoami", { stdio: "pipe" });
   } catch {
-    const result = run("git rev-parse --abbrev-ref --symbolic-full-name @{u}", {
+    const result = run("npm login", {
       stdio: "pipe",
     }).trim();
     console.log("result", result);
