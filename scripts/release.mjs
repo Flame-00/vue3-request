@@ -78,7 +78,7 @@ const ensureLoggedIn = () => {
     run("pnpm whoami", { stdio: "pipe" });
   } catch {
     const result = run("pnpm login");
-    console.log(result)
+    console.log(5555, result);
     throw new Error("请先登录 npm");
   }
 };
