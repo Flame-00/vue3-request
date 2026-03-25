@@ -364,7 +364,7 @@ const { runAsync, data, error, loading, params } = useRequest(service, {
 const onClick = async () => {
   try {
     await runAsync(lastName.value);
-    message.success(`data -> "${data.value.data}"`);
+    message.success(`data.value -> "${data.value.data}"`);
   } catch (error) {
     message.error(error.message);
   }
