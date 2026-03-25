@@ -34,7 +34,7 @@ export class Request<D, P extends any[]> {
   }
   setState = (s: Partial<IState<D, P>>) => {
     Object.assign(this.state, s);
-    
+
     if (s.data && typeof s.data === "object" && !isNil(s.data)) {
       const resKey = this.options.resKey || "data";
       if (Reflect.has(s.data, resKey)) {
@@ -44,9 +44,6 @@ export class Request<D, P extends any[]> {
         // @ts-ignore
         this.state.res = undefined;
       }
-    } else {
-      // @ts-ignore
-      this.state.res = undefined;
     }
   };
   executePlugin = (
