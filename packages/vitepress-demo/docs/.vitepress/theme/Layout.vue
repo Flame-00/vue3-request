@@ -43,7 +43,7 @@ provide("toggle-appearance", async ({ clientX: x, clientY: y }: MouseEvent) => {
     `circle(0px at ${x}px ${y}px)`,
     `circle(${Math.hypot(
       Math.max(x, innerWidth - x),
-      Math.max(y, innerHeight - y)
+      Math.max(y, innerHeight - y),
     )}px at ${x}px ${y}px)`,
   ];
   const doc = document as any;
@@ -57,8 +57,9 @@ provide("toggle-appearance", async ({ clientX: x, clientY: y }: MouseEvent) => {
     {
       duration: 300,
       easing: "ease-in",
+      fill: "forwards",
       pseudoElement: `::view-transition-${isDark.value ? "old" : "new"}(root)`,
-    }
+    },
   );
 });
 </script>
