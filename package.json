@@ -36,6 +36,11 @@
     "release:minor": "node ./scripts/release.mjs minor",
     "release:major": "node ./scripts/release.mjs major"
   },
+  "homepage": "https://github.com/Flame-00",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Flame-00/vue3-request"
+  },
   "keywords": [
     "vue3",
     "request",
