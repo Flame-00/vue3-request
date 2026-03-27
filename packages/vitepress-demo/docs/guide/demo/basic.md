@@ -51,7 +51,7 @@ const { data, res, error, loading } = useRequest(service);
   </section>
 </template>
 <script setup lang="ts">
-import { useRequest } from "@async-handler/request/vue3-request";
+import { useRequest } from "vue3-request";
 import axios from "axios";
 import { NSpin, NText, NEmpty, NCard } from "naive-ui";
 import faker from "@/utils/faker";
