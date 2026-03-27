@@ -55,7 +55,7 @@ features:
 
 ## ⚡ 快速安装
 
-选择你喜欢的包管理器，立即开始 Vue3Request 之旅：
+选择你喜欢的包管理器（推荐pnpm！）
 
 ::: code-group
 
