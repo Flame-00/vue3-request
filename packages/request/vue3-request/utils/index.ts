@@ -1,4 +1,4 @@
-import { ServiceType } from "../types";
+import type { ServiceType } from "../types";
 
 export const isNil = (value: unknown) => value === undefined || value === null;
 

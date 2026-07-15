@@ -14,7 +14,6 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "packageManager": "pnpm@10.12.1",
   "devDependencies": {
     "naive-ui": "^2.42.0",
     "vitepress": "^1.6.3",

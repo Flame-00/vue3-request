@@ -4,9 +4,9 @@ import { NMessageProvider } from "naive-ui";
 </script>
 
 <template>
-  <n-messageProvider>
+  <n-message-provider>
     <Demo />
-  </n-messageProvider>
+  </n-message-provider>
 </template>
 
 <style scoped></style>

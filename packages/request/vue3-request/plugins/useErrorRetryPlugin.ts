@@ -1,7 +1,7 @@
 import { computed, ref, toValue } from "vue";
 import { warn } from "../utils";
 import { definePlugin } from "../utils/definePlugin";
-import { Timeout } from "../types";
+import type { Timeout } from "../types";
 
 export default definePlugin((
   requestInstance,

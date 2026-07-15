@@ -1,5 +1,5 @@
-import { Ref, Reactive, ToRefs, WatchSource } from "vue";
-import { Request } from "./request";
+import type { Ref, Reactive, ToRefs, WatchSource } from "vue";
+import type { Request } from "./request";
 
 // export type ExtractResultDataType<T> = T extends (
 //   signal?: AbortSignal

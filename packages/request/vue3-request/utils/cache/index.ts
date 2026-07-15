@@ -1,4 +1,4 @@
-import { CacheParamsType, Timeout } from "../../types";
+import type { CacheParamsType, Timeout } from "../../types";
 import { warn } from "../";
 
 const cache = new Map<string, CacheParamsType>();

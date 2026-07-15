@@ -1,5 +1,4 @@
-import { CacheCallbackType } from "../../types";
-import { CacheParamsType } from "../../types";
+import type { CacheCallbackType, CacheParamsType } from "../../types";
 
 const events = new Map<string, Set<CacheCallbackType>>();
 

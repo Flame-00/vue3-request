@@ -3,7 +3,7 @@ import { warn } from "../utils";
 import { subscribe } from "../utils/subscribeReVisible";
 import { isDocumentVisible } from "../utils/isDocumentVisible";
 import { definePlugin } from "../utils/definePlugin";
-import { Timeout } from "../types";
+import type { Timeout } from "../types";
 
 export default definePlugin(
   (

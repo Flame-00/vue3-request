@@ -4,7 +4,7 @@ import { ref, onUnmounted } from "vue";
 import { getRequestCache, setRequestCache } from "../utils/cache/requestCache";
 import { definePlugin } from "../utils/definePlugin";
 import { warn } from "../utils";
-import { CacheParamsType } from "../types";
+import type { CacheParamsType } from "../types";
 
 export default definePlugin(
   (

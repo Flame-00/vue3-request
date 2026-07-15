@@ -1,4 +1,4 @@
-import { ServiceType } from "../../types";
+import type { ServiceType } from "../../types";
 
 const requestCache = new Map<string, ReturnType<ServiceType>>();
 
