@@ -1,7 +1,7 @@
 packages:
   - "packages/*"
 allowBuilds:
-  '@parcel/watcher': set this to true or false
-  esbuild: set this to true or false
-  vitepress-theme-demoblock: set this to true or false
-  vue-demi: set this to true or false
+  "@parcel/watcher": true
+  esbuild: true
+  vitepress-theme-demoblock: true
+  vue-demi: true

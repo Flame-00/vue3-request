@@ -29,3 +29,6 @@ coverage
 *.sw?
 
 *.tsbuildinfo
+
+# VitePress generated cache
+**/.vitepress/.temp/
