@@ -20,7 +20,7 @@ export function useRequest<
 // 重载2: D 是 object 但不传 resKey → K = "data"
 export function useRequest<D extends object, P extends any[] = any[]>(
   service: ServiceType<D, P>,
-  options?: BaseOptions<D, P, "data"> 
+  options?: BaseOptions<D, P, "data">
 ): UseRequestReturnType<D, P, "data">;
 
 // 重载3: D 是基础类型 → 没有 resKey

@@ -68,10 +68,10 @@ type ThrottleOptionsType = {
 
 type ExtractFieldType<D, K> = D extends object
   ? K extends keyof D
-    ? D[K]
-    : "data" extends keyof D
-    ? D["data"]
-    : never
+  ? D[K]
+  : "data" extends keyof D
+  ? D["data"]
+  : never
   : never;
 
 export interface IState<D, P extends any[], K = "data"> {
@@ -81,7 +81,7 @@ export interface IState<D, P extends any[], K = "data"> {
   isFinished: boolean;
   isAborted: boolean;
   error: Error;
-  params: P; 
+  params: P;
   signal: AbortSignal;
 }
 

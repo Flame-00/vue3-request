@@ -288,6 +288,216 @@ const {
 
 :::
 
+## 更多实用插件示例
+
+下面这些插件都只依赖 Vue3Request 的生命周期，不绑定 Axios、Fetch 或具体 UI 组件，适合直接放到项目的 `src/plugins/request` 目录中复用。
+
+### 合并重复请求（Single Flight）
+
+同一个接口可能被多个组件同时触发，例如页面初始化时，Header、Sidebar 和页面主体都请求当前用户。这个插件让相同 key 的请求共享同一个 Promise，避免短时间内重复访问后端。
+
+```ts
+import { definePlugin } from "vue3-request";
+
+const pendingRequests = new Map<string, Promise<unknown>>();
+
+interface DedupeOptions<P extends unknown[]> {
+  dedupeKey?: (params: P) => string;
+}
+
+export function createDedupePlugin<D, P extends unknown[]>() {
+  return definePlugin<D, P, DedupeOptions<P>>(
+    (requestInstance, options) => ({
+      onRequest: (service) => async (...params) => {
+        if (!options.dedupeKey) return service(...params);
+
+        const key = options.dedupeKey(requestInstance.state.params);
+        const pending = pendingRequests.get(key) as Promise<D> | undefined;
+        if (pending) return pending;
+
+        const current = service(...params);
+        pendingRequests.set(key, current);
+
+        try {
+          return await current;
+        } finally {
+          if (pendingRequests.get(key) === current) {
+            pendingRequests.delete(key);
+          }
+        }
+      },
+    })
+  );
+}
+```
+
+```ts
+type UserParams = [id: string];
+const dedupePlugin = createDedupePlugin<User, UserParams>();
+
+useRequest(getUser, {
+  dedupeKey: ([id]) => `user:${id}`,
+}, [dedupePlugin]);
+```
+
+key 中应包含接口身份和全部有效参数。这里只合并进行中的请求；请求结束后的数据复用仍交给内置缓存插件处理。
+
+### Token 失效后刷新并重放
+
+多个请求同时收到 `401` 时，通常只应刷新一次 Token，其余请求等待刷新完成后再重放。模块级的 `refreshingToken` 用于避免并发刷新。
+
+```ts
+import { definePlugin } from "vue3-request";
+
+let refreshingToken: Promise<void> | null = null;
+
+interface AuthRefreshOptions {
+  isUnauthorized?: (error: unknown) => boolean;
+  refreshToken?: () => Promise<void>;
+}
+
+export function createAuthRefreshPlugin<D, P extends unknown[]>() {
+  return definePlugin<D, P, AuthRefreshOptions>((_request, options) => ({
+    onRequest: (service) => async (...params) => {
+      try {
+        return await service(...params);
+      } catch (error) {
+        if (
+          !options.refreshToken ||
+          !options.isUnauthorized?.(error)
+        ) {
+          throw error;
+        }
+
+        refreshingToken ??= options.refreshToken().finally(() => {
+          refreshingToken = null;
+        });
+
+        await refreshingToken;
+        return service(...params);
+      }
+    },
+  }));
+}
+```
+
+```ts
+const authRefreshPlugin = createAuthRefreshPlugin<Order[], []>();
+
+useRequest(getOrders, {
+  isUnauthorized: (error) =>
+    axios.isAxiosError(error) && error.response?.status === 401,
+  refreshToken: authStore.refreshToken,
+}, [authRefreshPlugin]);
+```
+
+重放只执行一次，不会出现无限刷新循环。实际项目中，刷新失败后还应由 `authStore` 统一清理登录状态并跳转登录页。
+
+### 限制全局并发数
+
+批量加载图片详情、报表分片或大量下拉选项时，无限制并发容易挤占浏览器连接、触发网关限流。下面的插件让同一插件实例下的请求排队执行。
+
+```ts
+import { definePlugin } from "vue3-request";
+
+export function createConcurrencyPlugin<
+  D,
+  P extends unknown[]
+>(maxConcurrent: number) {
+  if (!Number.isInteger(maxConcurrent) || maxConcurrent <= 0) {
+    throw new RangeError("maxConcurrent must be a positive integer");
+  }
+
+  let activeCount = 0;
+  const queue: Array<() => void> = [];
+
+  const acquire = () => new Promise<void>((resolve) => {
+    if (activeCount < maxConcurrent) {
+      activeCount += 1;
+      resolve();
+      return;
+    }
+    queue.push(() => {
+      activeCount += 1;
+      resolve();
+    });
+  });
+
+  const release = () => {
+    activeCount -= 1;
+    queue.shift()?.();
+  };
+
+  return definePlugin<D, P>((_request, _options) => ({
+    onRequest: (service) => async (...params) => {
+      await acquire();
+      try {
+        return await service(...params);
+      } finally {
+        release();
+      }
+    },
+  }));
+}
+```
+
+```ts
+// 在模块顶层创建一次，所有使用它的实例共享最多 4 个并发名额
+const reportConcurrencyPlugin =
+  createConcurrencyPlugin<ReportChunk, [chunkId: string]>(4);
+
+useRequest(loadReportChunk, {}, [reportConcurrencyPlugin]);
+```
+
+若在每个组件内部重新创建插件，每个组件会拥有独立队列，也就无法实现跨组件限流。
+
+### 失败时返回降级数据
+
+推荐列表、运营配置等非核心接口失败时，与其让整个页面进入错误态，通常更适合返回本地默认值。该插件只处理明确允许降级的错误。
+
+```ts
+import { definePlugin } from "vue3-request";
+
+interface FallbackOptions<D, P extends unknown[]> {
+  shouldFallback?: (error: unknown) => boolean;
+  fallback?: (error: unknown, params: P) => D | Promise<D>;
+}
+
+export function createFallbackPlugin<D, P extends unknown[]>() {
+  return definePlugin<D, P, FallbackOptions<D, P>>(
+    (requestInstance, options) => ({
+      onRequest: (service) => async (...params) => {
+        try {
+          return await service(...params);
+        } catch (error) {
+          if (
+            !options.fallback ||
+            !options.shouldFallback?.(error)
+          ) {
+            throw error;
+          }
+
+          return options.fallback(error, requestInstance.state.params);
+        }
+      },
+    })
+  );
+}
+```
+
+```ts
+const fallbackPlugin = createFallbackPlugin<Banner[], []>();
+
+useRequest(getBanners, {
+  shouldFallback: (error) => !navigator.onLine || isTimeoutError(error),
+  fallback: () => localStorageBanners,
+}, [fallbackPlugin]);
+```
+
+降级成功后，请求会进入 `onSuccess` 而不是 `onError`。因此它适合“默认数据也算有效结果”的非核心接口，不应该用于订单提交、支付等写操作。
+
+这些插件可以组合使用。由于 `onRequest` 按洋葱模型执行，插件数组中靠前的插件位于外层，可以观察到内层插件处理后的最终结果或错误；生命周期型插件则按照插件数组顺序依次执行。
+
 通过自定义插件，你可以将 `useRequest` 扩展到任何业务场景，实现高度定制化的异步数据管理解决方案。
 
 ## 贡献者 :shamrock:
