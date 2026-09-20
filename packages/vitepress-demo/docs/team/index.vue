@@ -6,7 +6,7 @@ const props = withDefaults(defineProps<Props>(), {
   size: "medium",
   members: () => [
     {
-      avatar: withBase("/avatar.png"),
+      avatar: withBase("/avatar.PNG"),
       name: "Flame-00",
       title: "Creator",
       links: [
