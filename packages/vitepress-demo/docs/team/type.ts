@@ -1,7 +1,6 @@
 export interface Props {
     // 每个成员的大小，默认为 `medium`
     size?: 'small' | 'medium'
-
     // 显示的成员列表
     members?: TeamMember[]
 }
