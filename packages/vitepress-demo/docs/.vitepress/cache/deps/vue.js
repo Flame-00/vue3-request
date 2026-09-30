@@ -84,6 +84,7 @@ import {
   mergeModels,
   mergeProps,
   nextTick,
+  nodeOps,
   normalizeClass,
   normalizeProps,
   normalizeStyle,
@@ -102,6 +103,7 @@ import {
   onUpdated,
   onWatcherCleanup,
   openBlock,
+  patchProp,
   popScopeId,
   provide,
   proxyRefs,
@@ -169,8 +171,8 @@ import {
   withMemo,
   withModifiers,
   withScopeId
-} from "./chunk-7M3ZLALO.js";
-import "./chunk-BYYN2XO5.js";
+} from "./chunk-O5QPJTH3.js";
+import "./chunk-LOXRFETM.js";
 init_vue_runtime_esm_bundler();
 export {
   BaseTransition,
@@ -257,6 +259,7 @@ export {
   mergeModels,
   mergeProps,
   nextTick,
+  nodeOps,
   normalizeClass,
   normalizeProps,
   normalizeStyle,
@@ -275,6 +278,7 @@ export {
   onUpdated,
   onWatcherCleanup,
   openBlock,
+  patchProp,
   popScopeId,
   provide,
   proxyRefs,

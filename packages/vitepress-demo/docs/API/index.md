@@ -25,6 +25,7 @@ const { ...ReturnValues } = useRequest(Service, Options, Plugins);
 从 Service 返回的数据对象中提取的特定字段。默认提取 `data` 字段，可以通过 [resKey](#reskey) 选项自定义提取的字段名。
 
 例如，当 Service 返回 `{ code: 0, data: { name: 'John' } }` 时：
+
 - `data` 为完整的响应对象
 - `res` 默认为 `{ name: 'John' }`（提取了 `data` 字段）
 
@@ -133,7 +134,9 @@ const { ...ReturnValues } = useRequest(Service, Options, Plugins);
 
 - **类型：** `() => void`
 
-中止当前请求，会触发 [AbortSignal](#signal) 信号
+中止当前请求：触发 [AbortSignal](#signal)，忽略本次 Promise 的结果，并将 [loading](#loading) 重置为 `false`。不会把中止当成 [error](#error)，也不会触发错误重试。
+
+需要 service 把 [signal](#signal) 传给 `fetch` / `axios`，HTTP 才会真正被掐掉；即使没传 `signal`，本次结果也不会再写回 [data](#data)。
 
 **参考：** [中止请求](../guide/demo/abort-request.md)
 
@@ -487,7 +490,7 @@ const customPlugin = definePlugin<IResult, [id: number], IPluginOptions>(
         console[options.logLevel]("请求成功:", requestInstance.state.data);
       },
     };
-  }
+  },
 );
 
 // 使用插件
@@ -496,7 +499,7 @@ const { data } = useRequest(
   {
     logLevel: "info",
   },
-  [customPlugin]
+  [customPlugin],
 );
 ```
 

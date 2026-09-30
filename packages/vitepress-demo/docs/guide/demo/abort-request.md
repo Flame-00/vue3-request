@@ -14,10 +14,13 @@ const { signal, abort } = useRequest(service); // [!code ++]
 axios.post(url, { signal: signal.value }); // [!code ++]
 ```
 
-使用的是 `xhr` 或 `fetch` 请求，并添加了 `signal` 配置项 **(必须)**，那么 `useRequest` 会在以下时机自动调用 `abort` 方法：
+使用的是 `xhr` 或 `fetch` 请求，并添加了 `signal` 配置项 **(必须)**，那么 `useRequest` 会在以下时机自动中止请求：
 
-- 组件卸载时，还未返回结果的请求
-- 前置请求中止，发起新请求时自动中止前一个未完成的请求并忽略 promise 的响应，但是如果设置了 `options.abortPrevious = false` 则默认不会中止，但是依旧会[竞态取消](./cancel-response.md)
+- 手动调用 `abort()`：掐掉当前请求，忽略本次结果，`loading` 立刻变为 `false`。中止**不会**写入 `error`，也**不会**触发错误重试
+- 组件卸载时，还未返回结果的请求（走 `cancel`，会顺带 abort）
+- 前置请求中止：发起新请求时自动中止前一个未完成的请求并忽略旧 promise 的响应。设置 `options.abortPrevious = false` 则不会发 AbortSignal，但依旧会[竞态取消](./cancel-response.md)
+
+`abort()` 与 `cancel()` 的差别：`cancel` 只忽略结果，已发出的 HTTP 仍会继续（除非你自己接了 `signal`）；`abort` 会先触发 AbortSignal，再忽略结果。
 
 :::tip
 

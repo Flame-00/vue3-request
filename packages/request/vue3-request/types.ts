@@ -53,7 +53,7 @@ export type BaseOptions<D, P extends any[], K = "data"> = Partial<{
   debounceOptions: Reactive<DebounceOptionsType> | DebounceOptionsType;
   throttleWait: Ref<number> | number;
   throttleOptions: Reactive<ThrottleOptionsType> | ThrottleOptionsType;
-  abortPrevious: boolean;
+  abortPrevious: boolean | Ref<boolean>;
 }> &
   (D extends object ? { resKey?: K } : {});
 

@@ -1,47 +1,45 @@
+import { toValue } from "vue";
 import { definePlugin } from "../utils/definePlugin";
 
 export default definePlugin((requestInstance, { abortPrevious = true }) => {
   let controller: AbortController | null = null;
-  // 生成新的信号，并设置到state中
+
+  const abortCurrent = () => {
+    if (controller && !controller.signal.aborted) {
+      controller.abort();
+    }
+  };
+
   const initNewSignal = () => {
     controller = new AbortController();
-
     requestInstance.setState({
       signal: controller.signal,
-      isAborted: controller.signal.aborted,
+      isAborted: false,
     });
   };
 
-  // 中止请求
   requestInstance.abort = () => {
-    if (
-      controller &&
-      !controller.signal.aborted &&
-      !requestInstance.state.isFinished
-    ) {
-      controller.abort();
-
-      requestInstance.setState({
-        isAborted: controller.signal.aborted,
-      });
-    }
+    abortCurrent();
+    requestInstance.setState({
+      isAborted: true,
+    });
+    requestInstance.cancel();
   };
 
   return {
     onBefore: () => {
-      if (typeof abortPrevious === "boolean" && abortPrevious) {
-        requestInstance.abort();
+      if (toValue(abortPrevious)) {
+        abortCurrent();
       }
       initNewSignal();
     },
-    onRequest: (service) => {
-      return () => {
-        return service();
-      };
-    },
     onCancel: () => {
-      requestInstance.abort();
-      controller = null;
+      abortCurrent();
+      if (controller) {
+        requestInstance.setState({
+          isAborted: controller.signal.aborted,
+        });
+      }
     },
   };
 });

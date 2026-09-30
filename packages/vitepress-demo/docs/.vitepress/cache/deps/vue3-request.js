@@ -1,23 +1,23 @@
 import {
   init_vue_runtime_esm_bundler,
   vue_runtime_esm_bundler_exports
-} from "./chunk-7M3ZLALO.js";
+} from "./chunk-O5QPJTH3.js";
 import {
   __commonJS,
   __publicField,
   __toCommonJS
-} from "./chunk-BYYN2XO5.js";
+} from "./chunk-LOXRFETM.js";
 
-// ../../node_modules/.pnpm/vue3-request@1.0.28_typescript@5.8.3/node_modules/vue3-request/dist/vue3-request.umd.js
+// ../../node_modules/.pnpm/vue3-request@1.0.33_typescript@5.9.3/node_modules/vue3-request/dist/vue3-request.umd.js
 var require_vue3_request_umd = __commonJS({
-  "../../node_modules/.pnpm/vue3-request@1.0.28_typescript@5.8.3/node_modules/vue3-request/dist/vue3-request.umd.js"(exports, module) {
+  "../../node_modules/.pnpm/vue3-request@1.0.33_typescript@5.9.3/node_modules/vue3-request/dist/vue3-request.umd.js"(exports, module) {
     (function(w, i) {
       typeof exports == "object" && typeof module < "u" ? i(exports, (init_vue_runtime_esm_bundler(), __toCommonJS(vue_runtime_esm_bundler_exports))) : typeof define == "function" && define.amd ? define(["exports", "vue"], i) : (w = typeof globalThis < "u" ? globalThis : w || self, i(w.Vue3Request = {}, w.Vue));
     })(exports, function(w, i) {
       "use strict";
-      const p = (e) => e, P = (e) => e == null, C = typeof window > "u";
+      const p = (e) => e, C = (e) => e == null, T = typeof window > "u";
       function q(e) {
-        return P(e) ? e : typeof e == "number" && !isNaN(e);
+        return C(e) ? e : typeof e == "number" && !isNaN(e);
       }
       function b(e, t) {
         return q(e) === void 0 ? { is: false, value: 0 } : q(e) ? t && e === -1 ? { is: true, value: -1 } : { is: true, value: e === 0 || e && e < 0 ? 0 : e } : { is: false, value: 0 };
@@ -29,15 +29,22 @@ var require_vue3_request_umd = __commonJS({
           n = r(n);
         }
         return n == null ? void 0 : n();
-      }, T = () => new Promise(() => {
-      }), V = /* @__PURE__ */ new Map(), j = (e, t, { data: n, params: s, time: r }) => {
+      }, S = () => new Promise(() => {
+      }), P = /* @__PURE__ */ new Map(), j = (e, t, { data: n, params: s, time: r }) => {
         let a;
         const o = B(e), { is: l, value: c } = b(t, true);
         l && ((o == null ? void 0 : o.timer) && clearTimeout(o.timer), c !== -1 && (a = setTimeout(() => {
           F(e);
-        }, c)), V.set(e, { data: n, params: s, time: r, timer: a }));
-      }, B = (e) => V.get(e), F = (e) => {
-        e && typeof e == "string" ? V.delete(e) : V.clear();
+        }, c)), P.set(e, { data: n, params: s, time: r, timer: a }));
+      }, B = (e) => P.get(e), F = (e) => {
+        if (e && typeof e == "string") {
+          const t = P.get(e);
+          (t == null ? void 0 : t.timer) && clearTimeout(t.timer), P.delete(e);
+          return;
+        }
+        P.forEach((t) => {
+          (t == null ? void 0 : t.timer) && clearTimeout(t.timer);
+        }), P.clear();
       };
       class N {
         constructor(t, n) {
@@ -47,9 +54,9 @@ var require_vue3_request_umd = __commonJS({
           __publicField(this, "abort", () => {
           });
           __publicField(this, "setState", (t) => {
-            if (Object.assign(this.state, t), t.data && typeof t.data == "object" && !P(t.data)) {
+            if (Object.assign(this.state, t), t.data && typeof t.data == "object" && !C(t.data)) {
               const n = this.options.resKey || "data";
-              Reflect.has(t.data, n) && (this.state.res = t.data[n]);
+              Reflect.has(t.data, n) ? this.state.res = t.data[n] : this.state.res = void 0;
             }
           });
           __publicField(this, "executePlugin", (t, ...n) => {
@@ -72,17 +79,16 @@ var require_vue3_request_umd = __commonJS({
           __publicField(this, "runAsync", async (...t) => {
             var _a, _b, _c, _d, _e, _f;
             const n = ++this.currentRequestId, { isReturn: s, isReady: r, ...a } = this.executePlugin("onBefore", t);
-            if (!r) return T();
-            if (this.setState({ params: t, ...a }), this.loading(true), s) return this.loading(false), a.data;
-            (_b = (_a = this.options).onBefore) == null ? void 0 : _b.call(_a, t);
+            if (!r) return S();
+            if (this.setState({ params: t, ...a }), this.loading(true), (_b = (_a = this.options).onBefore) == null ? void 0 : _b.call(_a, t), s) return this.loading(false), a.data;
             try {
               const o = () => this.service(...t);
               let { servicePromise: l } = this.executePlugin("onRequest", o);
               l || (l = o());
               const c = await l;
-              return n !== this.currentRequestId ? T() : (this.setState({ data: c, error: void 0 }), this.executePlugin("onSuccess", t), (_d = (_c = this.options).onSuccess) == null ? void 0 : _d.call(_c, t), this.onFinished(), this.state.data);
+              return n !== this.currentRequestId ? S() : (this.setState({ data: c, error: void 0 }), this.executePlugin("onSuccess", t), (_d = (_c = this.options).onSuccess) == null ? void 0 : _d.call(_c, t), this.onFinished(), this.state.data);
             } catch (o) {
-              if (n !== this.currentRequestId) return T();
+              if (n !== this.currentRequestId) return S();
               throw this.setState({ data: void 0, res: void 0, error: o }), this.executePlugin("onError", t), (_f = (_e = this.options).onError) == null ? void 0 : _f.call(_e, t), this.onFinished(), this.state.error;
             }
           });
@@ -129,18 +135,18 @@ var require_vue3_request_umd = __commonJS({
         R.has(e) && ((_a = R.get(e)) == null ? void 0 : _a.forEach((a) => a({ data: t, params: n, time: s })));
       }, L = (e, t) => {
         var _a;
-        return R.has(e) ? (_a = R.get(e)) == null ? void 0 : _a.add(t) : R.set(e, /* @__PURE__ */ new Set()), () => {
+        return R.has(e) || R.set(e, /* @__PURE__ */ new Set()), (_a = R.get(e)) == null ? void 0 : _a.add(t), () => {
           const n = R.get(e);
           n == null ? void 0 : n.delete(t), (n == null ? void 0 : n.size) === 0 && R.delete(e);
         };
-      }, S = /* @__PURE__ */ new Map(), D = (e, t) => {
-        S.set(e, t), t.then(() => {
+      }, V = /* @__PURE__ */ new Map(), D = (e, t) => {
+        V.set(e, t), t.then(() => {
         }).catch(() => {
         }).finally(() => {
           $(e);
         });
-      }, H = (e) => S.get(e), $ = (e) => {
-        e && typeof e == "string" ? S.delete(e) : S.clear();
+      }, H = (e) => V.get(e), $ = (e) => {
+        e && typeof e == "string" ? V.delete(e) : V.clear();
       }, z = p((e, { cacheKey: t, cacheTime: n = 3e5, staleTime: s = 0, setCache: r, getCache: a }) => {
         const o = i.ref(null);
         let l = null;
@@ -204,17 +210,17 @@ var require_vue3_request_umd = __commonJS({
         }, onCancel: () => {
           r.value = 0, c();
         } } : {};
-      }), A = () => {
+      }), E = () => {
         var _a;
-        return C || P((_a = window.document) == null ? void 0 : _a.visibilityState) ? true : document.visibilityState === "visible";
-      }, E = /* @__PURE__ */ new Set(), Q = (e) => (E.add(e), () => {
-        E.delete(e);
+        return T || C((_a = window.document) == null ? void 0 : _a.visibilityState) ? true : document.visibilityState === "visible";
+      }, A = /* @__PURE__ */ new Set(), Q = (e) => (A.add(e), () => {
+        A.delete(e);
       }), X = () => {
-        A() && E.forEach((e) => {
+        E() && A.forEach((e) => {
           e();
         });
       };
-      !C && (window == null ? void 0 : window.addEventListener) && window.addEventListener("visibilitychange", X, false);
+      !T && (window == null ? void 0 : window.addEventListener) && window.addEventListener("visibilitychange", X, false);
       const Y = p((e, { pollingInterval: t, pollingWhenHidden: n = true, errorRetryCount: s }) => {
         const r = i.ref(null), a = i.ref(), o = () => {
           let l;
@@ -222,7 +228,7 @@ var require_vue3_request_umd = __commonJS({
           if (e.state.error && c !== 0) return;
           const { is: g, value: u } = b(i.toValue(t));
           return g ? (l = setTimeout(() => {
-            !i.toValue(n) && !A() ? r.value = Q(e.refresh) : e.refresh();
+            !i.toValue(n) && !E() ? r.value = Q(e.refresh) : e.refresh();
           }, u), () => {
             var _a;
             l && clearTimeout(l), (_a = r.value) == null ? void 0 : _a.call(r);
@@ -244,7 +250,7 @@ var require_vue3_request_umd = __commonJS({
           a.value = o();
         } };
       }), Z = p((e, { manual: t, refreshDeps: n, refreshDepsAction: s }) => {
-        if (P(n) || typeof n != "object" && typeof n != "function") return {};
+        if (C(n) || typeof n != "object" && typeof n != "function") return {};
         const r = i.watch(n, () => {
           t || (s ? s() : e.refresh());
         }, { deep: true });
@@ -253,18 +259,18 @@ var require_vue3_request_umd = __commonJS({
         } };
       }), G = () => {
         var _a;
-        return (!C && ((_a = window.navigator) == null ? void 0 : _a.onLine)) ?? true;
+        return (!T && ((_a = window.navigator) == null ? void 0 : _a.onLine)) ?? true;
       }, x = /* @__PURE__ */ new Set(), I = (e) => (x.add(e), () => {
         x.delete(e);
       }), M = () => {
-        !A() || !G() || x.forEach((e) => {
+        !E() || !G() || x.forEach((e) => {
           e();
         });
       };
-      !C && (window == null ? void 0 : window.addEventListener) && (window.addEventListener("visibilitychange", M, false), window.addEventListener("focus", M, false));
+      !T && (window == null ? void 0 : window.addEventListener) && (window.addEventListener("visibilitychange", M, false), window.addEventListener("focus", M, false));
       const k = p((e, { refocusTimespan: t = 5e3, refreshOnWindowFocus: n = false }) => {
         const s = i.ref(), { is: r } = b(i.toValue(t));
-        if (!r || P(i.toValue(n)) || typeof i.toValue(n) != "boolean") return {};
+        if (!r || C(i.toValue(n)) || typeof i.toValue(n) != "boolean") return {};
         const a = (o, l) => {
           let c = false;
           return () => {
