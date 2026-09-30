@@ -1,0 +1,37 @@
+---
+description: vue3-request 项目级开发约束，涵盖 Vue 3、TypeScript、插件和文档维护规范
+alwaysApply: true
+---
+
+# vue3-request 项目规范
+
+## 项目结构与工具
+
+- 这是一个基于 pnpm 的 Vue 3 + TypeScript monorepo；优先使用 `pnpm` 和已有脚本，不要引入新的包管理器或重复实现已有工具。
+- 请求库源码位于 `packages/request/vue3-request`；演示应用位于 `packages/vue3`；VitePress 文档位于 `packages/vitepress-demo`。
+- 修改发布包时优先检查 `packages/request/vue3-request/index.ts`、`useRequest.ts`、`useRequestImpl.ts`、`request.ts`、`types.ts` 和插件入口，确保公共 API、类型和实现同步。
+- `packages/vitepress-demo/docs/.vitepress/cache` 是构建缓存，不要手工修改、提交或把缓存文件当作源码维护。
+
+## TypeScript 与 Vue 规范
+
+- 遵循仓库的严格 TypeScript 配置；避免新增 `any`、`@ts-ignore` 和类型断言。确需使用时，应说明原因并将影响范围限制在边界代码。
+- 组合式 API 必须遵守 Vue 3 的生命周期规则。监听器、定时器、事件订阅和 AbortController 等副作用必须在 `onScopeDispose`、`onUnmounted` 或对应的清理回调中释放。
+- 接收 `Ref`、计算函数或普通值的配置时，使用 Vue 的 `toValue` 统一读取；不要直接把可能为 Ref 的对象当作布尔值、数字或函数判断。
+- 保持状态响应式，不要绕过 `Request` 的状态更新、插件生命周期和 `useRequestImpl` 的公开返回值直接修改内部状态。
+
+## 请求与插件设计
+
+- 插件通过 `definePlugin` 定义，并只使用 `PluginReturn` 支持的生命周期：`onBefore`、`onSuccess`、`onError`、`onFinally`、`onCancel` 和 `onRequest`。
+- `onCancel` 表示取消当前请求，不等同于组件卸载；不能仅依靠 `onCancel` 销毁长期监听或永久性的资源。
+- `manual`、`ready`、轮询、缓存、重试、防抖和节流等行为必须与 `Request` 的 `run`、`runAsync`、`refresh`、`refreshAsync`、`cancel` 流程保持一致，避免插件绕过统一请求入口。
+- 处理异步竞态、取消和错误时，保持现有的请求序号与生命周期语义；不要让过期请求覆盖新请求的状态。
+- 新增配置时同步更新 `BaseOptions`、实现、公共导出和文档，并明确普通值、`Ref`、函数及数组等支持范围。
+- 监听依赖时只在确有需要时启用深度监听；避免因大对象或无关嵌套字段变化造成重复请求。
+
+## 代码与文档
+
+- 注释和新增文档使用简体中文；注释说明设计原因、生命周期或边界条件，不重复描述显而易见的代码。
+- 修改公共行为时，补充或更新对应的 VitePress 指南、API 说明和演示；示例应展示真实可用的 `useRequest` 用法。
+- 保持现有双引号、分号、命名和文件组织风格；优先做局部修改，不要无关格式化或重命名。
+- 修改完成后至少运行相关的类型检查或构建脚本；提交前确认没有把构建产物、缓存或与当前任务无关的用户改动纳入变更。
+- 生成 Git 提交信息时使用中文，格式为 `[类型] 简短的中文描述`，例如 `feat: 添加依赖刷新插件`。
