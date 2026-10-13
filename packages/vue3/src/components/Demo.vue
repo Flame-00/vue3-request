@@ -8,7 +8,7 @@
       <n-button type="error" @click="cancel"> Cancel</n-button>
     </div>
     <n-card title="模拟请求">
-      <n-spin :show="(loading) as unknown as  boolean">
+      <n-spin :show="(loading) as unknown as boolean">
         data:
         <pre v-if="data">{{ data }}</pre>
         <hr />
