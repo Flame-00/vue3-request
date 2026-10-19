@@ -6,6 +6,9 @@
           ><template #home-hero-image>
             <img class="image-src" src="/logo.svg" />
           </template>
+          <template #home-hero-actions-after>
+            <HomeVideoModal />
+          </template>
         </Layout>
       </NEl>
     </NMessageProvider>
@@ -13,10 +16,11 @@
 </template>
 
 <script setup lang="ts">
-import { useData, useRouter } from "vitepress";
+import { useData } from "vitepress";
 import DefaultTheme from "vitepress/theme";
+import HomeVideoModal from "./HomeVideoModal.vue";
 const { Layout } = DefaultTheme;
-import { nextTick, provide, computed } from "vue";
+import { computed, nextTick, provide, ref } from "vue";
 import {
   NConfigProvider,
   NMessageProvider,
@@ -33,35 +37,32 @@ const enableTransitions = () =>
   "startViewTransition" in document &&
   window.matchMedia("(prefers-reduced-motion: no-preference)").matches;
 
-provide("toggle-appearance", async ({ clientX: x, clientY: y }: MouseEvent) => {
+provide("toggle-appearance", ({ clientX, clientY }: MouseEvent) => {
   if (!enableTransitions()) {
     isDark.value = !isDark.value;
     return;
   }
 
-  const clipPath = [
-    `circle(0px at ${x}px ${y}px)`,
-    `circle(${Math.hypot(
-      Math.max(x, innerWidth - x),
-      Math.max(y, innerHeight - y),
-    )}px at ${x}px ${y}px)`,
-  ];
-  const doc = document as any;
-  await doc.startViewTransition(async () => {
+  const x = (100 * clientX) / innerWidth;
+  const y = (100 * clientY) / innerHeight;
+  const maxRadius =
+    (100 * Math.hypot(
+      Math.max(clientX, innerWidth - clientX),
+      Math.max(clientY, innerHeight - clientY),
+    )) / (Math.hypot(innerWidth, innerHeight) / Math.SQRT2);
+
+  document.documentElement.style.setProperty("--switch-x", `${x}%`);
+  document.documentElement.style.setProperty("--switch-y", `${y}%`);
+  document.documentElement.style.setProperty("--switch-r", `${maxRadius}%`);
+
+  document.startViewTransition(async () => {
     isDark.value = !isDark.value;
     await nextTick();
-  }).ready;
-
-  document.documentElement.animate(
-    { clipPath: isDark.value ? clipPath.reverse() : clipPath },
-    {
-      duration: 300,
-      easing: "ease-in",
-      fill: "forwards",
-      pseudoElement: `::view-transition-${isDark.value ? "old" : "new"}(root)`,
-    },
-  );
+  });
 });
+
+// Layout 在站内导航时保留；刷新页面后重新创建。
+provide("home-video-auto-opened", ref(false));
 </script>
 <style>
 .disabled {
@@ -76,21 +77,27 @@ provide("toggle-appearance", async ({ clientX: x, clientY: y }: MouseEvent) => {
   animation: none;
   mix-blend-mode: normal;
 }
-
-::view-transition-old(root),
+::view-transition-new(root) {
+  animation: switch-appearance 300ms ease-in;
+}
 .dark::view-transition-new(root) {
+  animation: none;
+}
+.dark::view-transition-old(root) {
+  animation: switch-appearance 300ms ease-in reverse forwards;
   z-index: 1;
 }
-
-::view-transition-new(root),
-.dark::view-transition-old(root) {
-  z-index: 9999;
+@keyframes switch-appearance {
+  from {
+    clip-path: circle(0 at var(--switch-x) var(--switch-y));
+  }
+  to {
+    clip-path: circle(var(--switch-r) at var(--switch-x) var(--switch-y));
+  }
 }
-
 .VPSwitchAppearance {
   width: 22px !important;
 }
-
 .VPSwitchAppearance .check {
   transform: none !important;
 }

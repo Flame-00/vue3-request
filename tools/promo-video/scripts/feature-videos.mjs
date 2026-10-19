@@ -1,0 +1,15 @@
+export const featureVideos = [
+  { name: "basic", composition: "BasicDoc" },
+  { name: "cache", composition: "CacheDoc" },
+  { name: "retry", composition: "RetryDoc" },
+  { name: "abort", composition: "AbortDoc" },
+  { name: "focus", composition: "FocusDoc" },
+  { name: "polling", composition: "PollingDoc" },
+  { name: "lifecycle", composition: "LifecycleDoc" },
+  { name: "parameters", composition: "ParametersDoc" },
+  { name: "refresh", composition: "RefreshDoc" },
+  { name: "cancel", composition: "CancelDoc" },
+  { name: "ready", composition: "ReadyDoc" },
+  { name: "throttle", composition: "ThrottleDoc" },
+  { name: "debounce", composition: "DebounceDoc" },
+];

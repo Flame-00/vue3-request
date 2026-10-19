@@ -1,0 +1,33 @@
+{
+  "name": "promo-video",
+  "version": "1.0.0",
+  "description": "vue3-request 的 137.3 秒功能介绍视频",
+  "repository": {},
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "@remotion/cli": "4.0.535",
+    "@remotion/transitions": "4.0.535",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "remotion": "4.0.535"
+  },
+  "devDependencies": {
+    "@remotion/eslint-config-flat": "4.0.535",
+    "@types/react": "19.2.7",
+    "@types/web": "0.0.166",
+    "eslint": "9.39.5",
+    "prettier": "3.8.1",
+    "typescript": "5.9.3"
+  },
+  "scripts": {
+    "dev": "remotion studio --port=8826",
+    "build": "remotion bundle",
+    "render": "remotion render src/index.ts Vue3RequestPromo out/vue3-request-v4.mp4 --codec=h264 --crf=18 --concurrency=2",
+    "poster": "remotion still src/index.ts Vue3RequestPromo out/poster-v4.png --frame=100",
+    "sync:docs-video": "node scripts/sync-docs-video.mjs",
+    "render:features": "node scripts/render-features.mjs",
+    "upgrade": "remotion upgrade",
+    "lint": "eslint src && tsc"
+  }
+}
