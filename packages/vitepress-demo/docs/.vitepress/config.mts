@@ -69,6 +69,7 @@ export default defineConfig({
             { text: "Ready", link: "/guide/demo/ready" },
             { text: "缓存 & SWR", link: "/guide/demo/cache" },
             { text: "错误重试", link: "/guide/demo/retry" },
+            { text: "鉴权 Token 刷新", link: "/guide/demo/auth-refresh" },
             { text: "节流", link: "/guide/demo/throttle" },
             { text: "防抖", link: "/guide/demo/debounce" },
             { text: "屏幕聚焦重新请求", link: "/guide/demo/focus-refresh" },

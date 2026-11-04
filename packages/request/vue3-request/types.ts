@@ -54,6 +54,9 @@ export type BaseOptions<D, P extends any[], K = "data"> = Partial<{
   throttleWait: Ref<number> | number;
   throttleOptions: Reactive<ThrottleOptionsType> | ThrottleOptionsType;
   abortPrevious: boolean | Ref<boolean>;
+  isUnauthorized: (error: unknown) => boolean;
+  refreshToken: () => Promise<unknown>;
+  onUnauthorized: (error: unknown, refreshError?: unknown) => void;
 }> &
   (D extends object ? { resKey?: K } : {});
 

@@ -342,57 +342,6 @@ useRequest(getUser, {
 
 key 中应包含接口身份和全部有效参数。这里只合并进行中的请求；请求结束后的数据复用仍交给内置缓存插件处理。
 
-### Token 失效后刷新并重放
-
-多个请求同时收到 `401` 时，通常只应刷新一次 Token，其余请求等待刷新完成后再重放。模块级的 `refreshingToken` 用于避免并发刷新。
-
-```ts
-import { definePlugin } from "vue3-request";
-
-let refreshingToken: Promise<void> | null = null;
-
-interface AuthRefreshOptions {
-  isUnauthorized?: (error: unknown) => boolean;
-  refreshToken?: () => Promise<void>;
-}
-
-export function createAuthRefreshPlugin<D, P extends unknown[]>() {
-  return definePlugin<D, P, AuthRefreshOptions>((_request, options) => ({
-    onRequest: (service) => async (...params) => {
-      try {
-        return await service(...params);
-      } catch (error) {
-        if (
-          !options.refreshToken ||
-          !options.isUnauthorized?.(error)
-        ) {
-          throw error;
-        }
-
-        refreshingToken ??= options.refreshToken().finally(() => {
-          refreshingToken = null;
-        });
-
-        await refreshingToken;
-        return service(...params);
-      }
-    },
-  }));
-}
-```
-
-```ts
-const authRefreshPlugin = createAuthRefreshPlugin<Order[], []>();
-
-useRequest(getOrders, {
-  isUnauthorized: (error) =>
-    axios.isAxiosError(error) && error.response?.status === 401,
-  refreshToken: authStore.refreshToken,
-}, [authRefreshPlugin]);
-```
-
-重放只执行一次，不会出现无限刷新循环。实际项目中，刷新失败后还应由 `authStore` 统一清理登录状态并跳转登录页。
-
 ### 限制全局并发数
 
 批量加载图片详情、报表分片或大量下拉选项时，无限制并发容易挤占浏览器连接、触发网关限流。下面的插件让同一插件实例下的请求排队执行。

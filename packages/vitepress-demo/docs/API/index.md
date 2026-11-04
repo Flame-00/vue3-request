@@ -328,6 +328,22 @@ watch(refreshDeps, refresh);
 
 **参考：** [缓存](../guide/demo/cache.md)
 
+### setCache
+
+- **类型：** `(cacheKey: string, cacheData: CacheParamsType) => void`
+
+自定义缓存写入逻辑，配置后替代内置的 `setCache`。
+
+**参考：** [缓存](../guide/demo/cache.md)
+
+### getCache
+
+- **类型：** `(cacheKey: string) => CacheParamsType`
+
+自定义缓存读取逻辑，配置后替代内置的 `getCache`。
+
+**参考：** [缓存](../guide/demo/cache.md)
+
 ### ready <Badge text="响应式" />
 
 - **类型：** `Ref<boolean> | () => boolean`
@@ -416,6 +432,30 @@ type ThrottleOptionsType = {
 是否中止前一个未完成的请求
 
 **参考：** [中止请求](../guide/demo/abort-request.md)
+
+### isUnauthorized
+
+- **类型：** `(error: unknown) => boolean`
+
+判断请求错误是否属于「未授权 / 401」。返回 `true` 时触发 Token 刷新与重放；未配置时插件不接管任何错误。
+
+**参考：** [鉴权 Token 刷新](../guide/demo/auth-refresh.md)
+
+### refreshToken
+
+- **类型：** `() => Promise<unknown>`
+
+刷新 Token 的函数，成功 resolve、失败 reject。并发 401 时只会调用一次，其余请求等待同一个 Promise。
+
+**参考：** [鉴权 Token 刷新](../guide/demo/auth-refresh.md)
+
+### onUnauthorized
+
+- **类型：** `(error: unknown, refreshError?: unknown) => void`
+
+刷新失败或重放后仍 401 时的回调，用于清理登录态并跳转登录页。并发场景下只触发一次。
+
+**参考：** [鉴权 Token 刷新](../guide/demo/auth-refresh.md)
 
 ### resKey
 

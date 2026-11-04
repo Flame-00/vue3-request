@@ -1,3 +1,4 @@
+import useAuthRefreshPlugin from "./useAuthRefreshPlugin";
 import useAbortPlugin from "./useAbortPlugin";
 import useCachePlugin from "./useCachePlugin";
 import useErrorRetryPlugin from "./useErrorRetryPlugin";
@@ -9,6 +10,7 @@ import useDebouncePlugin from "./useDebouncePlugin";
 import useThrottlePlugin from "./useThrottlePlugin";
 import type { Plugin } from "../types";
 export default [
+  useAuthRefreshPlugin,
   useErrorRetryPlugin,
   usePollingPlugin,
   useRefreshDepsPlugin,

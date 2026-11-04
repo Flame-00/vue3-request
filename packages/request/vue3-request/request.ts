@@ -14,7 +14,7 @@ export class Request<D, P extends any[]> {
 
   state: IState<D, P>;
 
-  abort: () => void = () => {};
+  abort: () => void = () => { };
 
   constructor(
     public service: ServiceType<D, P>,
@@ -116,7 +116,7 @@ export class Request<D, P extends any[]> {
       }
 
       const data = await servicePromise;
-
+      console.log(data, 'data');
       if (requestId !== this.currentRequestId) {
         return neverPromise();
       }
